@@ -166,6 +166,7 @@ Led product design across customer acquisition, onboarding, subscription managem
 
 # Wisdom Panel
 Product Design Lead
+Nov 2019 – Sep 2023
 
 ## Overview
 Led product and experience design efforts focused on translating complex scientific and genetic health information into approachable consumer experiences.
