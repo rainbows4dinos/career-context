@@ -165,7 +165,7 @@ Led product design across customer acquisition, onboarding, subscription managem
 ---
 
 # Wisdom Panel
-Product Design Lead
+Director, Product Design
 Nov 2019 – Sep 2023
 
 ## Overview
