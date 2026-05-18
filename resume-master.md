@@ -180,8 +180,22 @@ Led product and experience design efforts focused on translating complex scienti
 
 ---
 
+# Vacasa
+Lead Product Designer
+2017 – 2019
+
+## Overview
+Led product design across Vacasa’s consumer platform, internal operational tooling, and design systems during a period of rapid growth and transformation.
+
+## Contributions
+- Led product design strategy for Vacasa’s first native consumer application, contributing to a +9 gain in guest NPS and significantly reducing customer support volume.
+- Established foundational design system practices across Vacasa’s web and native product ecosystem, improving consistency, scalability, and developer efficiency.
+- Led design direction for internal operational tools used by housekeeping and field maintenance teams, helping streamline workflows and improve operational efficiency across distributed service teams.
+- Improved conversion across key guest booking flows, including property detail pages and checkout experiences.
+- Provided digital design direction and implementation guidance during Vacasa’s 2018 rebrand, helping translate updated brand systems into cohesive product experiences.
+
 # Additional Experience
-(Add Vacasa and earlier roles later)
+(Add earlier roles later)
 
 ---
 
