@@ -157,10 +157,10 @@ Oct 2022 – Sep 2023
 Led product design across customer acquisition, onboarding, subscription management, retention, and ecommerce experiences.
 
 ## Contributions
-- Directed UX strategy and execution across responsive consumer experiences.
-- Improved collaboration between product, engineering, and marketing.
-- Contributed to onboarding and conversion optimization efforts.
-- Mentored designers and improved design process maturity.
+- Led redesign initiatives across onboarding, subscription management, retention, and ecommerce experiences within a rapidly evolving consumer platform.
+- Helped mature product design processes, collaboration models, and design system practices across product, engineering, and marketing teams.
+- Improved UX consistency and cross-functional alignment through stronger systems thinking, reusable patterns, and more cohesive experience design.
+- Mentored designers while helping elevate design quality, strategic thinking, and organizational design maturity.
 
 ---
 
@@ -172,9 +172,11 @@ Nov 2019 – Sep 2023
 Led product and experience design efforts focused on translating complex scientific and genetic health information into approachable consumer experiences.
 
 ## Contributions
-- Designed trust-sensitive consumer experiences communicating scientific and health-related insights.
-- Collaborated across science, product, and engineering stakeholders.
-- Simplified technically complex information into emotionally resonant UX.
+- Led a major transformation of Wisdom Panel’s digital product experience, modernizing the platform, redesigning core customer journeys, and helping evolve the organization’s design maturity.
+- Directed the development of scalable design systems and UX foundations that improved consistency, usability, accessibility, and cross-functional collaboration.
+- Translated complex scientific and genetic health information into approachable, trustworthy consumer experiences across onboarding, reporting, and educational workflows.
+- Partnered closely with science, engineering, product, and marketing stakeholders to align business goals with emotionally sensitive, human-centered UX.
+- Helped shift the organization toward more strategic, systems-oriented product design practices and long-term platform thinking.
 
 ---
 
