@@ -182,7 +182,7 @@ Led product and experience design efforts focused on translating complex scienti
 
 # Vacasa
 Lead Product Designer
-2017 – 2019
+May 2016 – Nov 2019
 
 ## Overview
 Led product design across Vacasa’s consumer platform, internal operational tooling, and design systems during a period of rapid growth and transformation.
