@@ -206,6 +206,16 @@ Art Institute of Portland, High Honors
 
 ---
 
+# Certifications
+
+## Design Thinking Certificate
+IDEO U
+
+## Certified Brazilian Jiu Jitsu Coach
+Straight Blast Gym International 
+
+---
+
 # Leadership Philosophy
 
 ## Player / Coach
