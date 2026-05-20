@@ -199,6 +199,13 @@ Led product design across Vacasa’s consumer platform, internal operational too
 
 ---
 
+# Education
+
+## Bachelor of Science, Multimedia & Web Design
+Art Institute of Portland, High Honors
+
+---
+
 # Leadership Philosophy
 
 ## Player / Coach
