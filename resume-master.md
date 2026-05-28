@@ -147,6 +147,7 @@ Worked across highly cross-functional environments spanning product, engineering
 - Workflow design
 - Executive communication
 
+
 ---
 
 # PetPlate
