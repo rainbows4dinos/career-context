@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Resume Tailor — Larry Reynolds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+  :root {
+    --bg: #f7f6f3; --surface: #ffffff; --border: #e4e2da;
+    --text: #1a1917; --muted: #7a7870; --accent: #2a52a0;
+    --accent-bg: #eef2fb; --success: #2d6a4f;
+    --sans: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+    --radius: 10px;
+  }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem }
+  .shell { max-width: 720px; margin: 0 auto }
+  header { margin-bottom: 2.5rem }
+  header h1 { font-size: 22px; font-weight: 500; letter-spacing: -0.02em }
+  header p { font-size: 14px; color: var(--muted); margin-top: 4px }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem }
+  label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px }
+  input[type=text], textarea {
+    width: 100%; font-family: var(--sans); font-size: 14px; color: var(--text);
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 12px; outline: none; transition: border-color 0.15s;
+  }
+  input[type=text]:focus, textarea:focus { border-color: var(--accent) }
+  textarea { min-height: 130px; resize: vertical; line-height: 1.6 }
+  .field { margin-bottom: 1.25rem }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+  .toggles { display: flex; flex-wrap: wrap; gap: 8px }
+  .tog { font-size: 13px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.15s; user-select: none }
+  .tog.on { background: var(--accent-bg); color: var(--accent); border-color: var(--accent) }
+  .step-bar { display: flex; gap: 6px; margin-bottom: 1.75rem }
+  .step { flex: 1; font-size: 12px; color: var(--muted); padding: 6px 4px; text-align: center; border-bottom: 2px solid var(--border); transition: all 0.2s }
+  .step.active { color: var(--accent); border-color: var(--accent); font-weight: 500 }
+  .step.done { color: var(--success); border-color: var(--success) }
+  .loading-card { text-align: center; padding: 3rem 2rem }
+  .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 1rem }
+  @keyframes spin { to { transform: rotate(360deg) } }
+  .loading-status { font-size: 15px; font-weight: 500; margin-bottom: 4px }
+  .loading-sub { font-size: 13px; color: var(--muted) }
+  .tailor-note { font-size: 13px; background: var(--accent-bg); color: var(--accent); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; line-height: 1.6 }
+  .tab-bar { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem }
+  .tab { font-size: 13px; padding: 8px 18px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500 }
+  /* Resume preview */
+  .resume-name { font-size: 20px; font-weight: 500; letter-spacing: -0.02em }
+  .resume-title-line { font-size: 13px; color: var(--muted); margin-top: 2px; margin-bottom: 1.25rem }
+  .section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding-bottom: 6px; border-bottom: 1px solid var(--border); margin-bottom: 10px; margin-top: 1.25rem }
+  .summary-text { font-size: 14px; line-height: 1.75 }
+  .skills-group { margin-bottom: 6px; font-size: 13px; line-height: 1.6 }
+  .job { margin-bottom: 1.1rem }
+  .job-header { display: flex; justify-content: space-between; align-items: baseline }
+  .job-title { font-size: 14px; font-weight: 500 }
+  .job-dates { font-size: 12px; color: var(--muted) }
+  .job-company { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px }
+  .job-blurb { font-size: 13px; color: var(--muted); margin-bottom: 5px; line-height: 1.6 }
+  .job-bullets { padding-left: 16px; font-size: 13px; line-height: 1.75 }
+  .job-bullets li { margin-bottom: 3px }
+  /* Cover letter preview */
+  .cl-body { font-size: 14px; line-height: 1.8 }
+  .cl-body p { margin-bottom: 1rem }
+  .btn-row { display: flex; gap: 10px; margin-top: 1rem; flex-wrap: wrap }
+  button.primary { flex: 1; padding: 11px; font-family: var(--sans); font-size: 14px; font-weight: 500; background: var(--text); color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.15s }
+  button.primary:hover { opacity: 0.85 }
+  button.primary:disabled { opacity: 0.4; cursor: not-allowed }
+  button.secondary { padding: 10px 18px; font-family: var(--sans); font-size: 14px; background: var(--surface); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s }
+  button.secondary:hover { border-color: var(--text); color: var(--text) }
+  .dl-note { font-size: 12px; color: var(--muted); margin-top: 10px }
+  @media (max-width: 520px) { .field-row { grid-template-columns: 1fr } .btn-row { flex-direction: column } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <h1>Resume Tailor</h1>
+    <p>Larry Reynolds — Principal Product Designer</p>
+  </header>
+
+  <div class="step-bar">
+    <div class="step active" id="step0">1. Job details</div>
+    <div class="step" id="step1">2. Generating</div>
+    <div class="step" id="step2">3. Preview + Download</div>
+  </div>
+
+  <!-- Pane 0: Input -->
+  <div id="pane0">
+    <div class="card">
+      <div class="field-row">
+        <div class="field">
+          <label>Job title *</label>
+          <input type="text" id="jobTitle" placeholder="Staff Product Designer" />
+        </div>
+        <div class="field">
+          <label>Company</label>
+          <input type="text" id="company" placeholder="Figma" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Job description *</label>
+        <textarea id="jobDesc" placeholder="Paste the full job description here."></textarea>
+      </div>
+      <div class="field">
+        <label>Hiring contact <span style="font-weight:400;text-transform:none;letter-spacing:0">— optional, for cover letter salutation</span></label>
+        <input type="text" id="hiringContact" placeholder="e.g. Sarah Chen, or leave blank for 'Hiring Team'" />
+      </div>
+      <div class="field">
+        <label>Emphasis focus <span style="font-weight:400;text-transform:none;letter-spacing:0">— optional, auto-detected if blank</span></label>
+        <div class="toggles" id="focusToggles">
+          <span class="tog" onclick="toggleFocus(this)" data-val="healthcare">Healthcare / sensitive UX</span>
+          <span class="tog" onclick="toggleFocus(this)" data-val="ai-native">AI-native</span>
+          <span class="tog" onclick="toggleFocus(this)" data-val="staff-ic">Staff IC</span>
+          <span class="tog" onclick="toggleFocus(this)" data-val="systems">Systems / platform</span>
+          <span class="tog" onclick="toggleFocus(this)" data-val="leadership">Design leadership</span>
+          <span class="tog" onclick="toggleFocus(this)" data-val="consumer">Consumer / DTC</span>
+          <span class="tog" onclick="toggleFocus(this)" data-val="zero-to-one">Zero-to-one</span>
+          <span class="tog" onclick="toggleFocus(this)" data-val="design-systems">Design systems</span>
+          <span class="tog" onclick="toggleFocus(this)" data-val="b2b-saas">B2B / SaaS</span>
+          <span class="tog" onclick="toggleFocus(this)" data-val="startup">Startup / fast-moving</span>
+          <span class="tog" onclick="toggleFocus(this)" data-val="contract">Contract / freelance</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Additional notes</label>
+        <input type="text" id="extraNotes" placeholder="e.g. De-emphasize management, highlight Figma expertise" />
+      </div>
+      <button class="primary" onclick="goTailor()">Generate resume + cover letter</button>
+    </div>
+  </div>
+
+  <!-- Pane 1: Loading -->
+  <div id="pane1" style="display:none">
+    <div class="card loading-card">
+      <div class="spinner"></div>
+      <div class="loading-status" id="loadStatus">Analyzing job description...</div>
+      <div class="loading-sub" id="loadSub">Identifying what they actually care about</div>
+    </div>
+  </div>
+
+  <!-- Pane 2: Preview -->
+  <div id="pane2" style="display:none">
+    <div class="tab-bar">
+      <div class="tab active" onclick="showTab('resume',this)">Resume</div>
+      <div class="tab" onclick="showTab('cl',this)">Cover Letter</div>
+    </div>
+    <div id="tabResume"><div class="card" id="resumeOut"></div></div>
+    <div id="tabCL" style="display:none"><div class="card" id="clOut"></div></div>
+    <div class="btn-row">
+      <button class="primary" id="dlResume" onclick="downloadDoc('resume')">Download resume .docx</button>
+      <button class="primary" id="dlCL" onclick="downloadDoc('cl')">Download cover letter .docx</button>
+      <button class="secondary" onclick="startOver()">New application</button>
+    </div>
+    <p class="dl-note">Files are generated to exactly match your template styling — Helvetica Neue, correct weights, spacing, and dividers.</p>
+  </div>
+</div>
+
+<!-- docx loaded lazily on first download click -->
+<script>
+// ─── Config ───────────────────────────────────────────────────────────────────
+const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-context/main';
+// Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
+// Set to null to call Anthropic directly (works locally or in Claude artifacts).
+const PROXY_URL = null; // Replace with your Cloudflare Worker URL once deployed
+
+// ─── Context files fetched from repo at runtime ───────────────────────────────
+let MASTER = null;
+let FRAMING = null;
+let README = null;
+let contextLoaded = false;
+let contextError = null;
+
+async function loadContext() {
+  if (contextLoaded) return;
+  const files = [
+    fetch(REPO_RAW + '/resume-master.md').then(r => { if (!r.ok) throw new Error('resume-master.md ' + r.status); return r.text(); }),
+    fetch(REPO_RAW + '/experience-framing.md').then(r => { if (!r.ok) throw new Error('experience-framing.md ' + r.status); return r.text(); }),
+    fetch(REPO_RAW + '/README.md').then(r => { if (!r.ok) throw new Error('README.md ' + r.status); return r.text(); }),
+  ];
+  try {
+    [MASTER, FRAMING, README] = await Promise.all(files);
+    contextLoaded = true;
+  } catch(e) {
+    contextError = e.message;
+    throw new Error('Could not load context files from GitHub: ' + e.message);
+  }
+}
+
+let focusSelected = [];
+let generatedData = null;
+let currentDocx = { resume: null, cl: null };
+
+function toggleFocus(el) {
+  el.classList.toggle('on');
+  const v = el.dataset.val;
+  focusSelected = focusSelected.includes(v) ? focusSelected.filter(x=>x!==v) : [...focusSelected,v];
+}
+
+function setStep(n) {
+  ['step0','step1','step2'].forEach((id,i)=>{
+    document.getElementById(id).className='step'+(i<n?' done':i===n?' active':'');
+  });
+  ['pane0','pane1','pane2'].forEach((id,i)=>{
+    document.getElementById(id).style.display=i===n?'':'none';
+  });
+}
+
+function showTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tabResume').style.display = tab==='resume'?'':'none';
+  document.getElementById('tabCL').style.display = tab==='cl'?'':'none';
+}
+
+function startOver() {
+  focusSelected=[];
+  document.querySelectorAll('.tog').forEach(b=>b.classList.remove('on'));
+  ['jobTitle','company','jobDesc','extraNotes','hiringContact'].forEach(id=>document.getElementById(id).value='');
+  currentDocx={resume:null,cl:null};
+  setStep(0);
+}
+
+async function goTailor() {
+  const title = document.getElementById('jobTitle').value.trim();
+  const jd    = document.getElementById('jobDesc').value.trim();
+  if (!title||!jd) { alert('Please add a job title and job description.'); return; }
+  const company = document.getElementById('company').value.trim();
+  const notes   = document.getElementById('extraNotes').value.trim();
+  const contact = document.getElementById('hiringContact').value.trim() || 'Hiring Team';
+  const focus   = focusSelected.length ? focusSelected.join(', ') : 'auto-detect from JD';
+  const month   = new Date().toLocaleString('default',{month:'long',year:'numeric'});
+
+  setStep(1);
+  const statusEl=document.getElementById('loadStatus');
+  const subEl=document.getElementById('loadSub');
+
+  // Load context files from GitHub if not already cached
+  if (!contextLoaded) {
+    statusEl.textContent = 'Loading context from GitHub...';
+    subEl.textContent = 'Fetching resume-master.md and experience-framing.md';
+    try {
+      await loadContext();
+    } catch(e) {
+      statusEl.textContent = 'Could not load context files.';
+      subEl.textContent = e.message + ' — Check that the repo is public and files exist.';
+      console.error(e);
+      return;
+    }
+  }
+
+  const msgs=[
+    ['Analyzing job description...','Figuring out what actually matters to this team'],
+    ['Selecting relevant experience...','Matching your background to this specific role'],
+    ['Crafting the summary...','Writing a targeted opening that speaks to this team'],
+    ['Writing the cover letter...','Finding the honest angle for this company'],
+    ['Final polish...','Tone check and cleanup'],
+  ];
+  let mi=0;
+  const tick=setInterval(()=>{ mi=(mi+1)%msgs.length; statusEl.textContent=msgs[mi][0]; subEl.textContent=msgs[mi][1]; },2200);
+
+  const prompt = `You are a resume and cover letter tailoring expert. Using the master resume context and experience framing below, create a tailored resume AND cover letter.
+
+MASTER RESUME:
+${MASTER}
+
+EXPERIENCE FRAMING (the why-it-mattered layer — use for authentic story angles and real numbers):
+${FRAMING}
+
+TONE & POSITIONING RULES (from README):
+${README}
+
+JOB APPLICATION:
+- Role: ${title}
+- Company: ${company||'not specified'}
+- Hiring contact: ${contact}
+- Emphasis focus: ${focus}
+- Notes: ${notes||'none'}
+- Date: ${month}
+
+JOB DESCRIPTION:
+${jd}
+
+Return ONLY a JSON object, no markdown, no backticks:
+{
+  "tailoring_notes": "2-3 sentences on what you emphasized and why",
+  "resume": {
+    "summary": "2-3 sentence tailored summary",
+    "skills": {
+      "product_ux": ["skill1","skill2"],
+      "ai_prototyping": ["skill1","skill2"],
+      "leadership": ["skill1","skill2"]
+    },
+    "experience": [
+      {
+        "company": "Company name",
+        "title": "Job title",
+        "dates": "Date range",
+        "blurb": "One-sentence context (omit if not needed)",
+        "bullets": ["Bold label: rest of bullet", "Plain bullet with no label"]
+      }
+    ]
+  },
+  "cover_letter": {
+    "opening_paragraph": "Hook — genuine specific observation about company/role tension",
+    "body_paragraphs": ["para 2","para 3","para 4"],
+    "closing_paragraph": "Low-pressure direct close"
+  }
+}
+
+RESUME RULES: Keep all 4 jobs. 3-4 bullets each. Lead with impact. Use real numbers ($3M, NPS, etc) where relevant. Bullets may have a "Bold label: " prefix when it adds clarity (like template). Skills 4-6 per group. No bullets starting with "I".
+COVER LETTER RULES: 4-5 paragraphs. Direct voice. Specific company angle. Use "patterns that spread" for principal credibility. No "excited to apply".`;
+
+  try {
+    const apiEndpoint = PROXY_URL || 'https://api.anthropic.com/v1/messages';
+    const res = await fetch(apiEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    clearInterval(tick);
+    const apiData = await res.json();
+
+    // Surface API-level errors clearly
+    if (apiData.error) throw new Error('API error: ' + apiData.error.message);
+    if (!apiData.content || !apiData.content.length) throw new Error('Empty API response: ' + JSON.stringify(apiData).slice(0,300));
+
+    const raw = apiData.content.map(b=>b.text||'').join('');
+
+    // Check for truncation
+    if (apiData.stop_reason === 'max_tokens') throw new Error('Response truncated — try a shorter job description.');
+
+    let r;
+    try {
+      r = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    } catch(parseErr) {
+      throw new Error('JSON parse failed. Model returned: ' + raw.slice(0,400));
+    }
+
+    // Strip em dashes throughout — model ignores tone rules reliably
+    // Replace em dash variants with a comma, colon, or space depending on context
+    function stripEmDashes(val) {
+      if (typeof val === 'string') {
+        return val
+          .replace(/—/g, ',')   // — standard em dash → comma
+          .replace(/–/g, ',')   // – en dash → comma (also AI-overused)
+          .replace(/\s,\s/g, ', ')   // clean up any " , " spacing artifacts
+          .replace(/,,/g, ',')       // clean double commas
+          .replace(/,\s+,/g, ',');   // clean comma-space-comma
+      }
+      if (Array.isArray(val)) return val.map(stripEmDashes);
+      if (val && typeof val === 'object') {
+        const out = {};
+        for (const k of Object.keys(val)) out[k] = stripEmDashes(val[k]);
+        return out;
+      }
+      return val;
+    }
+    r = stripEmDashes(r);
+
+    generatedData = { ...r, jobTitle: title, company, hiringContact: contact, currentMonth: month };
+    renderPreview(r, title, company, contact, month);
+
+    // Docx files are built lazily on download click — not here
+    currentDocx = { resume: null, cl: null };
+
+    setStep(2);
+  } catch(e) {
+    clearInterval(tick);
+    statusEl.textContent = 'Error: ' + e.message;
+    subEl.textContent = 'Check the browser console (F12) for full details, then click below to retry.';
+    console.error('Tailor error:', e);
+    // Remove any previous retry button
+    const existing = document.getElementById('retryBtn');
+    if (existing) existing.remove();
+    const retryBtn = document.createElement('button');
+    retryBtn.id = 'retryBtn';
+    retryBtn.className = 'primary';
+    retryBtn.style.cssText = 'margin-top:1.5rem;max-width:180px';
+    retryBtn.textContent = 'Start over';
+    retryBtn.onclick = startOver;
+    document.querySelector('.loading-card').appendChild(retryBtn);
+  }
+}
+
+// ─── Preview renderer ─────────────────────────────────────────────────────────
+function renderPreview(r, title, company, contact, month) {
+  const res = r.resume||{};
+  const sk  = res.skills||{};
+  const skillsHtml = [
+    sk.product_ux?.length   ? `<div class="skills-group"><strong>Product &amp; UX:</strong> ${sk.product_ux.join(', ')}</div>` : '',
+    sk.ai_prototyping?.length ? `<div class="skills-group"><strong>AI &amp; Prototyping:</strong> ${sk.ai_prototyping.join(', ')}</div>` : '',
+    sk.leadership?.length   ? `<div class="skills-group"><strong>Leadership:</strong> ${sk.leadership.join(', ')}</div>` : '',
+  ].join('');
+
+  const expHtml = (res.experience||[]).map(j=>`
+    <div class="job">
+      <div class="job-header">
+        <span class="job-title">${j.title}</span>
+        <span class="job-dates">${j.dates}</span>
+      </div>
+      <div class="job-company">${j.company}</div>
+      ${j.blurb?`<div class="job-blurb">${j.blurb}</div>`:''}
+      <ul class="job-bullets">${(j.bullets||[]).map(b=>{
+        const ci=b.indexOf(': ');
+        if(ci>0&&ci<45) return `<li><strong>${b.slice(0,ci+2)}</strong>${b.slice(ci+2)}</li>`;
+        return `<li>${b}</li>`;
+      }).join('')}</ul>
+    </div>`).join('');
+
+  document.getElementById('resumeOut').innerHTML=`
+    <div class="resume-name">Larry Reynolds</div>
+    <div class="resume-title-line">Principal Product Designer · Portland, OR · larryjr.design · larry.jr.design@gmail.com · 503-475-7438</div>
+    ${r.tailoring_notes?`<div class="tailor-note"><strong>Tailored:</strong> ${r.tailoring_notes}</div>`:''}
+    <div class="section-label">Summary</div>
+    <div class="summary-text">${res.summary||''}</div>
+    <div class="section-label">Core Skills</div>${skillsHtml}
+    <div class="section-label">Experience</div>${expHtml}
+    <div class="section-label">Education &amp; Certifications</div>
+    <div style="font-size:13px;line-height:1.8"><strong>BS, Multimedia &amp; Web Design</strong> — Art Institute of Portland, High Honors<br><strong>Design Thinking Certificate</strong> — IDEO U</div>`;
+
+  const cl=r.cover_letter||{};
+  const allParas=[cl.opening_paragraph,...(cl.body_paragraphs||[]),cl.closing_paragraph].filter(Boolean);
+  const addressee=company?`${contact}, ${company}`:contact;
+  document.getElementById('clOut').innerHTML=`
+    <div style="font-size:20px;font-weight:500;margin-bottom:4px">Larry Reynolds</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:1rem">Portland, OR · larry.jr.design@gmail.com · larryjr.design</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:8px">${month}</div>
+    <div style="font-size:14px;margin-bottom:4px">${addressee}</div>
+    <div style="font-size:14px;font-weight:500;margin-bottom:1.5rem">Re: ${title}</div>
+    <div class="cl-body">${allParas.map(p=>`<p>${p}</p>`).join('')}</div>
+    <div style="margin-top:1.5rem;font-size:14px;line-height:1.8"><strong>Larry Reynolds</strong><br><span style="color:var(--muted)">larryjr.design · 503-475-7438</span></div>`;
+}
+
+// ─── Docx builder (mirrors template XML exactly) ──────────────────────────────
+// Lazily resolved on first use so a CDN failure can't crash the page
+let Document, Packer, Paragraph, TextRun, ExternalHyperlink,
+    AlignmentType, BorderStyle, LevelFormat, TabStopType;
+
+function resolveDocx() {
+  if (Document) return true; // already loaded
+  if (typeof docx === 'undefined') return false;
+  ({ Document, Packer, Paragraph, TextRun, ExternalHyperlink,
+     AlignmentType, BorderStyle, LevelFormat, TabStopType } = docx);
+  return true;
+}
+
+const FONT='Helvetica Neue';
+const C_BLACK='000000', C_DARK='1a1a1a', C_MED='555555', C_MUTED='888888', C_LINK='1155cc', C_RULE='aaaaaa';
+
+function tr(text,color,sz,bold=false,underline=false) {
+  return new TextRun({text,font:FONT,color,size:sz,bold,underline:underline?{type:'single'}:undefined});
+}
+
+function sectionHead(text,spaceBefore=200,spaceAfter=80) {
+  return new Paragraph({
+    border:{bottom:{style:BorderStyle.SINGLE,size:4,color:C_RULE,space:2}},
+    spacing:{before:spaceBefore,after:spaceAfter},
+    children:[tr(text,C_DARK,18,true)],
+  });
+}
+
+const LOC_MAP={
+  'G2':'(Remote)','PetPlate':'(Remote)',
+  'Wisdom Panel':'(Hybrid, Portland, OR)','Wisdom Panel (by Mars Petcare)':'(Hybrid, Portland, OR)',
+  'Vacasa':'(On-Site, Portland, OR)',
+};
+
+async function buildResumeDocx(res) {
+  const children=[];
+
+  // Name
+  children.push(new Paragraph({spacing:{before:0,after:40},children:[tr('Larry Reynolds',C_BLACK,52,true)]}));
+  // Title
+  children.push(new Paragraph({spacing:{before:0,after:60},children:[tr('Principal Product Designer',C_MED,23)]}));
+  // Contact
+  children.push(new Paragraph({spacing:{before:0,after:0},children:[
+    tr('Portland, OR (Remote)  |  503-475-7438  |  ',C_MUTED,17),
+    new ExternalHyperlink({link:'mailto:larry.jr.design@gmail.com',children:[tr('larry.jr.design@gmail.com',C_LINK,17,false,true)]}),
+    tr('  |  ',C_MUTED,17),
+    new ExternalHyperlink({link:'https://www.larryjr.design',children:[tr('larryjr.design',C_LINK,17,false,true)]}),
+    tr('  |  ',C_MUTED,17),
+    new ExternalHyperlink({link:'https://www.linkedin.com/in/larryjrdesign',children:[tr('LinkedIn',C_LINK,17,false,true)]}),
+  ]}));
+  // Header divider
+  children.push(new Paragraph({border:{bottom:{style:BorderStyle.SINGLE,size:4,color:C_RULE,space:1}},spacing:{before:100,after:100},children:[]}));
+  // Summary
+  children.push(new Paragraph({spacing:{before:60,after:100},children:[tr(res.summary||'',C_DARK,19)]}));
+
+  // CORE SKILLS
+  children.push(sectionHead('CORE SKILLS'));
+  const sk=res.skills||{};
+  for(const [label,vals] of [['Product & UX:  ',sk.product_ux],['AI & Prototyping:  ',sk.ai_prototyping],['Leadership:  ',sk.leadership]]) {
+    if(vals?.length) children.push(new Paragraph({spacing:{before:40,after:40},children:[
+      tr(label,C_DARK,19,true),
+      tr(vals.join(', '),C_MED,19),
+    ]}));
+  }
+
+  // EXPERIENCE
+  children.push(sectionHead('EXPERIENCE'));
+  for(const job of res.experience||[]) {
+    const loc=LOC_MAP[job.company]||'(Remote)';
+    // Title + dates line with right tab
+    children.push(new Paragraph({
+      tabStops:[{type:TabStopType.RIGHT,position:9360}],
+      spacing:{before:160,after:20},
+      children:[
+        tr(job.title+' ',C_DARK,21,true),
+        tr(loc,C_MUTED,21),
+        tr('\t'+job.dates,C_MUTED,21),
+      ],
+    }));
+    // Company
+    children.push(new Paragraph({spacing:{before:0,after:60},children:[tr(job.company,C_DARK,19,true)]}));
+    // Blurb
+    if(job.blurb) children.push(new Paragraph({spacing:{before:0,after:60},children:[tr(job.blurb,C_MED,19)]}));
+    // Bullets
+    for(const bullet of job.bullets||[]) {
+      const ci=bullet.indexOf(': ');
+      let bChildren;
+      if(ci>0&&ci<45) {
+        bChildren=[tr(bullet.slice(0,ci+2),C_DARK,19,true),tr(bullet.slice(ci+2),C_MED,19)];
+      } else {
+        bChildren=[tr(bullet,C_MED,19)];
+      }
+      children.push(new Paragraph({numbering:{reference:'bullets',level:0},spacing:{before:40,after:40},children:bChildren}));
+    }
+  }
+
+  // EDUCATION
+  children.push(sectionHead('EDUCATION & CERTIFICATIONS'));
+  children.push(new Paragraph({spacing:{before:80,after:20},children:[tr('BS, Multimedia & Web Design',C_DARK,19,true)]}));
+  children.push(new Paragraph({spacing:{before:0,after:80},children:[tr('Art Institute of Portland, High Honors',C_MED,19)]}));
+  children.push(new Paragraph({spacing:{before:40,after:20},children:[tr('Design Thinking Certificate',C_DARK,19,true)]}));
+  children.push(new Paragraph({spacing:{before:0,after:0},children:[tr('IDEO U',C_MED,19)]}));
+
+  const doc=new Document({
+    numbering:{config:[{reference:'bullets',levels:[{level:0,format:LevelFormat.BULLET,text:'\u2022',alignment:AlignmentType.LEFT,style:{paragraph:{indent:{left:360,hanging:240}}}}]}]},
+    sections:[{properties:{page:{size:{width:12240,height:15840},margin:{top:1080,right:1080,bottom:1080,left:1080}}},children}],
+  });
+  return await Packer.toBlob(doc);
+}
+
+async function buildCoverLetterDocx(cl, jobTitle, company, contact, month) {
+  const addressee=company?`${contact}, ${company}`:contact;
+  const allParas=[cl.opening_paragraph,...(cl.body_paragraphs||[]),cl.closing_paragraph].filter(Boolean);
+  const children=[];
+
+  // Name
+  children.push(new Paragraph({spacing:{before:0,after:40},children:[tr('Larry Reynolds',C_BLACK,44,true)]}));
+  // Contact
+  children.push(new Paragraph({spacing:{before:0,after:60},children:[
+    tr('Portland, OR  |  ',C_MUTED,17),
+    new ExternalHyperlink({link:'mailto:larry.jr.design@gmail.com',children:[tr('larry.jr.design@gmail.com',C_LINK,17,false,true)]}),
+    tr('   |  ',C_MUTED,17),
+    new ExternalHyperlink({link:'https://www.larryjr.design',children:[tr('larryjr.design',C_LINK,17,false,true)]}),
+  ]}));
+  // Divider
+  children.push(new Paragraph({border:{bottom:{style:BorderStyle.SINGLE,size:4,color:C_RULE,space:1}},spacing:{before:60,after:200},children:[]}));
+  // Spacer
+  children.push(new Paragraph({spacing:{before:80,after:0},children:[]}));
+  // Date
+  children.push(new Paragraph({spacing:{before:0,after:240},children:[tr(month,C_MUTED,20)]}));
+  // Addressee
+  children.push(new Paragraph({spacing:{before:0,after:80},children:[tr(addressee,C_DARK,20)]}));
+  // Re: line
+  children.push(new Paragraph({spacing:{before:0,after:300},children:[tr('Re: '+jobTitle,C_DARK,20,true)]}));
+  // Body
+  for(const para of allParas) {
+    children.push(new Paragraph({spacing:{before:0,after:200},children:[tr(para,C_DARK,20)]}));
+  }
+  // Sign-off spacer
+  children.push(new Paragraph({spacing:{before:300,after:0},children:[]}));
+  // Closing name
+  children.push(new Paragraph({spacing:{before:0,after:40},children:[tr('Larry Reynolds',C_DARK,20,true)]}));
+  // Closing contact
+  children.push(new Paragraph({spacing:{before:0,after:0},children:[
+    new ExternalHyperlink({link:'https://www.larryjr.design',children:[tr('larryjr.design',C_LINK,20,false,true)]}),
+    tr('  |  503-475-7438',C_MUTED,20),
+  ]}));
+
+  const doc=new Document({
+    sections:[{properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1440,bottom:1440,left:1440}}},children}],
+  });
+  return await Packer.toBlob(doc);
+}
+
+async function loadDocxCDN() {
+  if (typeof docx !== 'undefined') return true;
+  return new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js';
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.head.appendChild(s);
+  });
+}
+
+async function downloadDoc(type) {
+  if (!generatedData) { alert('No document ready — please generate first.'); return; }
+
+  const btn = document.getElementById(type === 'resume' ? 'dlResume' : 'dlCL');
+  const origText = btn.textContent;
+  btn.textContent = 'Building...';
+  btn.disabled = true;
+
+  try {
+    // Load CDN if not already loaded
+    const loaded = await loadDocxCDN();
+    if (!loaded) throw new Error('Could not load the docx library. Check your internet connection.');
+    if (!resolveDocx()) throw new Error('docx library loaded but could not be initialised.');
+
+    // Build fresh if not cached
+    if (!currentDocx[type]) {
+      if (type === 'resume') {
+        currentDocx.resume = await buildResumeDocx(generatedData.resume);
+      } else {
+        currentDocx.cl = await buildCoverLetterDocx(
+          generatedData.cover_letter,
+          generatedData.jobTitle,
+          generatedData.company,
+          generatedData.hiringContact,
+          generatedData.currentMonth
+        );
+      }
+    }
+
+    const blob = currentDocx[type];
+    const co = (generatedData.company||'Application').replace(/\s+/g,'-');
+    const ti = (generatedData.jobTitle||'Resume').replace(/\s+/g,'-');
+    const suffix = type === 'resume' ? 'Resume' : 'CoverLetter';
+    const filename = `LarryReynolds_${suffix}_${co}_${ti}.docx`;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  } catch(e) {
+    console.error('Download error:', e);
+    alert('Download failed: ' + e.message + '\n\nCheck the browser console (F12) for details.');
+  } finally {
+    btn.textContent = origText;
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
