@@ -9,37 +9,39 @@
  * without exposing the API key in client-side code.
  */
 
-const ALLOWED_ORIGIN = 'https://rainbows4dinos.github.io';
-const ANTHROPIC_API  = 'https://api.anthropic.com/v1/messages';
+const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
+
+function addCors(response) {
+  const r = new Response(response.body, response);
+  r.headers.set('Access-Control-Allow-Origin', '*');
+  r.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  r.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  r.headers.set('Access-Control-Max-Age', '86400');
+  return r;
+}
 
 export default {
   async fetch(request, env) {
-    const origin = request.headers.get('Origin') || '';
-
-    // Handle CORS preflight
     if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        status: 204,
-        headers: corsHeaders(origin),
-      });
+      const r = new Response('OK', { status: 200 });
+      r.headers.set('Access-Control-Allow-Origin', '*');
+      r.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      r.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+      r.headers.set('Access-Control-Max-Age', '86400');
+      return r;
     }
 
-    // Only accept POST from allowed origin
     if (request.method !== 'POST') {
-      return new Response('Method not allowed', { status: 405 });
-    }
-    if (!origin.startsWith(ALLOWED_ORIGIN) && !origin.startsWith('http://localhost')) {
-      return new Response('Forbidden', { status: 403 });
+      return addCors(new Response('Method not allowed', { status: 405 }));
     }
 
     let body;
     try {
       body = await request.json();
     } catch {
-      return new Response('Invalid JSON', { status: 400 });
+      return addCors(new Response('Invalid JSON body', { status: 400 }));
     }
 
-    // Forward to Anthropic
     const upstream = await fetch(ANTHROPIC_API, {
       method: 'POST',
       headers: {
@@ -50,24 +52,12 @@ export default {
       body: JSON.stringify(body),
     });
 
-    const data = await upstream.json();
-
-    return new Response(JSON.stringify(data), {
-      status: upstream.status,
-      headers: {
-        'Content-Type': 'application/json',
-        ...corsHeaders(origin),
-      },
-    });
+    const data = await upstream.text();
+    const r = new Response(data, { status: upstream.status });
+    r.headers.set('Content-Type', 'application/json');
+    r.headers.set('Access-Control-Allow-Origin', '*');
+    r.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    r.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return r;
   },
 };
-
-function corsHeaders(origin) {
-  const allowed = origin.startsWith(ALLOWED_ORIGIN) || origin.startsWith('http://localhost');
-  return {
-    'Access-Control-Allow-Origin':  allowed ? origin : ALLOWED_ORIGIN,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Max-Age':       '86400',
-  };
-}

@@ -164,7 +164,7 @@
 const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-context/main';
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
 // Set to null to call Anthropic directly (works locally or in Claude artifacts).
-const PROXY_URL = null; // Replace with your Cloudflare Worker URL once deployed
+const PROXY_URL = 'https://resume-tailor-proxy.larryjrdesign.workers.dev'; // Replace with your Cloudflare Worker URL once deployed
 
 // ─── Context files fetched from repo at runtime ───────────────────────────────
 let MASTER = null;
@@ -319,7 +319,7 @@ COVER LETTER RULES: 4-5 paragraphs. Direct voice. Specific company angle. Use "p
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 4000,
         messages: [{ role: 'user', content: prompt }]
       })
