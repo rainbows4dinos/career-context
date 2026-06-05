@@ -169,7 +169,7 @@ const PROXY_URL = 'https://resume-tailor-proxy.larryjrdesign.workers.dev'; // Re
 // ─── Context files fetched from repo at runtime ───────────────────────────────
 let MASTER = null;
 let FRAMING = null;
-let README = null;
+let TONE = null;
 let contextLoaded = false;
 let contextError = null;
 
@@ -178,10 +178,10 @@ async function loadContext() {
   const files = [
     fetch(REPO_RAW + '/resume-master.md').then(r => { if (!r.ok) throw new Error('resume-master.md ' + r.status); return r.text(); }),
     fetch(REPO_RAW + '/experience-framing.md').then(r => { if (!r.ok) throw new Error('experience-framing.md ' + r.status); return r.text(); }),
-    fetch(REPO_RAW + '/README.md').then(r => { if (!r.ok) throw new Error('README.md ' + r.status); return r.text(); }),
+    fetch(REPO_RAW + '/tone-and-positioning.md').then(r => { if (!r.ok) throw new Error('tone-and-positioning.md ' + r.status); return r.text(); }),
   ];
   try {
-    [MASTER, FRAMING, README] = await Promise.all(files);
+    [MASTER, FRAMING, TONE] = await Promise.all(files);
     contextLoaded = true;
   } catch(e) {
     contextError = e.message;
@@ -269,8 +269,8 @@ ${MASTER}
 EXPERIENCE FRAMING (the why-it-mattered layer — use for authentic story angles and real numbers):
 ${FRAMING}
 
-TONE & POSITIONING RULES (from README):
-${README}
+TONE & POSITIONING RULES (from TONE):
+${TONE}
 
 JOB APPLICATION:
 - Role: ${title}
