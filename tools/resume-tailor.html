@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Readex+Pro:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
   :root {
@@ -135,6 +136,63 @@
   .revised-note strong { font-weight: 500 }
   @media print { .revised-highlight { background: none; color: inherit } .revised-note { display: none } }
   @media (max-width: 600px) { .field-row { grid-template-columns: 1fr } .btn-row { flex-direction: column } .revise-bar { flex-direction: column } .revise-bar button { width: 100% } }
+
+  /* ── Light theme ── */
+  body.light {
+    --bg: #FFFBF6;
+    --surface: #F5F2EC;
+    --surface2: #EDE9E2;
+    --border: #BAB8B5;
+    --border-subtle: #DEDBD8;
+    --text: #232221;
+    --muted: #7a7870;
+    --muted-light: #4F4D4A;
+    --accent: #CA5C5C;
+    --accent-bg: rgba(202, 92, 92, 0.1);
+    --accent-border: rgba(202, 92, 92, 0.3);
+    --success: #377579;
+    --success-bg: rgba(55, 117, 121, 0.1);
+    --yellow: #796237;
+    --yellow-bg: rgba(121, 98, 55, 0.08);
+    --yellow-border: rgba(121, 98, 55, 0.25);
+  }
+
+  /* ── Theme toggle ── */
+  header { position: relative }
+  .theme-toggle {
+    position: absolute; top: 0; right: 0;
+    height: 28px; cursor: pointer; user-select: none;
+    display: flex; align-items: center;
+  }
+  .toggle-track {
+    width: 52px; height: 28px; border-radius: 999px;
+    background: var(--surface2); border: 1px solid var(--border);
+    position: relative; transition: background 0.2s, border-color 0.2s;
+    display: flex; align-items: center;
+  }
+  .toggle-thumb {
+    position: absolute; top: 3px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--accent); transition: transform 0.2s, background 0.2s;
+    z-index: 1;
+  }
+  /* Dark mode: thumb right, sun icon visible left */
+  body:not(.light) .toggle-thumb { transform: translateX(25px) }
+  body:not(.light) .toggle-icon-sun { opacity: 1 }
+  body:not(.light) .toggle-icon-moon { opacity: 0 }
+  /* Light mode: thumb left, moon icon visible right */
+  body.light .toggle-thumb { transform: translateX(4px) }
+  body.light .toggle-icon-sun { opacity: 0 }
+  body.light .toggle-icon-moon { opacity: 1 }
+  .toggle-icon-sun, .toggle-icon-moon {
+    position: absolute; font-size: 14px; line-height: 1;
+    color: var(--text); transition: opacity 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px;
+  }
+  .toggle-icon-sun  { left: 3px }
+  .toggle-icon-moon { right: 3px }
+  .theme-toggle:hover .toggle-track { border-color: var(--muted) }
 </style>
 </head>
 <body>
@@ -142,6 +200,13 @@
   <header>
     <h1>Resume Tailor</h1>
     <p>Larry Reynolds — Principal Product Designer</p>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+      <div class="toggle-track">
+        <div class="toggle-thumb"></div>
+        <span class="material-icons-outlined toggle-icon-sun">light_mode</span>
+        <span class="material-icons-outlined toggle-icon-moon">dark_mode</span>
+      </div>
+    </div>
   </header>
 
   <div class="step-bar">
@@ -231,6 +296,18 @@
 
 <!-- docx loaded lazily on first download click -->
 <script>
+// ─── Theme ────────────────────────────────────────────────────────────────────
+(function() {
+  // Default dark; restore saved preference if present
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') document.body.classList.add('light');
+})();
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
 // ─── Config ───────────────────────────────────────────────────────────────────
 const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-context/main';
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
