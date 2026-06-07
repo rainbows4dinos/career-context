@@ -5,86 +5,136 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Resume Tailor — Larry Reynolds</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Readex+Pro:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
   :root {
-    --bg: #f7f6f3; --surface: #ffffff; --border: #e4e2da;
-    --text: #1a1917; --muted: #7a7870; --accent: #2a52a0;
-    --accent-bg: #eef2fb; --success: #2d6a4f;
-    --sans: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+    --bg: #232221;
+    --surface: #2d2b29;
+    --surface2: #363330;
+    --border: #4F4D4A;
+    --border-subtle: #3a3835;
+    --text: #FFFBF6;
+    --muted: #94918D;
+    --muted-light: #BAB8B5;
+    --accent: #F26F6F;
+    --accent-bg: rgba(242, 111, 111, 0.12);
+    --accent-border: rgba(242, 111, 111, 0.35);
+    --success: #6FEAF2;
+    --success-bg: rgba(111, 234, 242, 0.1);
+    --yellow: #F2C56F;
+    --yellow-bg: rgba(242, 197, 111, 0.12);
+    --yellow-border: rgba(242, 197, 111, 0.3);
+    --serif: 'Crimson Pro', Georgia, serif;
+    --sans: 'Readex Pro', sans-serif;
     --radius: 10px;
   }
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem }
-  .shell { max-width: 720px; margin: 0 auto }
-  header { margin-bottom: 2.5rem }
-  header h1 { font-size: 22px; font-weight: 500; letter-spacing: -0.02em }
-  header p { font-size: 14px; color: var(--muted); margin-top: 4px }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem }
-  label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; font-weight: 300; font-size: 16px }
+  .shell { max-width: 860px; margin: 0 auto }
+
+  /* Header */
+  header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle) }
+  header h1 { font-family: var(--serif); font-size: 32px; font-weight: 600; letter-spacing: -0.01em; color: var(--text) }
+  header p { font-size: 15px; color: var(--muted); margin-top: 5px; font-weight: 300; letter-spacing: 0.01em }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 1.75rem; margin-bottom: 1rem }
+
+  /* Labels */
+  label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px }
+
+  /* Inputs */
   input[type=text], textarea {
-    width: 100%; font-family: var(--sans); font-size: 14px; color: var(--text);
+    width: 100%; font-family: var(--sans); font-size: 15px; font-weight: 300; color: var(--text);
     background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-    padding: 9px 12px; outline: none; transition: border-color 0.15s;
+    padding: 10px 13px; outline: none; transition: border-color 0.15s;
   }
   input[type=text]:focus, textarea:focus { border-color: var(--accent) }
-  textarea { min-height: 130px; resize: vertical; line-height: 1.6 }
-  .field { margin-bottom: 1.25rem }
+  input[type=text]::placeholder, textarea::placeholder { color: var(--muted) }
+  textarea { min-height: 140px; resize: vertical; line-height: 1.6 }
+  .field { margin-bottom: 1.35rem }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+
+  /* Toggle pills */
   .toggles { display: flex; flex-wrap: wrap; gap: 8px }
-  .tog { font-size: 13px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.15s; user-select: none }
-  .tog.on { background: var(--accent-bg); color: var(--accent); border-color: var(--accent) }
+  .tog { font-size: 13px; font-weight: 400; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; user-select: none; letter-spacing: 0.01em }
+  .tog:hover { border-color: var(--muted-light); color: var(--muted-light) }
+  .tog.on { background: var(--accent-bg); color: var(--accent); border-color: var(--accent-border) }
+
+  /* Step bar */
   .step-bar { display: flex; gap: 6px; margin-bottom: 1.75rem }
-  .step { flex: 1; font-size: 12px; color: var(--muted); padding: 6px 4px; text-align: center; border-bottom: 2px solid var(--border); transition: all 0.2s }
+  .step { flex: 1; font-size: 12px; font-weight: 400; color: var(--muted); padding: 6px 4px; text-align: center; border-bottom: 2px solid var(--border-subtle); transition: all 0.2s; letter-spacing: 0.03em }
   .step.active { color: var(--accent); border-color: var(--accent); font-weight: 500 }
   .step.done { color: var(--success); border-color: var(--success) }
-  .loading-card { text-align: center; padding: 3rem 2rem }
-  .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 1rem }
+
+  /* Loading */
+  .loading-card { text-align: center; padding: 3.5rem 2rem }
+  .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 1.25rem }
   @keyframes spin { to { transform: rotate(360deg) } }
-  .loading-status { font-size: 15px; font-weight: 500; margin-bottom: 4px }
-  .loading-sub { font-size: 13px; color: var(--muted) }
-  .tailor-note { font-size: 13px; background: var(--accent-bg); color: var(--accent); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; line-height: 1.6 }
-  .tab-bar { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem }
-  .tab { font-size: 13px; padding: 8px 18px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s }
+  .loading-status { font-family: var(--serif); font-size: 22px; font-weight: 600; margin-bottom: 6px; color: var(--text) }
+  .loading-sub { font-size: 15px; color: var(--muted); font-weight: 300 }
+
+  /* Callout blocks */
+  .tailor-note { font-size: 14px; font-weight: 300; background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-border); border-radius: 8px; padding: 11px 15px; margin-bottom: 1.25rem; line-height: 1.6 }
+  .tailor-note strong { font-weight: 500 }
+
+  /* Tabs */
+  .tab-bar { display: flex; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1.5rem }
+  .tab { font-size: 14px; font-weight: 400; padding: 8px 20px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s }
+  .tab:hover { color: var(--muted-light) }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500 }
+
   /* Resume preview */
-  .resume-name { font-size: 20px; font-weight: 500; letter-spacing: -0.02em }
-  .resume-title-line { font-size: 13px; color: var(--muted); margin-top: 2px; margin-bottom: 1.25rem }
-  .section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding-bottom: 6px; border-bottom: 1px solid var(--border); margin-bottom: 10px; margin-top: 1.25rem }
-  .summary-text { font-size: 14px; line-height: 1.75 }
-  .skills-group { margin-bottom: 6px; font-size: 13px; line-height: 1.6 }
-  .job { margin-bottom: 1.1rem }
+  .resume-name { font-family: var(--serif); font-size: 26px; font-weight: 600; letter-spacing: -0.01em; color: var(--text) }
+  .resume-title-line { font-size: 13px; color: var(--muted); margin-top: 3px; margin-bottom: 1.25rem; font-weight: 300; letter-spacing: 0.02em }
+  .section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); padding-bottom: 6px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 10px; margin-top: 1.25rem }
+  .summary-text { font-size: 15px; line-height: 1.8; font-weight: 300 }
+  .skills-group { margin-bottom: 6px; font-size: 14px; line-height: 1.6; font-weight: 300 }
+  .skills-group strong { font-weight: 500; color: var(--muted-light) }
+  .job { margin-bottom: 1.2rem }
   .job-header { display: flex; justify-content: space-between; align-items: baseline }
-  .job-title { font-size: 14px; font-weight: 500 }
-  .job-dates { font-size: 12px; color: var(--muted) }
-  .job-company { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px }
-  .job-blurb { font-size: 13px; color: var(--muted); margin-bottom: 5px; line-height: 1.6 }
-  .job-bullets { padding-left: 16px; font-size: 13px; line-height: 1.75 }
-  .job-bullets li { margin-bottom: 3px }
+  .job-title { font-size: 15px; font-weight: 500; color: var(--text) }
+  .job-dates { font-size: 13px; color: var(--muted); font-weight: 300 }
+  .job-company { font-size: 14px; font-weight: 400; color: var(--muted-light); margin-bottom: 4px }
+  .job-blurb { font-size: 14px; color: var(--muted); margin-bottom: 5px; line-height: 1.6; font-weight: 300 }
+  .job-bullets { padding-left: 18px; font-size: 14px; line-height: 1.8; font-weight: 300 }
+  .job-bullets li { margin-bottom: 4px }
+  .job-bullets strong { font-weight: 500; color: var(--muted-light) }
+
   /* Cover letter preview */
-  .cl-body { font-size: 14px; line-height: 1.8 }
-  .cl-body p { margin-bottom: 1rem }
+  .cl-body { font-size: 15px; line-height: 1.9; font-weight: 300 }
+  .cl-body p { margin-bottom: 1.1rem }
+
+  /* Buttons */
   .btn-row { display: flex; gap: 10px; margin-top: 1rem; flex-wrap: wrap }
-  button.primary { flex: 1; padding: 11px; font-family: var(--sans); font-size: 14px; font-weight: 500; background: var(--text); color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.15s }
-  button.primary:hover { opacity: 0.85 }
-  button.primary:disabled { opacity: 0.4; cursor: not-allowed }
-  button.secondary { padding: 10px 18px; font-family: var(--sans); font-size: 14px; background: var(--surface); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s }
-  button.secondary:hover { border-color: var(--text); color: var(--text) }
-  .dl-note { font-size: 12px; color: var(--muted); margin-top: 10px }
+  button.primary { flex: 1; padding: 12px; font-family: var(--sans); font-size: 14px; font-weight: 500; letter-spacing: 0.02em; background: var(--accent); color: var(--bg); border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.15s }
+  button.primary:hover { opacity: 0.88 }
+  button.primary:disabled { opacity: 0.35; cursor: not-allowed }
+  button.secondary { padding: 11px 20px; font-family: var(--sans); font-size: 14px; font-weight: 400; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s }
+  button.secondary:hover { border-color: var(--muted-light); color: var(--muted-light) }
+
+  /* Download note */
+  .dl-note { font-size: 13px; color: var(--muted); margin-top: 10px; font-weight: 300 }
+
+  /* Revision bar */
   .revise-bar { display: flex; gap: 8px; margin-bottom: 1rem; align-items: flex-start }
-  .revise-bar input { flex: 1; font-family: var(--sans); font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; outline: none; transition: border-color 0.15s }
+  .revise-bar input { flex: 1; font-family: var(--sans); font-size: 15px; font-weight: 300; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 13px; outline: none; transition: border-color 0.15s }
+  .revise-bar input::placeholder { color: var(--muted) }
   .revise-bar input:focus { border-color: var(--accent) }
-  .revise-bar button { white-space: nowrap; padding: 9px 16px; font-family: var(--sans); font-size: 14px; font-weight: 500; background: var(--text); color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.15s; flex-shrink: 0 }
-  .revise-bar button:hover { opacity: 0.85 }
-  .revise-bar button:disabled { opacity: 0.4; cursor: not-allowed }
-  .revise-status { display: none; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 1rem }
+  .revise-bar button { white-space: nowrap; padding: 10px 18px; font-family: var(--sans); font-size: 14px; font-weight: 500; background: var(--accent); color: var(--bg); border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.15s; flex-shrink: 0 }
+  .revise-bar button:hover { opacity: 0.88 }
+  .revise-bar button:disabled { opacity: 0.35; cursor: not-allowed }
+  .revise-status { display: none; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin-bottom: 1rem; font-weight: 300 }
   .revise-status.visible { display: flex }
   .revise-spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; flex-shrink: 0 }
+
   /* Revision highlights — screen only */
-  .revised-highlight { background: #fff8c5; border-radius: 3px; padding: 1px 0 }
-  .revised-note { font-size: 13px; background: #fffbe6; color: #7a6200; border: 1px solid #f0d000; border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; line-height: 1.6 }
-  @media print { .revised-highlight { background: none } .revised-note { display: none } }
-  @media (max-width: 520px) { .field-row { grid-template-columns: 1fr } .btn-row { flex-direction: column } .revise-bar { flex-direction: column } .revise-bar button { width: 100% } }
+  .revised-highlight { background: rgba(242, 197, 111, 0.18); border-radius: 3px; padding: 1px 2px; color: var(--yellow) }
+  .revised-note { font-size: 14px; font-weight: 300; background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); border-radius: 8px; padding: 11px 15px; margin-bottom: 1.25rem; line-height: 1.6 }
+  .revised-note strong { font-weight: 500 }
+  @media print { .revised-highlight { background: none; color: inherit } .revised-note { display: none } }
+  @media (max-width: 600px) { .field-row { grid-template-columns: 1fr } .btn-row { flex-direction: column } .revise-bar { flex-direction: column } .revise-bar button { width: 100% } }
 </style>
 </head>
 <body>
@@ -141,7 +191,7 @@
         <label>Additional notes</label>
         <input type="text" id="extraNotes" placeholder="e.g. De-emphasize management, highlight Figma expertise" />
       </div>
-      <button class="primary" onclick="goTailor()">Generate resume + cover letter</button>
+      <button class="primary" onclick="goTailor()">Generate Resume + Cover Letter</button>
     </div>
   </div>
 
@@ -168,12 +218,12 @@
     </div>
     <div class="revise-bar">
       <input type="text" id="reviseNote" placeholder="Ask for a revision — e.g. Make the opening punchier, or drop the Elevate bullet" onkeydown="if(event.key==='Enter')goRevise()" />
-      <button onclick="goRevise()" id="reviseBtn">Revise</button>
+      <button onclick="goRevise()" id="reviseBtn">Request Revision</button>
     </div>
     <div class="btn-row">
-      <button class="primary" id="dlResume" onclick="downloadDoc('resume')">Download resume .docx</button>
-      <button class="primary" id="dlCL" onclick="downloadDoc('cl')">Download cover letter .docx</button>
-      <button class="secondary" onclick="startOver()">New application</button>
+      <button class="primary" id="dlResume" onclick="downloadDoc('resume')">Download Resume .docx</button>
+      <button class="primary" id="dlCL" onclick="downloadDoc('cl')">Download Cover Letter .docx</button>
+      <button class="secondary" onclick="startOver()">Start New Application</button>
     </div>
     <p class="dl-note">Files are generated to exactly match your template styling — Helvetica Neue, correct weights, spacing, and dividers.</p>
   </div>
@@ -456,7 +506,7 @@ COVER LETTER RULES: 4-5 paragraphs. Direct voice. Specific company angle. Use "p
     retryBtn.id = 'retryBtn';
     retryBtn.className = 'primary';
     retryBtn.style.cssText = 'margin-top:1.5rem;max-width:180px';
-    retryBtn.textContent = 'Start over';
+    retryBtn.textContent = 'Start Over';
     retryBtn.onclick = startOver;
     document.querySelector('.loading-card').appendChild(retryBtn);
   }
@@ -658,7 +708,7 @@ function renderPreview(r, title, company, contact, month, diff) {
     <div class="section-label">Core Skills</div>${skillsHtml}
     <div class="section-label">Experience</div>${expHtml}
     <div class="section-label">Education &amp; Certifications</div>
-    <div style="font-size:13px;line-height:1.8"><strong>BS, Multimedia &amp; Web Design</strong> — Art Institute of Portland, High Honors<br><strong>Design Thinking Certificate</strong> — IDEO U</div>`;
+    <div style="font-size:13px;line-height:1.8;font-weight:300"><strong style="font-weight:500;color:var(--muted-light)">BS, Multimedia &amp; Web Design</strong> <span style="color:var(--muted)">— Art Institute of Portland, High Honors</span><br><strong style="font-weight:500;color:var(--muted-light)">Design Thinking Certificate</strong> <span style="color:var(--muted)">— IDEO U</span></div>`;
 
   // Cover letter — diff at paragraph level
   const cl = r.cover_letter||{};
@@ -669,17 +719,18 @@ function renderPreview(r, title, company, contact, month, diff) {
 
   const addressee = company ? `${contact}, ${company}` : contact;
   document.getElementById('clOut').innerHTML=`
-    <div style="font-size:20px;font-weight:500;margin-bottom:4px">Larry Reynolds</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:1rem">Portland, OR · larry.jr.design@gmail.com · larryjr.design</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:8px">${month}</div>
-    <div style="font-size:14px;margin-bottom:4px">${addressee}</div>
-    <div style="font-size:14px;font-weight:500;margin-bottom:1.5rem">Re: ${title}</div>
+    <div style="font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:4px;letter-spacing:-0.01em">Larry Reynolds</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:1.25rem;font-weight:300;letter-spacing:0.02em">Portland, OR · larry.jr.design@gmail.com · larryjr.design</div>
+    <div style="width:100%;height:1px;background:var(--border-subtle);margin-bottom:1.25rem"></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:300">${month}</div>
+    <div style="font-size:13px;color:var(--muted-light);margin-bottom:3px;font-weight:300">${addressee}</div>
+    <div style="font-size:14px;font-weight:500;margin-bottom:1.5rem;color:var(--text)">Re: ${title}</div>
     ${diff && diff.type === 'cl' ? revisedCallout : ''}
     <div class="cl-body">${allParas.map((p,i)=>{
       const changed = oldCL && p !== (oldAllParas[i]||'');
       return `<p>${changed ? `<span class="revised-highlight">${p}</span>` : p}</p>`;
     }).join('')}</div>
-    <div style="margin-top:1.5rem;font-size:14px;line-height:1.8"><strong>Larry Reynolds</strong><br><span style="color:var(--muted)">larryjr.design · 503-475-7438</span></div>`;
+    <div style="margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border-subtle)"><span style="font-family:var(--serif);font-size:16px;font-weight:600">Larry Reynolds</span><br><span style="font-size:12px;color:var(--muted);font-weight:300">larryjr.design · 503-475-7438</span></div>`;
 }
 
 // ─── Docx builder (mirrors template XML exactly) ──────────────────────────────
@@ -852,7 +903,7 @@ async function downloadDoc(type) {
 
   const btn = document.getElementById(type === 'resume' ? 'dlResume' : 'dlCL');
   const origText = btn.textContent;
-  btn.textContent = 'Building...';
+  btn.textContent = 'Building Your File...';
   btn.disabled = true;
 
   try {
