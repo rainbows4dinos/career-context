@@ -331,12 +331,13 @@ async function loadContext() {
 // ─── Parse and render emphasis focus chips from tone-and-positioning.md ───────
 function parseChips(toneMarkdown) {
   const chips = [];
-  const inSection = /## Emphasis Focus Options[\s\S]*?(?=\n## |\n---|\n#[^#]|$)/m.exec(toneMarkdown);
-  if (!inSection) return chips;
-  const lines = inSection[0].split('\n');
+  const lines = toneMarkdown.split('\n');
+  let inSection = false;
   for (const line of lines) {
-    // Match lines like: - `value: Label`
-    const m = line.match(/^-\s+`([^:]+):\s*(.+?)`/);
+    if (/^##\s+Emphasis Focus Options/i.test(line)) { inSection = true; continue; }
+    if (inSection && /^##\s+/.test(line)) break; // next section — stop
+    if (!inSection) continue;
+    const m = line.match(/^-\s+`([^:`]+):\s*(.+?)`\s*$/);
     if (m) chips.push({ val: m[1].trim(), label: m[2].trim() });
   }
   return chips;
@@ -345,7 +346,9 @@ function parseChips(toneMarkdown) {
 function renderChips(toneMarkdown) {
   const container = document.getElementById('focusToggles');
   const chips = parseChips(toneMarkdown);
+  console.log('[chips] parsed', chips.length, 'chips from tone-and-positioning.md');
   if (!chips.length) {
+    console.log('[chips] raw TONE content:', toneMarkdown.slice(0, 500));
     container.innerHTML = '<span style="font-size:13px;color:var(--muted);font-weight:300">No focus options found in tone-and-positioning.md</span>';
     return;
   }
@@ -1042,6 +1045,12 @@ async function downloadDoc(type) {
     btn.disabled = false;
   }
 }
+
+// ─── Eager context load on page init (renders chips without waiting for Generate) ──
+loadContext().catch(e => {
+  document.getElementById('focusToggles').innerHTML =
+    `<span style="font-size:13px;color:var(--muted);font-weight:300">Could not load focus options — ${e.message}</span>`;
+});
 </script>
 </body>
 </html>
