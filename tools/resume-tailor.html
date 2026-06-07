@@ -31,19 +31,24 @@
     --sans: 'Readex Pro', sans-serif;
     --radius: 10px;
   }
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; font-weight: 300; font-size: 16px }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; font-weight: 300; font-size: 16px; line-height: 1.6; }
   .shell { max-width: 860px; margin: 0 auto }
+
+  /* Links */
+  a { color: var(--accent); text-decoration: none; transition: color 0.15s, background 0.15s }
+  a:hover { text-decoration-color: var(--accent); background: var(--accent-bg) }
+  a:focus-visible { outline: 2px solid var(--accent-border); outline-offset: 2px; border-radius: 2px }
 
   /* Header */
   header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle) }
   header h1 { font-family: var(--serif); font-size: 32px; font-weight: 600; letter-spacing: -0.01em; color: var(--text) }
-  header p { font-size: 15px; color: var(--muted); margin-top: 5px; font-weight: 300; letter-spacing: 0.01em }
+  header p { font-size: 15px; color: var(--text); margin-top: 5px; font-weight: 300; letter-spacing: 0.01em }
 
   /* Cards */
   .card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 1.75rem; margin-bottom: 1rem }
 
   /* Labels */
-  label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px }
+  label { display: block; font-size: 12px; font-weight: 500; color: var(--text); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px }
 
   /* Inputs */
   input[type=text], textarea {
@@ -198,8 +203,8 @@
 <body>
 <div class="shell">
   <header>
-    <h1>Resume Tailor</h1>
-    <p>Larry Reynolds — Principal Product Designer</p>
+    <h1>Larry's Super Cool Resume Tool</h1>
+    <p style="max-width: 90%;">Custom resume and cover letter generator using my job-hunting context files, docx templates, and Claude. Learn more on my <a href="https://github.com/rainbows4dinos/career-context" target="_blank">GitHub page</a>. Check out my portfolio at <a href="https://www.larryjr.design" target="_blank">www.larryjr.design</a></p>
     <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
       <div class="toggle-track">
         <div class="toggle-thumb"></div>
