@@ -80,6 +80,10 @@
   .revise-status { display: none; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 1rem }
   .revise-status.visible { display: flex }
   .revise-spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; flex-shrink: 0 }
+  /* Revision highlights — screen only */
+  .revised-highlight { background: #fff8c5; border-radius: 3px; padding: 1px 0 }
+  .revised-note { font-size: 13px; background: #fffbe6; color: #7a6200; border: 1px solid #f0d000; border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; line-height: 1.6 }
+  @media print { .revised-highlight { background: none } .revised-note { display: none } }
   @media (max-width: 520px) { .field-row { grid-template-columns: 1fr } .btn-row { flex-direction: column } .revise-bar { flex-direction: column } .revise-bar button { width: 100% } }
 </style>
 </head>
@@ -435,8 +439,9 @@ ${currentContent}
 
 REVISION REQUEST: ${note}
 
-Return ONLY the updated resume JSON with the same structure, no markdown, no backticks:
+Return ONLY the updated resume JSON with the same structure plus a revision_summary field, no markdown, no backticks:
 {
+  "revision_summary": "1-2 sentences describing what changed and why",
   "summary": "...",
   "skills": { "product_ux": [...], "ai_prototyping": [...], "leadership": [...] },
   "experience": [{ "company": "...", "title": "...", "dates": "...", "blurb": "...", "bullets": [...] }]
@@ -449,8 +454,9 @@ ${currentContent}
 
 REVISION REQUEST: ${note}
 
-Return ONLY the updated cover letter JSON with the same structure, no markdown, no backticks:
+Return ONLY the updated cover letter JSON with the same structure plus a revision_summary field, no markdown, no backticks:
 {
+  "revision_summary": "1-2 sentences describing what changed and why",
   "opening_paragraph": "...",
   "body_paragraphs": ["...", "..."],
   "closing_paragraph": "..."
@@ -477,6 +483,15 @@ TONE RULES: direct, specific, no "excited to apply", no em dashes, no corporate 
     // Strip em dashes
     revised = stripEmDashes(revised);
 
+    // Pull out revision_summary before storing (it's not part of the resume/cl schema)
+    const revisionSummary = revised.revision_summary || null;
+    delete revised.revision_summary;
+
+    // Snapshot old data for diffing before overwriting
+    const oldData = isResume
+      ? JSON.parse(JSON.stringify(generatedData.resume))
+      : JSON.parse(JSON.stringify(generatedData.cover_letter));
+
     if (isResume) {
       generatedData.resume = revised;
       currentDocx.resume = null; // invalidate cache
@@ -485,7 +500,12 @@ TONE RULES: direct, specific, no "excited to apply", no em dashes, no corporate 
       currentDocx.cl = null; // invalidate cache
     }
 
-    renderPreview(generatedData, generatedData.jobTitle, generatedData.company, generatedData.hiringContact, generatedData.currentMonth);
+    renderPreview(generatedData, generatedData.jobTitle, generatedData.company, generatedData.hiringContact, generatedData.currentMonth, {
+      type: isResume ? 'resume' : 'cl',
+      oldData,
+      note,
+      summary: revisionSummary
+    });
 
     // Restore the active tab after re-render (renderPreview always shows resume by default)
     if (activeTab === 'cl') {
@@ -507,51 +527,109 @@ TONE RULES: direct, specific, no "excited to apply", no em dashes, no corporate 
 }
 
 // ─── Preview renderer ─────────────────────────────────────────────────────────
-function renderPreview(r, title, company, contact, month) {
+// diff param: { type: 'resume'|'cl', oldData, summary } — optional, only on revision
+function renderPreview(r, title, company, contact, month, diff) {
   const res = r.resume||{};
   const sk  = res.skills||{};
-  const skillsHtml = [
-    sk.product_ux?.length   ? `<div class="skills-group"><strong>Product &amp; UX:</strong> ${sk.product_ux.join(', ')}</div>` : '',
-    sk.ai_prototyping?.length ? `<div class="skills-group"><strong>AI &amp; Prototyping:</strong> ${sk.ai_prototyping.join(', ')}</div>` : '',
-    sk.leadership?.length   ? `<div class="skills-group"><strong>Leadership:</strong> ${sk.leadership.join(', ')}</div>` : '',
-  ].join('');
 
-  const expHtml = (res.experience||[]).map(j=>`
+  // Helper: wrap text in highlight span if it changed vs old string
+  function hl(newStr, oldStr) {
+    if (!diff) return newStr || '';
+    return (newStr || '') !== (oldStr || '')
+      ? `<span class="revised-highlight">${newStr||''}</span>`
+      : (newStr || '');
+  }
+
+  // Helper: highlight a whole block if any content in it changed vs old array/string
+  function hlBlock(newVal, oldVal, inner) {
+    if (!diff) return inner;
+    const changed = JSON.stringify(newVal) !== JSON.stringify(oldVal);
+    return changed ? `<span class="revised-highlight">${inner}</span>` : inner;
+  }
+
+  const oldRes = (diff && diff.type === 'resume') ? diff.oldData : null;
+  const oldCL  = (diff && diff.type === 'cl')     ? diff.oldData : null;
+
+  // Skills: highlight each group if it changed
+  const skillsHtml = (() => {
+    const sk2 = res.skills||{};
+    const osk = oldRes ? (oldRes.skills||{}) : {};
+    const groups = [
+      ['Product &amp; UX:', sk2.product_ux, osk.product_ux],
+      ['AI &amp; Prototyping:', sk2.ai_prototyping, osk.ai_prototyping],
+      ['Leadership:', sk2.leadership, osk.leadership],
+    ];
+    return groups.filter(([,v])=>v?.length).map(([label,vals,ovals])=>{
+      const joined = vals.join(', ');
+      const ojoined = (ovals||[]).join(', ');
+      const inner = `<strong>${label}</strong> ${joined}`;
+      return `<div class="skills-group">${oldRes && joined !== ojoined ? `<strong>${label}</strong> <span class="revised-highlight">${joined}</span>` : inner}</div>`;
+    }).join('');
+  })();
+
+  // Experience: diff at bullet level
+  const expHtml = (res.experience||[]).map((j,ji)=>{
+    const oj = oldRes ? (oldRes.experience||[])[ji] : null;
+    const bulletsHtml = (j.bullets||[]).map((b,bi)=>{
+      const ob = oj ? (oj.bullets||[])[bi] : undefined;
+      const changed = oldRes && b !== ob;
+      const ci = b.indexOf(': ');
+      let inner;
+      if(ci>0&&ci<45) inner = `<strong>${b.slice(0,ci+2)}</strong>${b.slice(ci+2)}`;
+      else inner = b;
+      return `<li>${changed ? `<span class="revised-highlight">${inner}</span>` : inner}</li>`;
+    }).join('');
+    const blurbHtml = j.blurb
+      ? `<div class="job-blurb">${hl(j.blurb, oj?.blurb)}</div>`
+      : '';
+    return `
     <div class="job">
       <div class="job-header">
         <span class="job-title">${j.title}</span>
         <span class="job-dates">${j.dates}</span>
       </div>
       <div class="job-company">${j.company}</div>
-      ${j.blurb?`<div class="job-blurb">${j.blurb}</div>`:''}
-      <ul class="job-bullets">${(j.bullets||[]).map(b=>{
-        const ci=b.indexOf(': ');
-        if(ci>0&&ci<45) return `<li><strong>${b.slice(0,ci+2)}</strong>${b.slice(ci+2)}</li>`;
-        return `<li>${b}</li>`;
-      }).join('')}</ul>
-    </div>`).join('');
+      ${blurbHtml}
+      <ul class="job-bullets">${bulletsHtml}</ul>
+    </div>`;
+  }).join('');
+
+  // Revised callout (only shown after a revision, sits below the Tailored note)
+  const revisedCallout = (diff && diff.summary)
+    ? `<div class="revised-note"><strong>Revised:</strong> ${diff.summary}</div>`
+    : '';
 
   document.getElementById('resumeOut').innerHTML=`
     <div class="resume-name">Larry Reynolds</div>
     <div class="resume-title-line">Principal Product Designer · Portland, OR · larryjr.design · larry.jr.design@gmail.com · 503-475-7438</div>
     ${r.tailoring_notes?`<div class="tailor-note"><strong>Tailored:</strong> ${r.tailoring_notes}</div>`:''}
+    ${diff && diff.type === 'resume' ? revisedCallout : ''}
     <div class="section-label">Summary</div>
-    <div class="summary-text">${res.summary||''}</div>
+    <div class="summary-text">${hl(res.summary, oldRes?.summary)}</div>
     <div class="section-label">Core Skills</div>${skillsHtml}
     <div class="section-label">Experience</div>${expHtml}
     <div class="section-label">Education &amp; Certifications</div>
     <div style="font-size:13px;line-height:1.8"><strong>BS, Multimedia &amp; Web Design</strong> — Art Institute of Portland, High Honors<br><strong>Design Thinking Certificate</strong> — IDEO U</div>`;
 
-  const cl=r.cover_letter||{};
-  const allParas=[cl.opening_paragraph,...(cl.body_paragraphs||[]),cl.closing_paragraph].filter(Boolean);
-  const addressee=company?`${contact}, ${company}`:contact;
+  // Cover letter — diff at paragraph level
+  const cl = r.cover_letter||{};
+  const allParas = [cl.opening_paragraph,...(cl.body_paragraphs||[]),cl.closing_paragraph].filter(Boolean);
+  const oldAllParas = oldCL
+    ? [oldCL.opening_paragraph,...(oldCL.body_paragraphs||[]),oldCL.closing_paragraph].filter(Boolean)
+    : [];
+
+  const addressee = company ? `${contact}, ${company}` : contact;
   document.getElementById('clOut').innerHTML=`
     <div style="font-size:20px;font-weight:500;margin-bottom:4px">Larry Reynolds</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:1rem">Portland, OR · larry.jr.design@gmail.com · larryjr.design</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:8px">${month}</div>
     <div style="font-size:14px;margin-bottom:4px">${addressee}</div>
     <div style="font-size:14px;font-weight:500;margin-bottom:1.5rem">Re: ${title}</div>
-    <div class="cl-body">${allParas.map(p=>`<p>${p}</p>`).join('')}</div>
+    ${diff && diff.type === 'cl' ? revisedCallout : ''}
+    <div class="cl-body">${allParas.map((p,i)=>{
+      const changed = oldCL && p !== (oldAllParas[i]||'');
+      return `<p>${changed ? `<span class="revised-highlight">${p}</span>` : p}</p>`;
+    }).join('')}</div>
     <div style="margin-top:1.5rem;font-size:14px;line-height:1.8"><strong>Larry Reynolds</strong><br><span style="color:var(--muted)">larryjr.design · 503-475-7438</span></div>`;
 }
 
