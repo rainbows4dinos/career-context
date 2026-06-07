@@ -239,17 +239,7 @@
       <div class="field">
         <label>Emphasis focus <span style="font-weight:400;text-transform:none;letter-spacing:0">— optional, auto-detected if blank</span></label>
         <div class="toggles" id="focusToggles">
-          <span class="tog" onclick="toggleFocus(this)" data-val="healthcare">Healthcare / sensitive UX</span>
-          <span class="tog" onclick="toggleFocus(this)" data-val="ai-native">AI-native</span>
-          <span class="tog" onclick="toggleFocus(this)" data-val="staff-ic">Staff IC</span>
-          <span class="tog" onclick="toggleFocus(this)" data-val="systems">Systems / platform</span>
-          <span class="tog" onclick="toggleFocus(this)" data-val="leadership">Design leadership</span>
-          <span class="tog" onclick="toggleFocus(this)" data-val="consumer">Consumer / DTC</span>
-          <span class="tog" onclick="toggleFocus(this)" data-val="zero-to-one">Zero-to-one</span>
-          <span class="tog" onclick="toggleFocus(this)" data-val="design-systems">Design systems</span>
-          <span class="tog" onclick="toggleFocus(this)" data-val="b2b-saas">B2B / SaaS</span>
-          <span class="tog" onclick="toggleFocus(this)" data-val="startup">Startup / fast-moving</span>
-          <span class="tog" onclick="toggleFocus(this)" data-val="contract">Contract / freelance</span>
+          <span style="font-size:13px;color:var(--muted);font-weight:300">Loading...</span>
         </div>
       </div>
       <div class="field">
@@ -331,10 +321,37 @@ async function loadContext() {
   try {
     [MASTER, FRAMING, TONE] = await Promise.all(files);
     contextLoaded = true;
+    renderChips(TONE);
   } catch(e) {
     contextError = e.message;
     throw new Error('Could not load context files from GitHub: ' + e.message);
   }
+}
+
+// ─── Parse and render emphasis focus chips from tone-and-positioning.md ───────
+function parseChips(toneMarkdown) {
+  const chips = [];
+  const inSection = /## Emphasis Focus Options[\s\S]*?(?=\n## |\n---|\n#[^#]|$)/m.exec(toneMarkdown);
+  if (!inSection) return chips;
+  const lines = inSection[0].split('\n');
+  for (const line of lines) {
+    // Match lines like: - `value: Label`
+    const m = line.match(/^-\s+`([^:]+):\s*(.+?)`/);
+    if (m) chips.push({ val: m[1].trim(), label: m[2].trim() });
+  }
+  return chips;
+}
+
+function renderChips(toneMarkdown) {
+  const container = document.getElementById('focusToggles');
+  const chips = parseChips(toneMarkdown);
+  if (!chips.length) {
+    container.innerHTML = '<span style="font-size:13px;color:var(--muted);font-weight:300">No focus options found in tone-and-positioning.md</span>';
+    return;
+  }
+  container.innerHTML = chips.map(c =>
+    `<span class="tog" onclick="toggleFocus(this)" data-val="${c.val}">${c.label}</span>`
+  ).join('');
 }
 
 let focusSelected = [];
@@ -367,7 +384,8 @@ function showTab(tab, el) {
 
 function startOver() {
   focusSelected=[];
-  document.querySelectorAll('.tog').forEach(b=>b.classList.remove('on'));
+  if (TONE) renderChips(TONE); // re-render chips (clears active state)
+  else document.querySelectorAll('.tog').forEach(b=>b.classList.remove('on'));
   ['jobTitle','company','jobDesc','extraNotes','hiringContact'].forEach(id=>document.getElementById(id).value='');
   currentDocx={resume:null,cl:null};
   setStep(0);
