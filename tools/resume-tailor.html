@@ -293,15 +293,9 @@ async function goTailor() {
     }
   }
 
-  const msgs=[
-    ['Analyzing job description...','Figuring out what actually matters to this team'],
-    ['Selecting relevant experience...','Matching your background to this specific role'],
-    ['Crafting the summary...','Writing a targeted opening that speaks to this team'],
-    ['Writing the cover letter...','Finding the honest angle for this company'],
-    ['Final polish...','Tone check and cleanup'],
-  ];
-  let mi=0;
-  const tick=setInterval(()=>{ mi=(mi+1)%msgs.length; statusEl.textContent=msgs[mi][0]; subEl.textContent=msgs[mi][1]; },2200);
+  // Initial status — will be updated as stream progresses
+  statusEl.textContent = 'Starting...';
+  subEl.textContent = 'Connecting to API';
 
   const prompt = `You are a resume and cover letter tailoring expert. Using the master resume context and experience framing below, create a tailored resume AND cover letter.
 
@@ -355,6 +349,17 @@ Return ONLY a JSON object, no markdown, no backticks:
 RESUME RULES: Keep all 4 jobs. 3-4 bullets each. Lead with impact. Use real numbers ($3M, NPS, etc) where relevant. Bullets may have a "Bold label: " prefix when it adds clarity (like template). Skills 4-6 per group. No bullets starting with "I".
 COVER LETTER RULES: 4-5 paragraphs. Direct voice. Specific company angle. Use "patterns that spread" for principal credibility. No "excited to apply".`;
 
+  // Status stages keyed to JSON field names appearing in the stream
+  const stages = [
+    { marker: '"tailoring_notes"', status: 'Analyzing the role...', sub: 'Figuring out what actually matters to this team' },
+    { marker: '"summary"',         status: 'Writing your summary...', sub: 'Crafting a targeted opening for this role' },
+    { marker: '"skills"',          status: 'Selecting skills...', sub: 'Filtering to what is most relevant here' },
+    { marker: '"experience"',      status: 'Shaping experience bullets...', sub: 'Leading with impact, keeping it human' },
+    { marker: '"cover_letter"',    status: 'Writing the cover letter...', sub: 'Finding the honest angle for this company' },
+    { marker: '"closing_paragraph"', status: 'Finishing up...', sub: 'Wrapping the cover letter' },
+  ];
+  let stageIdx = 0;
+
   try {
     const apiEndpoint = PROXY_URL || 'https://api.anthropic.com/v1/messages';
     const res = await fetch(apiEndpoint, {
@@ -363,29 +368,74 @@ COVER LETTER RULES: 4-5 paragraphs. Direct voice. Specific company angle. Use "p
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
+        stream: true,
         messages: [{ role: 'user', content: prompt }]
       })
     });
-    clearInterval(tick);
-    const apiData = await res.json();
 
-    // Surface API-level errors clearly
-    if (apiData.error) throw new Error('API error: ' + apiData.error.message);
-    if (!apiData.content || !apiData.content.length) throw new Error('Empty API response: ' + JSON.stringify(apiData).slice(0,300));
+    if (!res.ok || !res.body) {
+      const errText = await res.text();
+      throw new Error(`API error ${res.status}: ${errText.slice(0, 200)}`);
+    }
 
-    const raw = apiData.content.map(b=>b.text||'').join('');
+    // Read the SSE stream
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let accumulated = '';
+    let buffer = '';
 
-    // Check for truncation
-    if (apiData.stop_reason === 'max_tokens') throw new Error('Response truncated — try a shorter job description.');
+    statusEl.textContent = 'Thinking...';
+    subEl.textContent = 'Reading the job description';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop(); // keep incomplete last line
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
+
+        let event;
+        try { event = JSON.parse(data); } catch { continue; }
+
+        // Surface stream-level errors
+        if (event.type === 'error') throw new Error('Stream error: ' + (event.error?.message || JSON.stringify(event.error)));
+
+        // Accumulate text delta
+        if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+          accumulated += event.delta.text;
+
+          // Advance status based on which JSON keys have appeared
+          while (stageIdx < stages.length && accumulated.includes(stages[stageIdx].marker)) {
+            statusEl.textContent = stages[stageIdx].status;
+            subEl.textContent    = stages[stageIdx].sub;
+            stageIdx++;
+          }
+        }
+
+        // Check for truncation
+        if (event.type === 'message_delta' && event.delta?.stop_reason === 'max_tokens') {
+          throw new Error('Response truncated — try a shorter job description.');
+        }
+      }
+    }
+
+    statusEl.textContent = 'Rendering...';
+    subEl.textContent = 'Almost there';
 
     let r;
     try {
-      r = JSON.parse(raw.replace(/```json|```/g,'').trim());
+      r = JSON.parse(accumulated.replace(/```json|```/g,'').trim());
     } catch(parseErr) {
-      throw new Error('JSON parse failed. Model returned: ' + raw.slice(0,400));
+      throw new Error('JSON parse failed. Model returned: ' + accumulated.slice(0,400));
     }
 
-    // Strip em dashes throughout — model ignores tone rules reliably
+    // Strip em dashes throughout
     r = stripEmDashes(r);
 
     generatedData = { ...r, jobTitle: title, company, hiringContact: contact, currentMonth: month };
@@ -396,7 +446,6 @@ COVER LETTER RULES: 4-5 paragraphs. Direct voice. Specific company angle. Use "p
 
     setStep(2);
   } catch(e) {
-    clearInterval(tick);
     statusEl.textContent = 'Error: ' + e.message;
     subEl.textContent = 'Check the browser console (F12) for full details, then click below to retry.';
     console.error('Tailor error:', e);
