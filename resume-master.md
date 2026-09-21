@@ -96,27 +96,65 @@ Comfortable moving between strategy and execution, including AI-assisted prototy
 - Functional prototyping
 - React
 - Frontend development
+- Tailwind and design token pipelines
 - Framer code components
+- Figma plugin development
 - GitHub workflows
 - Rapid iterative prototyping
+- After Effects and motion design
 
 ---
 
 # Experience
+
+# The Pattern
+Fractional Head of Design  
+Jun 2026 – Sep 2026
+
+## Overview
+Led design for a reimagining of The Pattern, a consumer app for self-understanding and relationships, during a high-pressure redesign. Focused on making a dense, expert interpretive system clear and emotionally resonant on mobile.
+
+## Key Initiatives
+
+### Your Pattern Journey
+- Designed and prototyped Your Pattern, the app's core experience: a highly interactive, personalized reading of each user's birth chart focused on personality and relationships.
+- Structured the reading as an authored journey through the chart, with one interactive focal element per screen and progressive disclosure so each layer stands on its own.
+- Gave context, sequence, and depth each their own navigation so users could go deeper without losing their place.
+- Built a functional prototype of the journey from a single master file and exported standalone builds for remote user testing.
+
+### Content Delivery
+- Designed a new content delivery flow that replaced passive card stacks with a guided, layered reading experience.
+
+### Design System
+- Built the design system foundation from Figma tokens, synced to a Tailwind v4 theme so design and the React codebase stayed aligned.
+- Built a Figma plugin to apply token values in place without duplicating variables.
+
+### Product Strategy
+- Audited the existing app and mapped the competitive landscape, identifying conversational AI depth as the clearest opportunity to stand out.
+
+## Skills Demonstrated
+- Interaction design
+- Systems thinking
+- Design systems
+- Functional prototyping
+- AI-assisted workflows
+- Product strategy
+
+---
 
 # G2
 Principal Product Experience Designer  
 Feb 2024 – May 2026
 
 ## Overview
-Led strategic product design initiatives across G2’s seller ecosystem, buyer intent platform, onboarding experiences, and design systems modernization efforts.
+Led strategic product design initiatives across G2's seller ecosystem, buyer intent platform, onboarding experiences, and design systems modernization efforts.
 
 Worked across highly cross-functional environments spanning product, engineering, brand, marketing, analytics, and executive leadership.
 
 ## Key Initiatives
 
 ### Elevate Design System
-- Spearheaded a cross-functional rebuild of G2’s design system.
+- Spearheaded a cross-functional rebuild of G2's design system.
 - Unified product, brand, and engineering stakeholders around scalable foundations and component architecture.
 - Led design consensus, Figma architecture, and implementation planning across multiple squads.
 - Improved consistency, accessibility, scalability, and product cohesion.
@@ -147,7 +185,6 @@ Worked across highly cross-functional environments spanning product, engineering
 - Workflow design
 - Executive communication
 
-
 ---
 
 # PetPlate
@@ -166,14 +203,14 @@ Led product design across customer acquisition, onboarding, subscription managem
 ---
 
 # Wisdom Panel
-Director, Product Design
-Nov 2019 – Sep 2023
+Director, Product Design  
+Nov 2019 – Oct 2022
 
 ## Overview
 Led product and experience design efforts focused on translating complex scientific and genetic health information into approachable consumer experiences.
 
 ## Contributions
-- Led a major transformation of Wisdom Panel’s digital product experience, modernizing the platform, redesigning core customer journeys, and helping evolve the organization’s design maturity.
+- Led a major transformation of Wisdom Panel's digital product experience, modernizing the platform, redesigning core customer journeys, and helping evolve the organization's design maturity.
 - Directed the development of scalable design systems and UX foundations that improved consistency, usability, accessibility, and cross-functional collaboration.
 - Translated complex scientific and genetic health information into approachable, trustworthy consumer experiences across onboarding, reporting, and educational workflows.
 - Partnered closely with science, engineering, product, and marketing stakeholders to align business goals with emotionally sensitive, human-centered UX.
@@ -182,21 +219,36 @@ Led product and experience design efforts focused on translating complex scienti
 ---
 
 # Vacasa
-Lead Product Designer
+Lead Product Designer  
 May 2016 – Nov 2019
 
 ## Overview
-Led product design across Vacasa’s consumer platform, internal operational tooling, and design systems during a period of rapid growth and transformation.
+Led product design across Vacasa's consumer platform, internal operational tooling, and design systems during a period of rapid growth and transformation.
 
 ## Contributions
-- Led product design strategy for Vacasa’s first native consumer application, contributing to a +9 gain in guest NPS and significantly reducing customer support volume.
-- Established foundational design system practices across Vacasa’s web and native product ecosystem, improving consistency, scalability, and developer efficiency.
+- Led product design strategy for Vacasa's first native consumer application, contributing to a +9 gain in guest NPS and significantly reducing customer support volume.
+- Established foundational design system practices across Vacasa's web and native product ecosystem, improving consistency, scalability, and developer efficiency.
 - Led design direction for internal operational tools used by housekeeping and field maintenance teams, helping streamline workflows and improve operational efficiency across distributed service teams.
 - Improved conversion across key guest booking flows, including property detail pages and checkout experiences.
-- Provided digital design direction and implementation guidance during Vacasa’s 2018 rebrand, helping translate updated brand systems into cohesive product experiences.
+- Provided digital design direction and implementation guidance during Vacasa's 2018 rebrand, helping translate updated brand systems into cohesive product experiences.
+
+---
 
 # Additional Experience
 (Add earlier roles later)
+
+---
+
+# Volunteer Work
+
+# PDX Pop Now!
+Volunteer Video Producer / Editor  
+May 2026 – Jul 2026
+
+## Contributions
+- Produced and edited a K-Tel-inspired promotional spot for PDX Pop Now!'s 2026 compilation.
+- Developed the retro space/analog visual concept and built the piece in After Effects, combining custom illustration assets, artist photography, motion graphics, character animation, and VHS-era effects to showcase 48 compilation artists.
+- Collaborated with the festival's art director, project manager, illustrator, and voice talent from concept through final delivery.
 
 ---
 
@@ -213,7 +265,7 @@ Art Institute of Portland, High Honors
 IDEO U
 
 ## Certified Brazilian Jiu Jitsu Coach
-Straight Blast Gym International 
+Straight Blast Gym International
 
 ---
 
@@ -240,7 +292,7 @@ Views AI as a collaborative tool for exploration, prototyping, synthesis, and wo
 - avoids excessive corporate jargon
 - avoids AI hype language
 - avoids em dashes
-- avoids “20+ years experience”
+- avoids "20+ years experience"
 
 ---
 
@@ -268,6 +320,18 @@ Emphasize:
 - influence without authority
 - cross-functional facilitation
 
+## Consumer / Mobile Roles
+Emphasize:
+- The Pattern interaction and content delivery work
+- making complex information approachable (Wisdom Panel, The Pattern)
+- subscription and retention experience (PetPlate)
+
+## Creative / Brand-Adjacent Roles
+Emphasize:
+- PDX Pop Now! motion work
+- visual craft
+- Vacasa rebrand implementation
+
 ---
 
 # Interview Notes
@@ -282,3 +346,6 @@ Emphasize:
 ## Watch-outs
 - Can over-explain or become overly detailed
 - Benefits from concise framing and structured storytelling
+
+## The Pattern: Why It Ended
+Keep it short and about role structure, not people. "The scope expanded while the launch date stayed fixed, and design ownership became spread across several people. The engagement didn't have the decision rights and single source of truth I needed to be effective, so I handed off the work and chose to end the contract. It clarified what needs to be in place for fractional design leadership to work."
