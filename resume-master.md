@@ -56,6 +56,8 @@ Explores how AI changes interaction models, onboarding, trust, workflow orchestr
 
 # Core Positioning
 
+Has built or matured a design system in every role held since 2016, across ecommerce, consumer genetics, DTC, B2B SaaS, and consumer mobile. Lead with this for any design systems or platform role.
+
 Strategic product designer focused on systems thinking, AI-native workflows, and human-centered experiences. Experienced leading cross-functional initiatives across product, engineering, marketing, and data teams to transform fragmented platforms into cohesive, scalable ecosystems.
 
 Combines UX strategy, interaction design, visual craft, design systems thinking, and functional prototyping to rapidly explore ideas and align teams under ambiguity.
@@ -112,33 +114,31 @@ Fractional Head of Design
 Jun 2026 – Sep 2026
 
 ## Overview
-Led design for a reimagining of The Pattern, a consumer app for self-understanding and relationships, during a high-pressure redesign. Focused on making a dense, expert interpretive system clear and emotionally resonant on mobile.
+Short fractional engagement on a consumer mobile app rebuild. Owned the interaction model for the app's core personal experience and the design token foundation behind it.
 
 ## Key Initiatives
 
-### Your Pattern Journey
-- Designed and prototyped Your Pattern, the app's core experience: a highly interactive, personalized reading of each user's birth chart focused on personality and relationships.
-- Structured the reading as an authored journey through the chart, with one interactive focal element per screen and progressive disclosure so each layer stands on its own.
-- Gave context, sequence, and depth each their own navigation so users could go deeper without losing their place.
-- Built a functional prototype of the journey from a single master file and exported standalone builds for remote user testing.
+### You Tab and Journey
+- Set the interaction model for the app's core personal experience: a journey wheel and carousel that opens into insight cards, which open into a long-form reader.
+- Designed each layer to stand on its own rather than tease the next, keeping context, sequence, and depth on separate navigation.
+- Built a working prototype of the flow and exported standalone builds for remote user testing.
 
-### Content Delivery
-- Designed a new content delivery flow that replaced passive card stacks with a guided, layered reading experience.
-
-### Design System
-- Built the design system foundation from Figma tokens, synced to a Tailwind v4 theme so design and the React codebase stayed aligned.
-- Built a Figma plugin to apply token values in place without duplicating variables.
-
-### Product Strategy
-- Audited the existing app and mapped the competitive landscape, identifying conversational AI depth as the clearest opportunity to stand out.
+### Design System Foundation
+- Customized a HeroUI Pro Native theme into the app's design foundation, mapping brand type and color onto its token structure with a Tailwind v4 theme.
+- Built the tooling that keeps tokens in sync across Figma, HeroUI, and Claude Code, including a Figma plugin that applies values in place without duplicating variables.
 
 ## Skills Demonstrated
 - Interaction design
-- Systems thinking
-- Design systems
+- Design systems and token architecture
 - Functional prototyping
 - AI-assisted workflows
-- Product strategy
+
+## Scope Notes (context only, never put on a resume)
+- The engagement ended in Sep 2026, before launch. No idea how much of the work shipped, so claim no launch credit, no metrics, no outcomes.
+- What survived review: the general direction and interaction model for the You tab, the journey wheel and carousel, the level 2 insight card interaction, and the basic level 3 reader interaction.
+- The brand evolution work was rejected. Never reference it.
+- Cap this role at 2 or 3 bullets. It was three months and should never outweigh G2 or Wisdom Panel.
+- Also done but not load-bearing: UX audit of the existing app, competitive analysis. Use only if a job description specifically asks for strategy or research work.
 
 ---
 
