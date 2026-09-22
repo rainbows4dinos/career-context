@@ -1,20 +1,6 @@
 # Tone and Positioning
 
-## Preferred Tone
-- thoughtful
-- direct
-- human
-- strategic
-- avoids corporate jargon
-- avoids em dashes
-
-## Primary Positioning
-Strategic product designer focused on systems thinking, AI-native workflows, and human-centered experiences.
-
-## Avoid
-- "20+ years"
-- AI hype language
-- generic leadership clichés
+Voice, tone, and format rules live in voice-and-format.md, which is the authoritative source and the file the resume tailor sends to the model. Positioning lives in resume-master.md. This file exists to feed the emphasis focus chips in the tailor tool, so keep the section below in its current format.
 
 ---
 

@@ -308,11 +308,20 @@ const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-contex
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
 // Set to null to call Anthropic directly (works locally or in Claude artifacts).
 const PROXY_URL = 'https://resume-tailor-proxy.larryjrdesign.workers.dev'; // Replace with your Cloudflare Worker URL once deployed
+// Optional shared key. Set the same value as the worker's TAILOR_KEY secret.
+// This page is public, so anyone can read this value. It is a speed bump, not auth.
+const PROXY_KEY = '';
+function apiHeaders() {
+  return PROXY_KEY
+    ? { 'Content-Type': 'application/json', 'x-tailor-key': PROXY_KEY }
+    : { 'Content-Type': 'application/json' };
+}
 
 // ─── Context files fetched from repo at runtime ───────────────────────────────
 let MASTER = null;
 let FRAMING = null;
 let TONE = null;
+let VOICE = null;
 let contextLoaded = false;
 let contextError = null;
 
@@ -322,9 +331,10 @@ async function loadContext() {
     fetch(REPO_RAW + '/resume-master.md').then(r => { if (!r.ok) throw new Error('resume-master.md ' + r.status); return r.text(); }),
     fetch(REPO_RAW + '/experience-framing.md').then(r => { if (!r.ok) throw new Error('experience-framing.md ' + r.status); return r.text(); }),
     fetch(REPO_RAW + '/tone-and-positioning.md').then(r => { if (!r.ok) throw new Error('tone-and-positioning.md ' + r.status); return r.text(); }),
+    fetch(REPO_RAW + '/voice-and-format.md').then(r => { if (!r.ok) throw new Error('voice-and-format.md ' + r.status); return r.text(); }),
   ];
   try {
-    [MASTER, FRAMING, TONE] = await Promise.all(files);
+    [MASTER, FRAMING, TONE, VOICE] = await Promise.all(files);
     contextLoaded = true;
     renderChips(TONE);
   } catch(e) {
@@ -403,6 +413,11 @@ function startOver() {
 function stripEmDashes(val) {
   if (typeof val === 'string') {
     return val
+      // Date and number ranges read as ranges, not comma splices
+      .replace(/(\b(?:19|20)\d{2})\s*[—–]\s*/g, '$1 to ')
+      .replace(/(\d)\s*[—–]\s*(\d)/g, '$1 to $2')
+      .replace(/\s*[—–]\s*(Present|present)\b/g, ' to $1')
+      // Any remaining long dash becomes a comma
       .replace(/—/g, ',')
       .replace(/–/g, ',')
       .replace(/\s,\s/g, ', ')
@@ -435,7 +450,7 @@ async function goTailor() {
   // Load context files from GitHub if not already cached
   if (!contextLoaded) {
     statusEl.textContent = 'Loading context from GitHub...';
-    subEl.textContent = 'Fetching resume-master.md and experience-framing.md';
+    subEl.textContent = 'Fetching resume-master.md, experience-framing.md, voice-and-format.md';
     try {
       await loadContext();
     } catch(e) {
@@ -450,16 +465,16 @@ async function goTailor() {
   statusEl.textContent = 'Starting...';
   subEl.textContent = 'Connecting to API';
 
-  const prompt = `You are a resume and cover letter tailoring expert. Using the master resume context and experience framing below, create a tailored resume AND cover letter.
+  const prompt = `You are helping Larry Reynolds tailor his resume and cover letter for one specific job. The VOICE AND FORMAT RULES are authoritative. Where anything else conflicts with them, follow them.
 
-MASTER RESUME:
+MASTER RESUME (the facts layer):
 ${MASTER}
 
-EXPERIENCE FRAMING (the why-it-mattered layer — use for authentic story angles and real numbers):
+EXPERIENCE FRAMING (why the work mattered, real numbers, honest angles):
 ${FRAMING}
 
-TONE & POSITIONING RULES (from TONE):
-${TONE}
+VOICE AND FORMAT RULES (authoritative, follow exactly):
+${VOICE}
 
 JOB APPLICATION:
 - Role: ${title}
@@ -476,7 +491,7 @@ Return ONLY a JSON object, no markdown, no backticks:
 {
   "tailoring_notes": "2-3 sentences on what you emphasized and why",
   "resume": {
-    "summary": "2-3 sentence tailored summary",
+    "summary": "3 sentences, 55 words maximum",
     "skills": {
       "product_ux": ["skill1","skill2"],
       "ai_prototyping": ["skill1","skill2"],
@@ -487,20 +502,40 @@ Return ONLY a JSON object, no markdown, no backticks:
         "company": "Company name",
         "title": "Job title",
         "dates": "Date range",
-        "blurb": "One-sentence context (omit if not needed)",
         "bullets": ["Bold label: rest of bullet", "Plain bullet with no label"]
       }
     ]
   },
   "cover_letter": {
-    "opening_paragraph": "Hook — genuine specific observation about company/role tension",
-    "body_paragraphs": ["para 2","para 3","para 4"],
-    "closing_paragraph": "Low-pressure direct close"
+    "greeting": "Hi <contact or team>,",
+    "opening_paragraph": "States the role being applied for and the single strongest reason, plus one specific true thing about this company or role",
+    "body_paragraphs": ["one story, told concretely", "what he would bring to this team specifically"],
+    "closing_paragraph": "Two sentences, direct, says what he would like next"
   }
 }
 
-RESUME RULES: Keep all 4 jobs. 3-4 bullets each. Lead with impact. Use real numbers ($3M, NPS, etc) where relevant. Bullets may have a "Bold label: " prefix when it adds clarity (like template). Skills 4-6 per group. No bullets starting with "I".
-COVER LETTER RULES: 4-5 paragraphs. Direct voice. Specific company angle. Use "patterns that spread" for principal credibility. No "excited to apply".`;
+HARD CONSTRAINTS. Check each one before returning.
+RESUME
+- Include every role in the master resume, most recent first. Do not drop or merge roles.
+- Bullet caps by role: The Pattern 3, G2 4, PetPlate 2, Wisdom Panel 3, Vacasa 2.
+- One idea per bullet, 25 words maximum. Never start a bullet with "I".
+- No per-role blurb, overview, or context sentence. Bullets only.
+- Summary: 3 sentences, 55 words maximum. No thesis about what design or design systems really are.
+- Skills: 12 maximum across all three groups combined.
+- Use only numbers that appear in the context above. Never invent or estimate a metric.
+- The Pattern: obey its Scope Notes. No launch credit, no shipped outcomes, no metrics, no brand work.
+- Credit for code: built, created, customized, set up, designed. Never wrote, coded, engineered, developed, from scratch.
+COVER LETTER
+- 250 to 300 words total across all paragraphs. Count them.
+- Greeting, then opening, then exactly two body paragraphs, then a two sentence close.
+- The opening paragraph must say what role he is applying for in its first sentence. Never open on an observation about the industry, the discipline, or a tension in the work.
+- One story in the body, not a survey of the career. Do not restate resume bullets.
+- At most one "not X, it is Y" construction in the entire letter.
+- Do not end every paragraph on an insight. Some paragraphs just end.
+BANNED EVERYWHERE
+- Em dashes and en dashes.
+- The words: genuine, genuinely, honest, honestly, durable, leverage as a noun, at scale, present-state, future-state, excited to apply, passionate.
+- Sentences that could appear in any other designer's application. Cut anything not specific to Larry or to this company.`;
 
   // Status stages keyed to JSON field names appearing in the stream
   const stages = [
@@ -517,7 +552,7 @@ COVER LETTER RULES: 4-5 paragraphs. Direct voice. Specific company angle. Use "p
     const apiEndpoint = PROXY_URL || 'https://api.anthropic.com/v1/messages';
     const res = await fetch(apiEndpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: apiHeaders(),
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
@@ -646,10 +681,13 @@ Return ONLY the updated resume JSON with the same structure plus a revision_summ
   "revision_summary": "1-2 sentences describing what changed and why",
   "summary": "...",
   "skills": { "product_ux": [...], "ai_prototyping": [...], "leadership": [...] },
-  "experience": [{ "company": "...", "title": "...", "dates": "...", "blurb": "...", "bullets": [...] }]
+  "experience": [{ "company": "...", "title": "...", "dates": "...", "bullets": [...] }]
 }
 
-TONE RULES: thoughtful, direct, human, strategic. No em dashes, no hype language, no bullets starting with "I".`
+VOICE AND FORMAT RULES (authoritative, follow exactly):
+${VOICE || ''}
+
+Keep every constraint from the original generation: bullet caps per role (The Pattern 3, G2 4, PetPlate 2, Wisdom Panel 3, Vacasa 2), one idea per bullet at 25 words maximum, no per-role blurb, summary at 3 sentences and 55 words maximum, 12 skills maximum, no invented numbers, no em dashes, no bullets starting with "I". Credit for code is built or created, never wrote or engineered. Change only what the revision request asks for.`
     : `You are a cover letter expert. The user wants to revise their tailored cover letter. Here is the current cover letter JSON:
 
 ${currentContent}
@@ -659,18 +697,22 @@ REVISION REQUEST: ${note}
 Return ONLY the updated cover letter JSON with the same structure plus a revision_summary field, no markdown, no backticks:
 {
   "revision_summary": "1-2 sentences describing what changed and why",
+  "greeting": "...",
   "opening_paragraph": "...",
   "body_paragraphs": ["...", "..."],
   "closing_paragraph": "..."
 }
 
-TONE RULES: direct, specific, no "excited to apply", no em dashes, no corporate clichés.`;
+VOICE AND FORMAT RULES (authoritative, follow exactly):
+${VOICE || ''}
+
+Keep every constraint from the original generation: 250 to 300 words total, greeting plus opening plus two body paragraphs plus a two sentence close, the opening names the role in its first sentence and never starts on an industry observation, one story not a survey, at most one "not X, it is Y" construction, no em dashes, none of the banned words. Change only what the revision request asks for.`;
 
   try {
     const apiEndpoint = PROXY_URL || 'https://api.anthropic.com/v1/messages';
     const res = await fetch(apiEndpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: apiHeaders(),
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 3000,
@@ -730,6 +772,37 @@ TONE RULES: direct, specific, no "excited to apply", no em dashes, no corporate 
 
 // ─── Preview renderer ─────────────────────────────────────────────────────────
 // diff param: { type: 'resume'|'cl', oldData, summary } — optional, only on revision
+// Catches the constraints the model most often drifts on. Warnings only, nothing is blocked.
+function qaWarnings(r) {
+  const w = [];
+  const res = r.resume||{}, cl = r.cover_letter||{};
+  const caps = { 'The Pattern':3, 'G2':4, 'PetPlate':2, 'Wisdom Panel':3, 'Vacasa':2 };
+  (res.experience||[]).forEach(j => {
+    const cap = caps[j.company];
+    const n = (j.bullets||[]).length;
+    if (cap && n > cap) w.push(`${j.company}: ${n} bullets, cap is ${cap}`);
+    if (j.blurb) w.push(`${j.company}: has a blurb line, should be bullets only`);
+    (j.bullets||[]).forEach(b => {
+      const words = String(b).split(/\s+/).filter(Boolean).length;
+      if (words > 30) w.push(`${j.company}: ${words} word bullet, cap is 25`);
+    });
+  });
+  const sw = String(res.summary||'').split(/\s+/).filter(Boolean).length;
+  if (sw > 60) w.push(`Summary is ${sw} words, target is 55`);
+  const skillCount = Object.values(res.skills||{}).reduce((n,a)=>n+(a||[]).length,0);
+  if (skillCount > 14) w.push(`${skillCount} skills listed, target is 12`);
+  const clText = [cl.greeting,cl.opening_paragraph,...(cl.body_paragraphs||[]),cl.closing_paragraph].filter(Boolean).join(' ');
+  const cw = clText.split(/\s+/).filter(Boolean).length;
+  if (cw && (cw > 320 || cw < 200)) w.push(`Cover letter is ${cw} words, target is 250 to 300`);
+  const banned = ['genuine','genuinely','honest','honestly','durable','at scale','excited to apply','passionate','present-state','future-state'];
+  const all = (clText + ' ' + JSON.stringify(res)).toLowerCase();
+  const hits = banned.filter(t => all.includes(t));
+  if (hits.length) w.push('Banned words: ' + hits.join(', '));
+  const anti = (clText.match(/\b(isn't|is not|wasn't|was not|aren't|are not)\b[^.]{0,70}\bit(?:'s| is| was)\b/gi)||[]).length;
+  if (anti > 1) w.push(`${anti} "not X, it is Y" constructions, max is 1`);
+  return w;
+}
+
 function renderPreview(r, title, company, contact, month, diff) {
   const res = r.resume||{};
   const sk  = res.skills||{};
@@ -805,6 +878,7 @@ function renderPreview(r, title, company, contact, month, diff) {
     <div class="resume-name">Larry Reynolds</div>
     <div class="resume-title-line">Principal Product Designer · Portland, OR · larryjr.design · larry.jr.design@gmail.com · 503-475-7438</div>
     ${r.tailoring_notes?`<div class="tailor-note"><strong>Tailored:</strong> ${r.tailoring_notes}</div>`:''}
+    ${(()=>{ const qa = qaWarnings(r); return qa.length ? `<div class="tailor-note" style="border-left:3px solid #c98a2b"><strong>Check before sending:</strong> ${qa.join('; ')}</div>` : ''; })()}
     ${diff && diff.type === 'resume' ? revisedCallout : ''}
     <div class="section-label">Summary</div>
     <div class="summary-text">${hl(res.summary, oldRes?.summary)}</div>
@@ -815,9 +889,10 @@ function renderPreview(r, title, company, contact, month, diff) {
 
   // Cover letter — diff at paragraph level
   const cl = r.cover_letter||{};
-  const allParas = [cl.opening_paragraph,...(cl.body_paragraphs||[]),cl.closing_paragraph].filter(Boolean);
+  const greeting = cl.greeting || ('Hi ' + (contact || 'there') + ',');
+  const allParas = [greeting,cl.opening_paragraph,...(cl.body_paragraphs||[]),cl.closing_paragraph].filter(Boolean);
   const oldAllParas = oldCL
-    ? [oldCL.opening_paragraph,...(oldCL.body_paragraphs||[]),oldCL.closing_paragraph].filter(Boolean)
+    ? [oldCL.greeting || ('Hi ' + (contact || 'there') + ','),oldCL.opening_paragraph,...(oldCL.body_paragraphs||[]),oldCL.closing_paragraph].filter(Boolean)
     : [];
 
   const addressee = company ? `${contact}, ${company}` : contact;
@@ -948,7 +1023,7 @@ async function buildResumeDocx(res) {
 
 async function buildCoverLetterDocx(cl, jobTitle, company, contact, month) {
   const addressee=company?`${contact}, ${company}`:contact;
-  const allParas=[cl.opening_paragraph,...(cl.body_paragraphs||[]),cl.closing_paragraph].filter(Boolean);
+  const allParas=[cl.greeting||('Hi '+(contact||'there')+','),cl.opening_paragraph,...(cl.body_paragraphs||[]),cl.closing_paragraph].filter(Boolean);
   const children=[];
 
   // Name
