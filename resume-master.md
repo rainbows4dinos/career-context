@@ -56,7 +56,7 @@ Explores how AI changes interaction models, onboarding, trust, workflow orchestr
 
 # Core Positioning
 
-Has built or matured a design system in every role held since 2016, across ecommerce, consumer genetics, DTC, B2B SaaS, and consumer mobile. Lead with this for any design systems or platform role.
+Has built or matured a design system in every role he has held, across ecommerce, consumer genetics, DTC, B2B SaaS, and consumer mobile. Lead with this for any design systems or platform role. State it as every role, never with a start year or a span of years.
 
 Strategic product designer focused on systems thinking, AI-native workflows, and human-centered experiences. Experienced leading cross-functional initiatives across product, engineering, marketing, and data teams to transform fragmented platforms into cohesive, scalable ecosystems.
 

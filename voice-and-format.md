@@ -15,6 +15,8 @@ Hard limits. Length is the most common failure, and the fix is cutting, not comp
 - Do not write a role-level overview sentence and then bullets that repeat it. Pick one. Bullets are usually the better choice.
 - Skills: 12 maximum, grouped into at most 3 lines.
 - Never invent metrics. Only Wisdom Panel, G2 Solutions, and Vacasa have real numbers.
+- Never state how long he has been working. No "a decade of experience", no "15 years", no "20+ years", no start year a reader can subtract from. The strength is that he has done the work in every role, not how many years it adds up to. Write "in every role he has held", never "since 2016".
+- This applies to the cover letter too.
 
 ---
 
