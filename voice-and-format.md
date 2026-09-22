@@ -36,6 +36,16 @@ Target 250 to 300 words. Four short paragraphs. If it runs past one screen, it i
 - Get to first person in the first sentence or two. Say what he wants.
 - Contractions are fine. Write like a note to a person he respects, not a position paper.
 
+## Warmth
+
+The letter should sound like it was written to a person, not filed.
+
+- Enthusiasm is welcome. It just has to be specific. One concrete sentence about what makes this company or product interesting beats any amount of stated eagerness.
+- The banned phrase is "excited to apply." Being interested is not banned. Say what caught his attention and why.
+- Some personality belongs in here. A dry aside, a plain admission of what he does not know yet, or a small true detail does more for the letter than another paragraph proving competence.
+- Greeting, first person, contractions. Write it the way he would write to someone he respects.
+- The greeting is a required field. A letter that opens on a paragraph instead of a greeting is wrong, no matter how good the paragraph is.
+
 ## Anti-AI Tells
 
 Check every draft for these and cut them:

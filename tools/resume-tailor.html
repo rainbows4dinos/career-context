@@ -203,7 +203,7 @@
 <body>
 <div class="shell">
   <header>
-    <h1>Larry's Super Cool Resume Tool</h1>
+    <h1>Larry's Super Cool Resume Tool <span id="buildTag" style="font-size:11px;font-weight:400;opacity:0.5;vertical-align:middle"></span></h1>
     <p style="max-width: 90%;">Custom resume and cover letter generator using my job-hunting context files, docx templates, and Claude. Learn more on my <a href="https://github.com/rainbows4dinos/career-context" target="_blank">GitHub page</a>. Check out my portfolio at <a href="https://www.larryjr.design" target="_blank">www.larryjr.design</a></p>
     <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
       <div class="toggle-track">
@@ -298,12 +298,18 @@
   if (saved === 'light') document.body.classList.add('light');
 })();
 
+document.addEventListener('DOMContentLoaded', () => {
+  const t = document.getElementById('buildTag');
+  if (t) t.textContent = 'build ' + BUILD;
+});
+
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
   localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
+const BUILD = '2026-09-22-b'; // bump when editing this file, shown next to the title
 const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-context/main';
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
 // Set to null to call Anthropic directly (works locally or in Claude artifacts).
@@ -327,11 +333,12 @@ let contextError = null;
 
 async function loadContext() {
   if (contextLoaded) return;
+  const bust = '?v=' + Date.now();
   const files = [
-    fetch(REPO_RAW + '/resume-master.md').then(r => { if (!r.ok) throw new Error('resume-master.md ' + r.status); return r.text(); }),
-    fetch(REPO_RAW + '/experience-framing.md').then(r => { if (!r.ok) throw new Error('experience-framing.md ' + r.status); return r.text(); }),
-    fetch(REPO_RAW + '/tone-and-positioning.md').then(r => { if (!r.ok) throw new Error('tone-and-positioning.md ' + r.status); return r.text(); }),
-    fetch(REPO_RAW + '/voice-and-format.md').then(r => { if (!r.ok) throw new Error('voice-and-format.md ' + r.status); return r.text(); }),
+    fetch(REPO_RAW + '/resume-master.md' + bust).then(r => { if (!r.ok) throw new Error('resume-master.md ' + r.status); return r.text(); }),
+    fetch(REPO_RAW + '/experience-framing.md' + bust).then(r => { if (!r.ok) throw new Error('experience-framing.md ' + r.status); return r.text(); }),
+    fetch(REPO_RAW + '/tone-and-positioning.md' + bust).then(r => { if (!r.ok) throw new Error('tone-and-positioning.md ' + r.status); return r.text(); }),
+    fetch(REPO_RAW + '/voice-and-format.md' + bust).then(r => { if (!r.ok) throw new Error('voice-and-format.md ' + r.status); return r.text(); }),
   ];
   try {
     [MASTER, FRAMING, TONE, VOICE] = await Promise.all(files);
