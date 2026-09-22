@@ -57,8 +57,8 @@ Check every draft for these and cut them:
 - Every paragraph landing on a Big Insight. Some paragraphs should just end.
 - Triads. Three-item lists in a sentence, over and over.
 - Self-praise stated as virtue: "I take developing designers seriously", "I have a genuine point of view". Show it or cut it.
-- The words genuine, genuinely, honest, honestly, durable, leverage, at scale, present-state, future-state. These are usually doing the work a specific detail should do. Cut the word and name the thing: not "a setup I find genuinely interesting" but what about it is interesting.
-- Note for whoever is generating: any banned word that appears in these files appears inside a quoted example of what not to write. Do not treat it as vocabulary to reuse.
+- Banned words, including their adverb forms: genuine, honest, durable, leverage as a noun, at scale, present-state, future-state, passionate. Each is standing in for a specific detail. Cut it and name the detail instead.
+- Any banned word that appears anywhere in these files appears only because the rule has to name it. It is never vocabulary to reuse.
 - Sentences that could appear in any designer's letter. Delete anything that is not specific to Larry or to this company.
 - Em dashes.
 

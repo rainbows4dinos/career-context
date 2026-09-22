@@ -298,10 +298,44 @@
   if (saved === 'light') document.body.classList.add('light');
 })();
 
-document.addEventListener('DOMContentLoaded', () => {
+// Version tag: reads the latest commit for this file from GitHub, then compares it
+// against the deploy time of the page actually running. Catches a cached page.
+async function showVersion() {
   const t = document.getElementById('buildTag');
-  if (t) t.textContent = 'build ' + BUILD;
-});
+  if (!t) return;
+  t.textContent = 'build ' + BUILD;
+  try {
+    const res = await fetch('https://api.github.com/repos/rainbows4dinos/career-context/commits?path=tools/resume-tailor.html&per_page=1', { cache: 'no-store' });
+    if (!res.ok) throw new Error('GitHub API ' + res.status);
+    const [commit] = await res.json();
+    if (!commit) throw new Error('no commits returned');
+
+    const committed = new Date(commit.commit.committer.date);
+    const sha = commit.sha.slice(0, 7);
+    const when = committed.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
+                 ' ' + committed.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+
+    // Is the page in the browser older than the newest commit to it?
+    let stale = false;
+    try {
+      const head = await fetch(location.href, { method: 'HEAD', cache: 'no-store' });
+      const lastMod = head.headers.get('Last-Modified');
+      if (lastMod) stale = new Date(lastMod).getTime() + 120000 < committed.getTime();
+    } catch (_) { /* file:// or no HEAD, skip the staleness check */ }
+
+    t.textContent = sha + ' · ' + when;
+    if (stale) {
+      t.textContent += ' · cached page, hard reload';
+      t.style.color = '#c98a2b';
+      t.style.opacity = '1';
+    }
+  } catch (e) {
+    console.warn('Version check unavailable:', e.message);
+    t.textContent = 'build ' + BUILD;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', showVersion);
 
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
@@ -309,7 +343,7 @@ function toggleTheme() {
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const BUILD = '2026-09-22-b'; // bump when editing this file, shown next to the title
+const BUILD = '2026-09-22-d'; // fallback only, the version tag is read from GitHub at load
 const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-context/main';
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
 // Set to null to call Anthropic directly (works locally or in Claude artifacts).
@@ -542,7 +576,9 @@ COVER LETTER
 BANNED EVERYWHERE
 - Em dashes and en dashes.
 - The words: genuine, genuinely, honest, honestly, durable, leverage as a noun, at scale, present-state, future-state, excited to apply, passionate.
-- Sentences that could appear in any other designer's application. Cut anything not specific to Larry or to this company.`;
+- Sentences that could appear in any other designer's application. Cut anything not specific to Larry or to this company.
+
+LAST STEP BEFORE YOU RETURN: re-read every sentence you just wrote. If any contains a banned word, an em dash, or a second "not X, it is Y" construction, rewrite that sentence and then return the JSON.`;
 
   // Status stages keyed to JSON field names appearing in the stream
   const stages = [
@@ -633,6 +669,18 @@ BANNED EVERYWHERE
     // Strip em dashes throughout
     r = stripEmDashes(r);
 
+    // One automatic repair pass if the output broke a checkable rule
+    const firstPass = qaWarnings(r);
+    if (firstPass.some(w => /Banned words|constructions/.test(w))) {
+      statusEl.textContent = 'Fixing rule violations...';
+      subEl.textContent = firstPass.filter(w => /Banned words|constructions/.test(w)).join('; ');
+      try {
+        r = await autoRepair(r, firstPass);
+      } catch (repairErr) {
+        console.warn('Auto repair failed, keeping the original output:', repairErr);
+      }
+    }
+
     generatedData = { ...r, jobTitle: title, company, hiringContact: contact, currentMonth: month };
     renderPreview(r, title, company, contact, month);
 
@@ -655,6 +703,42 @@ BANNED EVERYWHERE
     retryBtn.onclick = startOver;
     document.querySelector('.loading-card').appendChild(retryBtn);
   }
+}
+
+// ─── Automatic repair ────────────────────────────────────────────────────────
+// The model leaks banned words at a low rate no matter how the rule is worded.
+// One targeted pass fixes them without the user having to ask.
+async function autoRepair(r, warnings) {
+  const fixable = warnings.filter(w => /Banned words|constructions/.test(w));
+  if (!fixable.length) return r;
+
+  const prompt = `The resume and cover letter JSON below breaks rules it was written under. Fix ONLY the problems listed. Change as little else as possible, keep every other sentence exactly as it is, and keep the same JSON structure.
+
+PROBLEMS:
+${fixable.map(w => '- ' + w).join('\n')}
+
+RULES FOR THE FIX:
+- Banned words, including adverb forms: genuine, honest, durable, leverage as a noun, at scale, present-state, future-state, passionate, excited to apply. Do not swap in a synonym for the banned word. Delete it and say the specific thing it was standing in for, or cut the phrase.
+- At most one "not X, it is Y" construction in the whole cover letter. Rewrite the extras as plain statements.
+- No em dashes.
+
+JSON:
+${JSON.stringify({ resume: r.resume, cover_letter: r.cover_letter })}
+
+Return ONLY the corrected JSON, no markdown, no backticks:
+{ "resume": { ... }, "cover_letter": { ... } }`;
+
+  const res = await fetch(PROXY_URL || 'https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: apiHeaders(),
+    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 3000, messages: [{ role: 'user', content: prompt }] })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  const raw = data.content.map(b => b.text || '').join('');
+  const fixed = stripEmDashes(JSON.parse(raw.replace(/```json|```/g, '').trim()));
+  if (!fixed.resume || !fixed.cover_letter) throw new Error('repair returned an unexpected shape');
+  return { ...r, resume: fixed.resume, cover_letter: fixed.cover_letter };
 }
 
 // ─── Revision ────────────────────────────────────────────────────────────────
