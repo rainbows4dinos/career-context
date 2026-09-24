@@ -347,7 +347,7 @@ function toggleTheme() {
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const BUILD = '2026-09-24-c'; // fallback only, the version tag is read from GitHub at load
+const BUILD = '2026-09-24-d'; // fallback only, the version tag is read from GitHub at load
 const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-context/main';
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
 // Set to null to call Anthropic directly (works locally or in Claude artifacts).
@@ -1190,8 +1190,11 @@ async function downloadBundle() {
   btn.textContent = 'Building Files...';
   btn.disabled = true;
 
+  const step = (label) => { btn.textContent = label; console.log('[bundle]', label); };
+
   try {
-    await Promise.all([ loadJsZipCDN(), loadPdfMakeCDN(), loadDocxCDN() ]);
+    step('Loading libraries...');
+    await withTimeout(Promise.all([ loadJsZipCDN(), loadPdfMakeCDN(), loadDocxCDN() ]), 45000, 'Library load');
     if (!resolveDocx()) throw new Error('docx library loaded but could not be initialised.');
 
     const co = (generatedData.company || 'Application').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -1199,13 +1202,16 @@ async function downloadBundle() {
     const folder = `${co}_${ti}`;
     const base = `LarryReynolds_${co}_${ti}`;
 
-    const [resumePdf, clPdf, resumeDocx, clDocx, atsDocx] = await Promise.all([
-      pdfBlob(buildResumePdfDef(generatedData.resume)),
-      pdfBlob(buildCoverLetterPdfDef(generatedData.cover_letter, generatedData.jobTitle, generatedData.company, generatedData.hiringContact, generatedData.currentMonth)),
-      buildResumeDocx(generatedData.resume),
-      buildCoverLetterDocx(generatedData.cover_letter, generatedData.jobTitle, generatedData.company, generatedData.hiringContact, generatedData.currentMonth),
-      buildAtsDocx(generatedData.resume),
-    ]);
+    step('Building PDFs...');
+    const resumePdf = await withTimeout(pdfBlob(buildResumePdfDef(generatedData.resume)), 20000, 'Resume PDF');
+    const clPdf = await withTimeout(pdfBlob(buildCoverLetterPdfDef(generatedData.cover_letter, generatedData.jobTitle, generatedData.company, generatedData.hiringContact, generatedData.currentMonth)), 20000, 'Cover letter PDF');
+
+    step('Building Word files...');
+    const resumeDocx = await withTimeout(buildResumeDocx(generatedData.resume), 20000, 'Resume docx');
+    const clDocx = await withTimeout(buildCoverLetterDocx(generatedData.cover_letter, generatedData.jobTitle, generatedData.company, generatedData.hiringContact, generatedData.currentMonth), 20000, 'Cover letter docx');
+    const atsDocx = await withTimeout(buildAtsDocx(generatedData.resume), 20000, 'ATS docx');
+
+    step('Zipping...');
 
     const zip = new JSZip();
     const dir = zip.folder(folder);
@@ -1223,7 +1229,7 @@ async function downloadBundle() {
       `_Resume.docx, _CoverLetter.docx Job boards that parse docx, or hand edits.\n` +
       `_Resume_ATS.docx                Workday autofill only. Plain on purpose.\n`);
 
-    const blob = await zip.generateAsync({ type: 'blob' });
+    const blob = await withTimeout(zip.generateAsync({ type: 'blob' }), 20000, 'Zip');
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = folder + '.zip';
@@ -1304,6 +1310,8 @@ async function buildAtsDocx(res) {
 // Mirrors the docx layout. Uses the PDF standard Helvetica so no font file has
 // to be downloaded and the text stays selectable for ATS parsing.
 const PDF_DARK='#1a1a1a', PDF_MED='#555555', PDF_MUTED='#888888', PDF_LINK='#1155cc', PDF_RULE='#aaaaaa';
+let PDF_FONT = 'Helvetica'; // cleared if the standard-font check fails
+function pdfDefaultStyle() { return PDF_FONT ? { font: PDF_FONT, color: PDF_DARK } : { color: PDF_DARK }; }
 const PDF_WIDTH = 612 - 108; // Letter minus 0.75in margins
 
 function pdfRule(margin) {
@@ -1375,7 +1383,7 @@ function buildResumePdfDef(res) {
     { text:'Design Thinking Certificate', bold:true, color:PDF_DARK }, { text:', IDEO U', color:PDF_MED },
   ]});
 
-  return { pageSize:'LETTER', pageMargins:[54,54,54,54], defaultStyle:{ font:'Helvetica', color:PDF_DARK }, content };
+  return { pageSize:'LETTER', pageMargins:[54,54,54,54], defaultStyle: pdfDefaultStyle(), content };
 }
 
 function buildCoverLetterPdfDef(cl, jobTitle, company, contact, month) {
@@ -1402,21 +1410,61 @@ function buildCoverLetterPdfDef(cl, jobTitle, company, contact, month) {
     ]},
   ];
 
-  return { pageSize:'LETTER', pageMargins:[54,54,54,54], defaultStyle:{ font:'Helvetica', color:PDF_DARK }, content };
+  return { pageSize:'LETTER', pageMargins:[54,54,54,54], defaultStyle: pdfDefaultStyle(), content };
+}
+
+// Any step that can hang gets a deadline, so a stall surfaces as a named error
+// instead of a button that says Building Files forever.
+function withTimeout(promise, ms, label) {
+  let timer;
+  return Promise.race([
+    Promise.resolve(promise).finally(() => clearTimeout(timer)),
+    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(label + ' timed out after ' + (ms/1000) + 's')), ms); }),
+  ]);
+}
+
+let pdfFontsReady = false;
+
+async function loadPdfMakeScript(src, label) {
+  await withTimeout(new Promise((resolve, reject) => {
+    const sc = document.createElement('script');
+    sc.src = src;
+    sc.onload = resolve;
+    sc.onerror = () => reject(new Error('Could not load ' + label + ' from the CDN.'));
+    document.head.appendChild(sc);
+  }), 20000, label);
 }
 
 async function loadPdfMakeCDN() {
-  if (typeof pdfMake !== 'undefined' && pdfMake.fonts) return true;
-  await new Promise((resolve, reject) => {
-    const sc = document.createElement('script');
-    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js';
-    sc.onload = resolve;
-    sc.onerror = () => reject(new Error('Could not load pdfmake from the CDN.'));
-    document.head.appendChild(sc);
-  });
+  if (pdfFontsReady) return true;
+  if (typeof pdfMake === 'undefined') {
+    await loadPdfMakeScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js', 'pdfmake');
+  }
   if (typeof pdfMake === 'undefined') throw new Error('pdfmake loaded but is not available.');
-  // Standard PDF fonts, so no font file download is needed
+
+  // Preferred: the PDF standard Helvetica, which needs no font file download.
+  // Some builds cannot resolve it, and the failure mode is a callback that never
+  // fires, so prove it works on a one-line document before trusting it.
   pdfMake.fonts = { Helvetica: { normal:'Helvetica', bold:'Helvetica-Bold', italics:'Helvetica-Oblique', bolditalics:'Helvetica-BoldOblique' } };
+  try {
+    await withTimeout(new Promise((resolve, reject) => {
+      try {
+        pdfMake.createPdf({ defaultStyle:{ font:'Helvetica' }, content:[{ text:'test' }] }).getBlob(resolve);
+      } catch (e) { reject(e); }
+    }), 4000, 'Helvetica font check');
+    pdfFontsReady = true;
+    return true;
+  } catch (e) {
+    console.warn('Standard Helvetica unavailable in this build, falling back to Roboto:', e.message);
+  }
+
+  // Fallback: pdfmake's bundled Roboto. Costs a font file download.
+  if (!pdfMake.vfs || !Object.keys(pdfMake.vfs || {}).length) {
+    await loadPdfMakeScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.js', 'pdfmake fonts');
+  }
+  delete pdfMake.fonts; // use the bundled default
+  PDF_FONT = null;      // drop the font override from the doc definitions
+  pdfFontsReady = true;
   return true;
 }
 
@@ -1452,7 +1500,14 @@ async function downloadDoc(type, format) {
       const def = type === 'resume'
         ? buildResumePdfDef(generatedData.resume)
         : buildCoverLetterPdfDef(generatedData.cover_letter, generatedData.jobTitle, generatedData.company, generatedData.hiringContact, generatedData.currentMonth);
-      pdfMake.createPdf(def).download(baseName + '.pdf');
+      const blob = await withTimeout(pdfBlob(def), 20000, 'PDF build');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = baseName + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     } catch(e) {
       console.error('PDF download error:', e);
       alert('PDF download failed: ' + e.message);
