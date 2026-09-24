@@ -281,14 +281,15 @@
       <button onclick="goRevise()" id="reviseBtn">Request Revision</button>
     </div>
     <div class="btn-row">
-      <button class="primary" id="dlResumePdf" onclick="downloadDoc('resume','pdf')">Resume PDF</button>
-      <button class="primary" id="dlCLPdf" onclick="downloadDoc('cl','pdf')">Cover Letter PDF</button>
+      <button class="primary" id="dlAll" onclick="downloadBundle()">Download All (folder)</button>
+      <button class="secondary" id="dlResumePdf" onclick="downloadDoc('resume','pdf')">Resume PDF</button>
+      <button class="secondary" id="dlCLPdf" onclick="downloadDoc('cl','pdf')">Cover Letter PDF</button>
       <button class="secondary" id="dlResume" onclick="downloadDoc('resume','docx')">Resume .docx</button>
       <button class="secondary" id="dlCL" onclick="downloadDoc('cl','docx')">Cover Letter .docx</button>
       <button class="secondary" id="dlAts" onclick="downloadDoc('resume','ats')">Resume .docx (ATS plain)</button>
       <button class="secondary" onclick="startOver()">Start New Application</button>
     </div>
-    <p class="dl-note">PDF for sending and attaching. Docx for job boards that parse it, and for hand edits before sending. Both keep selectable text so an ATS can read them.<br>ATS plain is for Workday autofill only: one column, one fact per line, no tabs or parentheticals. It looks plain because that is what parses.</p>
+    <p class="dl-note">Download All gives you a zip that unpacks into one folder named for the company and role, with all five files inside.<br>PDF for sending and attaching. Docx for job boards that parse it, and for hand edits before sending. Both keep selectable text so an ATS can read them.<br>ATS plain is for Workday autofill only: one column, one fact per line, no tabs or parentheticals. It looks plain because that is what parses.</p>
   </div>
 </div>
 
@@ -346,7 +347,7 @@ function toggleTheme() {
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const BUILD = '2026-09-24-b'; // fallback only, the version tag is read from GitHub at load
+const BUILD = '2026-09-24-c'; // fallback only, the version tag is read from GitHub at load
 const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-context/main';
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
 // Set to null to call Anthropic directly (works locally or in Claude artifacts).
@@ -1158,6 +1159,85 @@ async function buildCoverLetterDocx(cl, jobTitle, company, contact, month) {
     sections:[{properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1440,bottom:1440,left:1440}}},children}],
   });
   return await Packer.toBlob(doc);
+}
+
+// ─── Bundle download ─────────────────────────────────────────────────────────
+// Browsers strip path separators from the download attribute, so a folder has to
+// arrive as a zip. Unpacking it gives one folder per application.
+async function loadJsZipCDN() {
+  if (typeof JSZip !== 'undefined') return true;
+  await new Promise((resolve, reject) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    sc.onload = resolve;
+    sc.onerror = () => reject(new Error('Could not load JSZip from the CDN.'));
+    document.head.appendChild(sc);
+  });
+  if (typeof JSZip === 'undefined') throw new Error('JSZip loaded but is not available.');
+  return true;
+}
+
+function pdfBlob(def) {
+  return new Promise((resolve, reject) => {
+    try { pdfMake.createPdf(def).getBlob(resolve); } catch (e) { reject(e); }
+  });
+}
+
+async function downloadBundle() {
+  if (!generatedData) { alert('No document ready — please generate first.'); return; }
+  const btn = document.getElementById('dlAll');
+  const origText = btn.textContent;
+  btn.textContent = 'Building Files...';
+  btn.disabled = true;
+
+  try {
+    await Promise.all([ loadJsZipCDN(), loadPdfMakeCDN(), loadDocxCDN() ]);
+    if (!resolveDocx()) throw new Error('docx library loaded but could not be initialised.');
+
+    const co = (generatedData.company || 'Application').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const ti = (generatedData.jobTitle || 'Role').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const folder = `${co}_${ti}`;
+    const base = `LarryReynolds_${co}_${ti}`;
+
+    const [resumePdf, clPdf, resumeDocx, clDocx, atsDocx] = await Promise.all([
+      pdfBlob(buildResumePdfDef(generatedData.resume)),
+      pdfBlob(buildCoverLetterPdfDef(generatedData.cover_letter, generatedData.jobTitle, generatedData.company, generatedData.hiringContact, generatedData.currentMonth)),
+      buildResumeDocx(generatedData.resume),
+      buildCoverLetterDocx(generatedData.cover_letter, generatedData.jobTitle, generatedData.company, generatedData.hiringContact, generatedData.currentMonth),
+      buildAtsDocx(generatedData.resume),
+    ]);
+
+    const zip = new JSZip();
+    const dir = zip.folder(folder);
+    dir.file(base + '_Resume.pdf', resumePdf);
+    dir.file(base + '_CoverLetter.pdf', clPdf);
+    dir.file(base + '_Resume.docx', resumeDocx);
+    dir.file(base + '_CoverLetter.docx', clDocx);
+    dir.file(base + '_Resume_ATS.docx', atsDocx);
+
+    // A note to future you, since the ATS copy looks wrong if you forget why it exists
+    dir.file('README.txt',
+      `${generatedData.jobTitle || ''} at ${generatedData.company || ''}\n` +
+      `Generated ${new Date().toLocaleDateString()}\n\n` +
+      `_Resume.pdf, _CoverLetter.pdf   Send these. Selectable text, one page.\n` +
+      `_Resume.docx, _CoverLetter.docx Job boards that parse docx, or hand edits.\n` +
+      `_Resume_ATS.docx                Workday autofill only. Plain on purpose.\n`);
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = folder + '.zip';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  } catch (e) {
+    console.error('Bundle error:', e);
+    alert('Could not build the folder: ' + e.message);
+  } finally {
+    btn.textContent = origText;
+    btn.disabled = false;
+  }
 }
 
 // ─── ATS plain docx ──────────────────────────────────────────────────────────
