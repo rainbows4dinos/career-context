@@ -285,9 +285,10 @@
       <button class="primary" id="dlCLPdf" onclick="downloadDoc('cl','pdf')">Cover Letter PDF</button>
       <button class="secondary" id="dlResume" onclick="downloadDoc('resume','docx')">Resume .docx</button>
       <button class="secondary" id="dlCL" onclick="downloadDoc('cl','docx')">Cover Letter .docx</button>
+      <button class="secondary" id="dlAts" onclick="downloadDoc('resume','ats')">Resume .docx (ATS plain)</button>
       <button class="secondary" onclick="startOver()">Start New Application</button>
     </div>
-    <p class="dl-note">PDF for sending and attaching. Docx for job boards that parse it, and for hand edits before sending. Both keep selectable text so an ATS can read them.</p>
+    <p class="dl-note">PDF for sending and attaching. Docx for job boards that parse it, and for hand edits before sending. Both keep selectable text so an ATS can read them.<br>ATS plain is for Workday autofill only: one column, one fact per line, no tabs or parentheticals. It looks plain because that is what parses.</p>
   </div>
 </div>
 
@@ -345,7 +346,7 @@ function toggleTheme() {
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const BUILD = '2026-09-24-a'; // fallback only, the version tag is read from GitHub at load
+const BUILD = '2026-09-24-b'; // fallback only, the version tag is read from GitHub at load
 const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-context/main';
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
 // Set to null to call Anthropic directly (works locally or in Claude artifacts).
@@ -417,7 +418,7 @@ function renderChips(toneMarkdown) {
 
 let focusSelected = [];
 let generatedData = null;
-let currentDocx = { resume: null, cl: null };
+let currentDocx = { resume: null, cl: null, ats: null };
 let activeTab = 'resume';
 
 function toggleFocus(el) {
@@ -448,7 +449,7 @@ function startOver() {
   if (TONE) renderChips(TONE); // re-render chips (clears active state)
   else document.querySelectorAll('.tog').forEach(b=>b.classList.remove('on'));
   ['jobTitle','company','jobDesc','extraNotes','hiringContact'].forEach(id=>document.getElementById(id).value='');
-  currentDocx={resume:null,cl:null};
+  currentDocx={resume:null,cl:null,ats:null};
   setStep(0);
 }
 
@@ -687,7 +688,7 @@ LAST STEP BEFORE YOU RETURN: re-read every sentence you just wrote. If any conta
     renderPreview(r, title, company, contact, month);
 
     // Docx files are built lazily on download click — not here
-    currentDocx = { resume: null, cl: null };
+    currentDocx = { resume: null, cl: null, ats: null };
 
     setStep(2);
   } catch(e) {
@@ -832,6 +833,7 @@ Keep every constraint from the original generation: 250 to 300 words total, gree
     if (isResume) {
       generatedData.resume = revised;
       currentDocx.resume = null; // invalidate cache
+      currentDocx.ats = null;
     } else {
       generatedData.cover_letter = revised;
       currentDocx.cl = null; // invalidate cache
@@ -1158,6 +1160,66 @@ async function buildCoverLetterDocx(cl, jobTitle, company, contact, month) {
   return await Packer.toBlob(doc);
 }
 
+// ─── ATS plain docx ──────────────────────────────────────────────────────────
+// For Workday autofill. One column, one fact per line, standard section labels,
+// no tab stops, no columns, no parentheticals. Company, title, dates, bullets.
+const ATS_LOC={
+  'The Pattern':'Remote','G2':'Remote','PetPlate':'Remote',
+  'Wisdom Panel':'Portland, OR','Wisdom Panel (by Mars Petcare)':'Portland, OR',
+  'Vacasa':'Portland, OR',
+};
+
+function atsLine(text, bold=false, after=0) {
+  return new Paragraph({ spacing:{before:0, after}, children:[ tr(text, C_DARK, 20, bold) ] });
+}
+
+function atsHead(text) {
+  return new Paragraph({ spacing:{before:240, after:80}, children:[ tr(text, C_DARK, 20, true) ] });
+}
+
+async function buildAtsDocx(res) {
+  const children=[];
+
+  // Contact, one fact per line
+  children.push(atsLine('Larry Reynolds', true));
+  children.push(atsLine('Portland, OR'));
+  children.push(atsLine('503-475-7438'));
+  children.push(atsLine('larry.jr.design@gmail.com'));
+  children.push(atsLine('larryjr.design'));
+  children.push(atsLine('linkedin.com/in/larryjrdesign', false, 120));
+
+  children.push(atsHead('Summary'));
+  children.push(atsLine(res.summary || ''));
+
+  children.push(atsHead('Skills'));
+  const sk = res.skills || {};
+  const allSkills = [...(sk.product_ux||[]), ...(sk.ai_prototyping||[]), ...(sk.leadership||[])];
+  if (allSkills.length) children.push(atsLine(allSkills.join(', ')));
+
+  children.push(atsHead('Work Experience'));
+  for (const job of res.experience || []) {
+    const loc = ATS_LOC[job.company] || 'Remote';
+    children.push(new Paragraph({ spacing:{before:200, after:0}, children:[ tr(job.company + ', ' + loc, C_DARK, 20, true) ] }));
+    children.push(atsLine(job.title || ''));
+    children.push(atsLine(job.dates || '', false, 60));
+    for (const b of job.bullets || []) {
+      children.push(new Paragraph({ numbering:{reference:'bullets', level:0}, spacing:{before:20, after:20},
+        children:[ tr(b, C_DARK, 20) ] }));
+    }
+  }
+
+  children.push(atsHead('Education'));
+  children.push(atsLine('BS, Multimedia & Web Design, Art Institute of Portland'));
+  children.push(atsLine('Design Thinking Certificate, IDEO U'));
+
+  const doc=new Document({
+    numbering:{config:[{reference:'bullets',levels:[{level:0,format:LevelFormat.BULLET,text:'\u2022',alignment:AlignmentType.LEFT,
+      style:{paragraph:{indent:{left:360,hanging:180}}}}]}]},
+    sections:[{properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1440,bottom:1440,left:1440}}},children}],
+  });
+  return await Packer.toBlob(doc);
+}
+
 // ─── PDF export (pdfmake) ────────────────────────────────────────────────────
 // Mirrors the docx layout. Uses the PDF standard Helvetica so no font file has
 // to be downloaded and the text stays selectable for ATS parsing.
@@ -1293,7 +1355,7 @@ async function downloadDoc(type, format) {
   format = format || 'docx';
   if (!generatedData) { alert('No document ready — please generate first.'); return; }
 
-  const btnId = (type === 'resume' ? 'dlResume' : 'dlCL') + (format === 'pdf' ? 'Pdf' : '');
+  const btnId = format === 'ats' ? 'dlAts' : (type === 'resume' ? 'dlResume' : 'dlCL') + (format === 'pdf' ? 'Pdf' : '');
   const btn = document.getElementById(btnId);
   const origText = btn.textContent;
   btn.textContent = 'Building Your File...';
@@ -1302,7 +1364,7 @@ async function downloadDoc(type, format) {
   const co = (generatedData.company||'Application').replace(/\s+/g,'-');
   const ti = (generatedData.jobTitle||'Resume').replace(/\s+/g,'-');
   const suffix = type === 'resume' ? 'Resume' : 'CoverLetter';
-  const baseName = `LarryReynolds_${suffix}_${co}_${ti}`;
+  const baseName = `LarryReynolds_${suffix}_${co}_${ti}` + (format === 'ats' ? '_ATS' : '');
 
   if (format === 'pdf') {
     try {
@@ -1328,8 +1390,11 @@ async function downloadDoc(type, format) {
     if (!resolveDocx()) throw new Error('docx library loaded but could not be initialised.');
 
     // Build fresh if not cached
-    if (!currentDocx[type]) {
-      if (type === 'resume') {
+    const cacheKey = format === 'ats' ? 'ats' : type;
+    if (!currentDocx[cacheKey]) {
+      if (format === 'ats') {
+        currentDocx.ats = await buildAtsDocx(generatedData.resume);
+      } else if (type === 'resume') {
         currentDocx.resume = await buildResumeDocx(generatedData.resume);
       } else {
         currentDocx.cl = await buildCoverLetterDocx(
@@ -1342,7 +1407,7 @@ async function downloadDoc(type, format) {
       }
     }
 
-    const blob = currentDocx[type];
+    const blob = currentDocx[cacheKey];
     const filename = baseName + '.docx';
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
