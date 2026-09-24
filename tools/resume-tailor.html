@@ -281,11 +281,13 @@
       <button onclick="goRevise()" id="reviseBtn">Request Revision</button>
     </div>
     <div class="btn-row">
-      <button class="primary" id="dlResume" onclick="downloadDoc('resume')">Download Resume .docx</button>
-      <button class="primary" id="dlCL" onclick="downloadDoc('cl')">Download Cover Letter .docx</button>
+      <button class="primary" id="dlResumePdf" onclick="downloadDoc('resume','pdf')">Resume PDF</button>
+      <button class="primary" id="dlCLPdf" onclick="downloadDoc('cl','pdf')">Cover Letter PDF</button>
+      <button class="secondary" id="dlResume" onclick="downloadDoc('resume','docx')">Resume .docx</button>
+      <button class="secondary" id="dlCL" onclick="downloadDoc('cl','docx')">Cover Letter .docx</button>
       <button class="secondary" onclick="startOver()">Start New Application</button>
     </div>
-    <p class="dl-note">Files are generated to exactly match your template styling — Helvetica Neue, correct weights, spacing, and dividers.</p>
+    <p class="dl-note">PDF for sending and attaching. Docx for job boards that parse it, and for hand edits before sending. Both keep selectable text so an ATS can read them.</p>
   </div>
 </div>
 
@@ -343,7 +345,7 @@ function toggleTheme() {
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const BUILD = '2026-09-22-d'; // fallback only, the version tag is read from GitHub at load
+const BUILD = '2026-09-24-a'; // fallback only, the version tag is read from GitHub at load
 const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-context/main';
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
 // Set to null to call Anthropic directly (works locally or in Claude artifacts).
@@ -1156,6 +1158,126 @@ async function buildCoverLetterDocx(cl, jobTitle, company, contact, month) {
   return await Packer.toBlob(doc);
 }
 
+// ─── PDF export (pdfmake) ────────────────────────────────────────────────────
+// Mirrors the docx layout. Uses the PDF standard Helvetica so no font file has
+// to be downloaded and the text stays selectable for ATS parsing.
+const PDF_DARK='#1a1a1a', PDF_MED='#555555', PDF_MUTED='#888888', PDF_LINK='#1155cc', PDF_RULE='#aaaaaa';
+const PDF_WIDTH = 612 - 108; // Letter minus 0.75in margins
+
+function pdfRule(margin) {
+  return { canvas: [{ type:'line', x1:0, y1:0, x2:PDF_WIDTH, y2:0, lineWidth:0.5, lineColor:PDF_RULE }], margin: margin||[0,4,0,6] };
+}
+
+function pdfSectionHead(text) {
+  return [
+    { text, fontSize:8, bold:true, color:PDF_DARK, characterSpacing:0.8, margin:[0,10,0,3] },
+    pdfRule([0,0,0,6]),
+  ];
+}
+
+function pdfContactLine() {
+  return { fontSize:8, color:PDF_MUTED, text: [
+    'Portland, OR (Remote)  |  503-475-7438  |  ',
+    { text:'larry.jr.design@gmail.com', color:PDF_LINK, link:'mailto:larry.jr.design@gmail.com' },
+    '  |  ',
+    { text:'larryjr.design', color:PDF_LINK, link:'https://www.larryjr.design' },
+    '  |  ',
+    { text:'LinkedIn', color:PDF_LINK, link:'https://www.linkedin.com/in/larryjrdesign' },
+  ]};
+}
+
+function pdfBullet(bullet) {
+  const ci = bullet.indexOf(': ');
+  if (ci > 0 && ci < 45) {
+    return { text: [ { text: bullet.slice(0, ci+2), bold:true, color:PDF_DARK }, { text: bullet.slice(ci+2), color:PDF_MED } ], fontSize:9.5, margin:[0,1,0,1] };
+  }
+  return { text: bullet, fontSize:9.5, color:PDF_MED, margin:[0,1,0,1] };
+}
+
+function buildResumePdfDef(res) {
+  const content = [
+    { text:'Larry Reynolds', fontSize:22, bold:true, color:'#000000', margin:[0,0,0,2] },
+    { text:'Principal Product Designer', fontSize:11.5, color:PDF_MED, margin:[0,0,0,3] },
+    pdfContactLine(),
+    pdfRule([0,6,0,8]),
+    { text: res.summary || '', fontSize:9.5, color:PDF_DARK, lineHeight:1.25, margin:[0,0,0,2] },
+  ];
+
+  content.push(...pdfSectionHead('CORE SKILLS'));
+  const sk = res.skills || {};
+  for (const [label, vals] of [['Product & UX:  ',sk.product_ux],['AI & Prototyping:  ',sk.ai_prototyping],['Leadership:  ',sk.leadership]]) {
+    if (vals && vals.length) content.push({ fontSize:9.5, lineHeight:1.2, margin:[0,1,0,1], text:[
+      { text: label, bold:true, color:PDF_DARK },
+      { text: vals.join(', '), color:PDF_MED },
+    ]});
+  }
+
+  content.push(...pdfSectionHead('EXPERIENCE'));
+  for (const job of res.experience || []) {
+    const loc = LOC_MAP[job.company] || '(Remote)';
+    content.push({ margin:[0,8,0,1], columns: [
+      { width:'*', fontSize:10.5, text:[ { text: job.title + ' ', bold:true, color:PDF_DARK }, { text: loc, color:PDF_MUTED } ] },
+      { width:'auto', fontSize:10.5, color:PDF_MUTED, alignment:'right', text: job.dates || '' },
+    ]});
+    content.push({ text: job.company, fontSize:9.5, bold:true, color:PDF_DARK, margin:[0,0,0,3] });
+    if (job.blurb) content.push({ text: job.blurb, fontSize:9.5, color:PDF_MED, margin:[0,0,0,3] });
+    const bullets = (job.bullets || []).map(pdfBullet);
+    if (bullets.length) content.push({ ul: bullets, margin:[6,0,0,0] });
+  }
+
+  content.push(...pdfSectionHead('EDUCATION & CERTIFICATIONS'));
+  content.push({ fontSize:9.5, margin:[0,0,0,1], text:[
+    { text:'BS, Multimedia & Web Design', bold:true, color:PDF_DARK }, { text:', Art Institute of Portland, High Honors', color:PDF_MED },
+  ]});
+  content.push({ fontSize:9.5, text:[
+    { text:'Design Thinking Certificate', bold:true, color:PDF_DARK }, { text:', IDEO U', color:PDF_MED },
+  ]});
+
+  return { pageSize:'LETTER', pageMargins:[54,54,54,54], defaultStyle:{ font:'Helvetica', color:PDF_DARK }, content };
+}
+
+function buildCoverLetterPdfDef(cl, jobTitle, company, contact, month) {
+  const addressee = company ? contact + ', ' + company : contact;
+  const paras = [ cl.greeting || ('Hi ' + (contact || 'there') + ','), cl.opening_paragraph, ...(cl.body_paragraphs || []), cl.closing_paragraph ].filter(Boolean);
+
+  const content = [
+    { text:'Larry Reynolds', fontSize:22, bold:true, color:'#000000', margin:[0,0,0,2] },
+    { fontSize:8, color:PDF_MUTED, text:[
+      'Portland, OR  |  ',
+      { text:'larry.jr.design@gmail.com', color:PDF_LINK, link:'mailto:larry.jr.design@gmail.com' },
+      '  |  ',
+      { text:'larryjr.design', color:PDF_LINK, link:'https://www.larryjr.design' },
+    ]},
+    pdfRule([0,8,0,14]),
+    { text: month, fontSize:10, color:PDF_MUTED, margin:[0,0,0,10] },
+    { text: addressee, fontSize:10, color:PDF_DARK, margin:[0,0,0,3] },
+    { text: 'Re: ' + jobTitle, fontSize:10, bold:true, color:PDF_DARK, margin:[0,0,0,14] },
+    ...paras.map(p => ({ text:p, fontSize:10, color:PDF_DARK, lineHeight:1.35, margin:[0,0,0,10] })),
+    { text:'Larry Reynolds', fontSize:10, bold:true, color:PDF_DARK, margin:[0,14,0,2] },
+    { fontSize:10, color:PDF_MUTED, text:[
+      { text:'larryjr.design', color:PDF_LINK, link:'https://www.larryjr.design' },
+      '  |  503-475-7438',
+    ]},
+  ];
+
+  return { pageSize:'LETTER', pageMargins:[54,54,54,54], defaultStyle:{ font:'Helvetica', color:PDF_DARK }, content };
+}
+
+async function loadPdfMakeCDN() {
+  if (typeof pdfMake !== 'undefined' && pdfMake.fonts) return true;
+  await new Promise((resolve, reject) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js';
+    sc.onload = resolve;
+    sc.onerror = () => reject(new Error('Could not load pdfmake from the CDN.'));
+    document.head.appendChild(sc);
+  });
+  if (typeof pdfMake === 'undefined') throw new Error('pdfmake loaded but is not available.');
+  // Standard PDF fonts, so no font file download is needed
+  pdfMake.fonts = { Helvetica: { normal:'Helvetica', bold:'Helvetica-Bold', italics:'Helvetica-Oblique', bolditalics:'Helvetica-BoldOblique' } };
+  return true;
+}
+
 async function loadDocxCDN() {
   if (typeof docx !== 'undefined') return true;
   return new Promise((resolve) => {
@@ -1167,13 +1289,37 @@ async function loadDocxCDN() {
   });
 }
 
-async function downloadDoc(type) {
+async function downloadDoc(type, format) {
+  format = format || 'docx';
   if (!generatedData) { alert('No document ready — please generate first.'); return; }
 
-  const btn = document.getElementById(type === 'resume' ? 'dlResume' : 'dlCL');
+  const btnId = (type === 'resume' ? 'dlResume' : 'dlCL') + (format === 'pdf' ? 'Pdf' : '');
+  const btn = document.getElementById(btnId);
   const origText = btn.textContent;
   btn.textContent = 'Building Your File...';
   btn.disabled = true;
+
+  const co = (generatedData.company||'Application').replace(/\s+/g,'-');
+  const ti = (generatedData.jobTitle||'Resume').replace(/\s+/g,'-');
+  const suffix = type === 'resume' ? 'Resume' : 'CoverLetter';
+  const baseName = `LarryReynolds_${suffix}_${co}_${ti}`;
+
+  if (format === 'pdf') {
+    try {
+      await loadPdfMakeCDN();
+      const def = type === 'resume'
+        ? buildResumePdfDef(generatedData.resume)
+        : buildCoverLetterPdfDef(generatedData.cover_letter, generatedData.jobTitle, generatedData.company, generatedData.hiringContact, generatedData.currentMonth);
+      pdfMake.createPdf(def).download(baseName + '.pdf');
+    } catch(e) {
+      console.error('PDF download error:', e);
+      alert('PDF download failed: ' + e.message);
+    } finally {
+      btn.textContent = origText;
+      btn.disabled = false;
+    }
+    return;
+  }
 
   try {
     // Load CDN if not already loaded
@@ -1197,10 +1343,7 @@ async function downloadDoc(type) {
     }
 
     const blob = currentDocx[type];
-    const co = (generatedData.company||'Application').replace(/\s+/g,'-');
-    const ti = (generatedData.jobTitle||'Resume').replace(/\s+/g,'-');
-    const suffix = type === 'resume' ? 'Resume' : 'CoverLetter';
-    const filename = `LarryReynolds_${suffix}_${co}_${ti}.docx`;
+    const filename = baseName + '.docx';
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = filename;
