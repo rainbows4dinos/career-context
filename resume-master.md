@@ -121,7 +121,7 @@ Short fractional engagement on a consumer mobile app rebuild. Owned the interact
 ### You Tab and Journey
 - Set the interaction model for the app's core personal experience: a journey wheel and carousel that opens into insight cards, which open into a long-form reader.
 - Designed each layer to stand on its own rather than tease the next, keeping context, sequence, and depth on separate navigation.
-- Built a working prototype of the flow and exported standalone builds for remote user testing.
+- Built a working prototype of the content delivery flow and exported standalone builds for remote user testing.
 
 ### Design System Foundation
 - Customized a HeroUI Pro Native theme into the app's design foundation, mapping brand type and color onto its token structure with a Tailwind v4 theme.
