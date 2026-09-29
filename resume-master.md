@@ -110,7 +110,7 @@ Comfortable moving between strategy and execution, including AI-assisted prototy
 # Experience
 
 # The Pattern
-Fractional Head of Design  
+Fractional Head of Design
 Jun 2026 – Sep 2026
 
 ## Overview
