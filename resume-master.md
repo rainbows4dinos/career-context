@@ -92,7 +92,8 @@ Comfortable moving between strategy and execution, including AI-assisted prototy
 
 ## Technical & AI
 - Claude
-- Cursor
+- Codex
+- Visual Studio Code
 - Figma AI
 - AI-assisted coding
 - Functional prototyping
