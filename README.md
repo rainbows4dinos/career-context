@@ -6,7 +6,8 @@ Files, in the order the tailor tool uses them:
 
 - `resume-master.md` — the facts layer. Roles, dates, bullets, scope notes, target roles.
 - `experience-framing.md` — the why-it-mattered layer. Story angles and real numbers.
-- `voice-and-format.md` — the authoritative voice, length, and format rules. Anything generated from this repo follows it.
+- `voice-and-format.md` — voice and format reasoning: structure, anti-patterns, judgment calls. Anything generated from this repo follows it.
+- `rules.json` — the countable rules: bullet caps per role, word limits, banned words, role locations. The tool injects it into prompts, checks output against it, and builds its repair pass from it. Change a number here and nowhere else.
 - `tone-and-positioning.md` — emphasis focus chips for the tool. Not a tone source anymore.
 - `tools/resume-tailor.html` — the tailor app. Fetches the files above from this repo at runtime, so changes here only reach the tool once pushed to main.
 - `tools/proxy-worker.js` — Cloudflare Worker that holds the Anthropic key.

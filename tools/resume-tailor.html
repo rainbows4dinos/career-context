@@ -249,7 +249,7 @@
       </div>
       <div class="field">
         <label>Additional notes</label>
-        <input type="text" id="extraNotes" placeholder="e.g. De-emphasize management, highlight Figma expertise" />
+        <textarea id="extraNotes" style="min-height:72px" placeholder="e.g. De-emphasize management, highlight Figma expertise"></textarea>
       </div>
       <button class="primary" onclick="goTailor()">Generate Resume + Cover Letter</button>
     </div>
@@ -347,7 +347,7 @@ function toggleTheme() {
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const BUILD = '2026-09-24-d'; // fallback only, the version tag is read from GitHub at load
+const BUILD = '2026-10-05-a'; // fallback only, the version tag is read from GitHub at load
 const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/career-context/main';
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
 // Set to null to call Anthropic directly (works locally or in Claude artifacts).
@@ -366,6 +366,14 @@ let MASTER = null;
 let FRAMING = null;
 let TONE = null;
 let VOICE = null;
+let RULES = null; // rules.json, the machine-readable half of voice-and-format.md
+
+// Only used if rules.json cannot be fetched, so the page still runs.
+const DEFAULT_RULES = {
+  bulletCaps: {}, limits: {}, bannedWords: [], locations: {},
+};
+const limit = (key, fallback) => ((RULES && RULES.limits && RULES.limits[key]) ?? fallback);
+const bannedWords = () => ((RULES && RULES.bannedWords) || []);
 let contextLoaded = false;
 let contextError = null;
 
@@ -377,9 +385,11 @@ async function loadContext() {
     fetch(REPO_RAW + '/experience-framing.md' + bust).then(r => { if (!r.ok) throw new Error('experience-framing.md ' + r.status); return r.text(); }),
     fetch(REPO_RAW + '/tone-and-positioning.md' + bust).then(r => { if (!r.ok) throw new Error('tone-and-positioning.md ' + r.status); return r.text(); }),
     fetch(REPO_RAW + '/voice-and-format.md' + bust).then(r => { if (!r.ok) throw new Error('voice-and-format.md ' + r.status); return r.text(); }),
+    fetch(REPO_RAW + '/rules.json' + bust).then(r => { if (!r.ok) throw new Error('rules.json ' + r.status); return r.json(); }),
   ];
   try {
-    [MASTER, FRAMING, TONE, VOICE] = await Promise.all(files);
+    [MASTER, FRAMING, TONE, VOICE, RULES] = await Promise.all(files);
+    if (!RULES) RULES = DEFAULT_RULES;
     contextLoaded = true;
     renderChips(TONE);
   } catch(e) {
@@ -495,7 +505,7 @@ async function goTailor() {
   // Load context files from GitHub if not already cached
   if (!contextLoaded) {
     statusEl.textContent = 'Loading context from GitHub...';
-    subEl.textContent = 'Fetching resume-master.md, experience-framing.md, voice-and-format.md';
+    subEl.textContent = 'Fetching resume-master.md, experience-framing.md, voice-and-format.md, rules.json';
     try {
       await loadContext();
     } catch(e) {
@@ -560,26 +570,14 @@ Return ONLY a JSON object, no markdown, no backticks:
 }
 
 HARD CONSTRAINTS. Check each one before returning.
-RESUME
+${rulesBlock()}
 - Include every role in the master resume, most recent first. Do not drop or merge roles.
-- Bullet caps by role: The Pattern 3, G2 4, PetPlate 2, Wisdom Panel 3, Vacasa 2.
-- One idea per bullet, 25 words maximum. Never start a bullet with "I".
-- No per-role blurb, overview, or context sentence. Bullets only.
-- Summary: 3 sentences, 55 words maximum. No thesis about what design or design systems really are.
-- Skills: 12 maximum across all three groups combined.
 - Use only numbers that appear in the context above. Never invent or estimate a metric.
 - The Pattern: obey its Scope Notes. No launch credit, no shipped outcomes, no metrics, no brand work.
-- Credit for code: built, created, customized, set up, designed. Never wrote, coded, engineered, developed, from scratch.
-COVER LETTER
-- 250 to 300 words total across all paragraphs. Count them.
 - Greeting, then opening, then exactly two body paragraphs, then a two sentence close.
 - The opening paragraph must say what role he is applying for in its first sentence. Never open on an observation about the industry, the discipline, or a tension in the work.
 - One story in the body, not a survey of the career. Do not restate resume bullets.
-- At most one "not X, it is Y" construction in the entire letter.
 - Do not end every paragraph on an insight. Some paragraphs just end.
-BANNED EVERYWHERE
-- Em dashes and en dashes.
-- The words: genuine, genuinely, honest, honestly, durable, leverage as a noun, at scale, present-state, future-state, excited to apply, passionate.
 - Sentences that could appear in any other designer's application. Cut anything not specific to Larry or to this company.
 
 LAST STEP BEFORE YOU RETURN: re-read every sentence you just wrote. If any contains a banned word, an em dash, or a second "not X, it is Y" construction, rewrite that sentence and then return the JSON.`;
@@ -722,8 +720,8 @@ PROBLEMS:
 ${fixable.map(w => '- ' + w).join('\n')}
 
 RULES FOR THE FIX:
-- Banned words, including adverb forms: genuine, honest, durable, leverage as a noun, at scale, present-state, future-state, passionate, excited to apply. Do not swap in a synonym for the banned word. Delete it and say the specific thing it was standing in for, or cut the phrase.
-- At most one "not X, it is Y" construction in the whole cover letter. Rewrite the extras as plain statements.
+- Banned words, including adverb forms: ${bannedWords().join(', ')}. Do not swap in a synonym. Delete the word and say the specific thing it was standing in for, or cut the phrase.
+- At most ${limit('antithesisMax',1)} "not X, it is Y" construction in the whole cover letter. Rewrite the extras as plain statements.
 - No em dashes.
 
 JSON:
@@ -782,7 +780,10 @@ Return ONLY the updated resume JSON with the same structure plus a revision_summ
 VOICE AND FORMAT RULES (authoritative, follow exactly):
 ${VOICE || ''}
 
-Keep every constraint from the original generation: bullet caps per role (The Pattern 3, G2 4, PetPlate 2, Wisdom Panel 3, Vacasa 2), one idea per bullet at 25 words maximum, no per-role blurb, summary at 3 sentences and 55 words maximum, 12 skills maximum, no invented numbers, no em dashes, no bullets starting with "I". Credit for code is built or created, never wrote or engineered. Change only what the revision request asks for.`
+Keep every constraint from the original generation:
+${rulesBlock()}
+- No invented numbers.
+Change only what the revision request asks for.`
     : `You are a cover letter expert. The user wants to revise their tailored cover letter. Here is the current cover letter JSON:
 
 ${currentContent}
@@ -801,7 +802,10 @@ Return ONLY the updated cover letter JSON with the same structure plus a revisio
 VOICE AND FORMAT RULES (authoritative, follow exactly):
 ${VOICE || ''}
 
-Keep every constraint from the original generation: 250 to 300 words total, greeting plus opening plus two body paragraphs plus a two sentence close, the opening names the role in its first sentence and never starts on an industry observation, one story not a survey, at most one "not X, it is Y" construction, no em dashes, none of the banned words. Change only what the revision request asks for.`;
+Keep every constraint from the original generation:
+${rulesBlock()}
+- Greeting plus opening plus two body paragraphs plus a two sentence close. The opening names the role in its first sentence.
+Change only what the revision request asks for.`;
 
   try {
     const apiEndpoint = PROXY_URL || 'https://api.anthropic.com/v1/messages';
@@ -872,7 +876,7 @@ Keep every constraint from the original generation: 250 to 300 words total, gree
 function qaWarnings(r) {
   const w = [];
   const res = r.resume||{}, cl = r.cover_letter||{};
-  const caps = { 'The Pattern':3, 'G2':4, 'PetPlate':2, 'Wisdom Panel':3, 'Vacasa':2 };
+  const caps = (RULES && RULES.bulletCaps) || {};
   (res.experience||[]).forEach(j => {
     const cap = caps[j.company];
     const n = (j.bullets||[]).length;
@@ -880,22 +884,23 @@ function qaWarnings(r) {
     if (j.blurb) w.push(`${j.company}: has a blurb line, should be bullets only`);
     (j.bullets||[]).forEach(b => {
       const words = String(b).split(/\s+/).filter(Boolean).length;
-      if (words > 30) w.push(`${j.company}: ${words} word bullet, cap is 25`);
+      if (words > limit('bulletWordsHardFail',30)) w.push(`${j.company}: ${words} word bullet, cap is ${limit('bulletWords',25)}`);
     });
   });
   const sw = String(res.summary||'').split(/\s+/).filter(Boolean).length;
-  if (sw > 60) w.push(`Summary is ${sw} words, target is 55`);
+  if (sw > limit('summaryWordsHardFail',60)) w.push(`Summary is ${sw} words, target is ${limit('summaryWords',55)}`);
   const skillCount = Object.values(res.skills||{}).reduce((n,a)=>n+(a||[]).length,0);
-  if (skillCount > 14) w.push(`${skillCount} skills listed, target is 12`);
+  if (skillCount > limit('skillsHardFail',14)) w.push(`${skillCount} skills listed, target is ${limit('skillsTotal',12)}`);
   const clText = [cl.greeting,cl.opening_paragraph,...(cl.body_paragraphs||[]),cl.closing_paragraph].filter(Boolean).join(' ');
   const cw = clText.split(/\s+/).filter(Boolean).length;
-  if (cw && (cw > 320 || cw < 200)) w.push(`Cover letter is ${cw} words, target is 250 to 300`);
-  const banned = ['genuine','genuinely','honest','honestly','durable','at scale','excited to apply','passionate','present-state','future-state'];
+  if (cw && (cw > limit('coverLetterHardFailHigh',320) || cw < limit('coverLetterHardFailLow',200)))
+    w.push(`Cover letter is ${cw} words, target is ${limit('coverLetterWordsMin',250)} to ${limit('coverLetterWordsMax',300)}`);
   const all = (clText + ' ' + JSON.stringify(res)).toLowerCase();
-  const hits = banned.filter(t => all.includes(t));
+  const hits = bannedWords().filter(t => all.includes(t.toLowerCase()));
   if (hits.length) w.push('Banned words: ' + hits.join(', '));
   const anti = (clText.match(/\b(isn't|is not|wasn't|was not|aren't|are not)\b[^.]{0,70}\bit(?:'s| is| was)\b/gi)||[]).length;
-  if (anti > 1) w.push(`${anti} "not X, it is Y" constructions, max is 1`);
+  const antiMax = limit('antithesisMax',1);
+  if (anti > antiMax) w.push(`${anti} "not X, it is Y" constructions, max is ${antiMax}`);
   return w;
 }
 
@@ -1035,11 +1040,11 @@ function sectionHead(text,spaceBefore=200,spaceAfter=80) {
   });
 }
 
-const LOC_MAP={
-  'G2':'(Remote)','PetPlate':'(Remote)',
-  'Wisdom Panel':'(Hybrid, Portland, OR)','Wisdom Panel (by Mars Petcare)':'(Hybrid, Portland, OR)',
-  'Vacasa':'(On-Site, Portland, OR)',
-};
+function locationFor(company, kind) {
+  const entry = (RULES && RULES.locations && RULES.locations[company]) || null;
+  if (entry && entry[kind]) return entry[kind];
+  return kind === 'ats' ? 'Remote' : '(Remote)';
+}
 
 async function buildResumeDocx(res) {
   const children=[];
@@ -1075,7 +1080,7 @@ async function buildResumeDocx(res) {
   // EXPERIENCE
   children.push(sectionHead('EXPERIENCE'));
   for(const job of res.experience||[]) {
-    const loc=LOC_MAP[job.company]||'(Remote)';
+    const loc=locationFor(job.company,'display');
     // Title + dates line with right tab
     children.push(new Paragraph({
       tabStops:[{type:TabStopType.RIGHT,position:9360}],
@@ -1159,6 +1164,30 @@ async function buildCoverLetterDocx(cl, jobTitle, company, contact, month) {
     sections:[{properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1440,bottom:1440,left:1440}}},children}],
   });
   return await Packer.toBlob(doc);
+}
+
+// ─── Rules as prompt text ────────────────────────────────────────────────────
+// Every prompt that needs the enforceable rules builds them from rules.json here,
+// so a number lives in exactly one place.
+function rulesBlock() {
+  const r = RULES || DEFAULT_RULES;
+  const caps = Object.entries(r.bulletCaps || {})
+    .filter(([k]) => !k.includes('('))
+    .map(([k,v]) => `${k} ${v}`).join(', ');
+  const L = r.limits || {};
+  return [
+    `- Bullet caps by role: ${caps}.`,
+    `- One idea per bullet, ${L.bulletWords} words maximum. Never start a bullet with "I".`,
+    `- No per-role blurb, overview, or context sentence. Bullets only.`,
+    `- Summary: ${L.summarySentences} sentences, ${L.summaryWords} words maximum.`,
+    `- Skills: ${L.skillsTotal} maximum across all groups combined.`,
+    `- Cover letter: ${L.coverLetterWordsMin} to ${L.coverLetterWordsMax} words total across all paragraphs. Count them.`,
+    `- At most ${L.antithesisMax} "not X, it is Y" construction in the entire letter.`,
+    `- Banned words, including adverb forms: ${bannedWords().join(', ')}. Cut the word and name the specific thing it was standing in for.`,
+    `- Credit for code: ${(r.creditForCode?.use || []).join(', ')}. Never ${(r.creditForCode?.avoid || []).join(', ')}.`,
+    r.noTenureClaims ? `- Never state how long he has been working: no year counts, no span, no start year a reader can subtract from.` : '',
+    `- Dates read as "${r.dateStyle}". No em dashes anywhere.`,
+  ].filter(Boolean).join('\n');
 }
 
 // ─── Bundle download ─────────────────────────────────────────────────────────
@@ -1249,12 +1278,6 @@ async function downloadBundle() {
 // ─── ATS plain docx ──────────────────────────────────────────────────────────
 // For Workday autofill. One column, one fact per line, standard section labels,
 // no tab stops, no columns, no parentheticals. Company, title, dates, bullets.
-const ATS_LOC={
-  'The Pattern':'Remote','G2':'Remote','PetPlate':'Remote',
-  'Wisdom Panel':'Portland, OR','Wisdom Panel (by Mars Petcare)':'Portland, OR',
-  'Vacasa':'Portland, OR',
-};
-
 function atsLine(text, bold=false, after=0) {
   return new Paragraph({ spacing:{before:0, after}, children:[ tr(text, C_DARK, 20, bold) ] });
 }
@@ -1284,7 +1307,7 @@ async function buildAtsDocx(res) {
 
   children.push(atsHead('Work Experience'));
   for (const job of res.experience || []) {
-    const loc = ATS_LOC[job.company] || 'Remote';
+    const loc = locationFor(job.company,'ats');
     children.push(new Paragraph({ spacing:{before:200, after:0}, children:[ tr(job.company + ', ' + loc, C_DARK, 20, true) ] }));
     children.push(atsLine(job.title || ''));
     children.push(atsLine(job.dates || '', false, 60));
@@ -1364,7 +1387,7 @@ function buildResumePdfDef(res) {
 
   content.push(...pdfSectionHead('EXPERIENCE'));
   for (const job of res.experience || []) {
-    const loc = LOC_MAP[job.company] || '(Remote)';
+    const loc = locationFor(job.company,'display');
     content.push({ margin:[0,8,0,1], columns: [
       { width:'*', fontSize:10.5, text:[ { text: job.title + ' ', bold:true, color:PDF_DARK }, { text: loc, color:PDF_MUTED } ] },
       { width:'auto', fontSize:10.5, color:PDF_MUTED, alignment:'right', text: job.dates || '' },

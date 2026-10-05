@@ -2,27 +2,26 @@
 
 Rules for anything generated from these context files: tailored resumes, cover letters, outreach. resume-master.md is the facts layer, experience-framing.md is the why-it-mattered layer, this is the how-it-should-read layer.
 
+The countable rules live in rules.json: bullet caps per role, word limits, the banned word list, role locations. The tailor tool injects that file into every prompt, checks its output against it, and builds its repair pass from it. Change a number there, never here, and never in the tool's HTML. This file holds the reasoning, the examples, and the judgment calls that cannot be expressed as a number.
+
 ---
 
 # Resume Length
 
-Hard limits. Length is the most common failure, and the fix is cutting, not compressing.
+Length is the most common failure, and the fix is cutting, not compressing. Counts are in rules.json.
 
 - One page. Two only if a role explicitly asks for a detailed history.
-- Summary: 3 sentences, 55 words maximum. No thesis statement about what design systems really are. No "Believe the most durable X are the ones that..." The summary says who he is, what he has been doing, and what he wants to do next.
-- Bullets per role: The Pattern 2 to 3. G2 4. PetPlate 2. Wisdom Panel 3. Vacasa 2. Earlier roles none.
-- One idea per bullet, 25 words maximum. If a bullet has two colons or three clauses, it is two bullets or it is one bullet with the filler removed.
+- The summary says who he is, what he has been doing, and what he wants to do next. No thesis statement about what design systems really are. No "Believe the most durable X are the ones that..."
+- One idea per bullet. If a bullet has two colons or three clauses, it is two bullets, or it is one bullet with the filler removed.
 - Do not write a role-level overview sentence and then bullets that repeat it. Pick one. Bullets are usually the better choice.
-- Skills: 12 maximum, grouped into at most 3 lines.
 - Never invent metrics. Only Wisdom Panel, G2 Solutions, and Vacasa have real numbers.
-- Never state how long he has been working. No "a decade of experience", no "15 years", no "20+ years", no start year a reader can subtract from. The strength is that he has done the work in every role, not how many years it adds up to. Write "in every role he has held", never "since 2016".
-- This applies to the cover letter too.
+- Never state how long he has been working. The strength is that he has done the work in every role, not how many years it adds up to. Write "in every role he has held", never a start year or a span. This applies to the cover letter too.
 
 ---
 
 # Cover Letter
 
-Target 250 to 300 words. Four short paragraphs. If it runs past one screen, it is too long.
+Four short paragraphs, within the word range in rules.json. If it runs past one screen, it is too long.
 
 ## Structure
 
@@ -52,13 +51,13 @@ The letter should sound like it was written to a person, not filed.
 
 Check every draft for these and cut them:
 
-- Antithesis constructions: "not just X, but Y", "the work that mattered most wasn't A, it was B", "that's not a failure, it's a signal". One in a whole letter, maximum. The eBay draft had five.
+- Antithesis constructions: "not just X, but Y", "the work that mattered most wasn't A, it was B", "that's not a failure, it's a signal". The cap is in rules.json. The first eBay draft had five.
 - Abstract nouns doing the acting. Larry does things; "the work" does not.
 - Every paragraph landing on a Big Insight. Some paragraphs should just end.
 - Triads. Three-item lists in a sentence, over and over.
 - Self-praise stated as virtue: "I take developing designers seriously", "I have a genuine point of view". Show it or cut it.
-- Banned words, including their adverb forms: genuine, honest, durable, leverage as a noun, at scale, present-state, future-state, passionate. Each is standing in for a specific detail. Cut it and name the detail instead.
-- Any banned word that appears anywhere in these files appears only because the rule has to name it. It is never vocabulary to reuse.
+- The banned word list is in rules.json. Each of those words is standing in for a specific detail. Cut it and name the detail instead.
+- Any banned word that appears anywhere in these files appears only because a rule or an example has to name it. It is never vocabulary to reuse.
 - Sentences that could appear in any designer's letter. Delete anything that is not specific to Larry or to this company.
 - Em dashes.
 
@@ -66,8 +65,7 @@ Check every draft for these and cut them:
 
 Larry's code is AI-generated first, then hand-edited. The language has to match that.
 
-- Use: built, created, set up, designed, put together, customized.
-- Avoid: wrote, coded, engineered, developed, programmed, hand-rolled, from scratch.
+- The allowed and avoided verbs are in rules.json under creditForCode.
 - Name the outcome and the system, not the act of typing. "Built the tooling that keeps tokens in sync" is true and stronger than "wrote a Figma plugin."
 - Same rule for prototypes. He designed and built them. He did not write them.
 - This is not modesty. Anyone who asks in an interview gets the straight answer, and the resume should not have set up a claim he then has to walk back.
@@ -80,4 +78,4 @@ Direct, plainspoken, a little dry. Concrete over conceptual. Comfortable saying 
 
 # The Pattern, Specifically
 
-Both documents are at risk of overstating this engagement. See the scope notes in resume-master.md. Short version: interaction model and token foundation, three months, ended before launch, no shipped outcomes, no brand work, 2 to 3 bullets maximum, never a cover letter's main story.
+Both documents are at risk of overstating this engagement. See the scope notes in resume-master.md. Short version: interaction model and token foundation, three months, ended before launch, no shipped outcomes, no brand work, and never a cover letter's main story. Its bullet cap is in rules.json.

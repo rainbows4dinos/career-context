@@ -1,0 +1,49 @@
+{
+  "_comment": "Machine-readable rules. The tailor tool injects these into the prompt, checks output against them, and builds its repair pass from them. Prose reasoning lives in voice-and-format.md. Change a number here, not in the HTML.",
+
+  "bulletCaps": {
+    "The Pattern": 3,
+    "G2": 4,
+    "PetPlate": 2,
+    "Wisdom Panel": 3,
+    "Wisdom Panel (by Mars Petcare)": 3,
+    "Vacasa": 2
+  },
+
+  "limits": {
+    "summarySentences": 3,
+    "summaryWords": 55,
+    "summaryWordsHardFail": 60,
+    "bulletWords": 25,
+    "bulletWordsHardFail": 30,
+    "skillsTotal": 12,
+    "skillsHardFail": 14,
+    "coverLetterWordsMin": 250,
+    "coverLetterWordsMax": 300,
+    "coverLetterHardFailLow": 200,
+    "coverLetterHardFailHigh": 320,
+    "antithesisMax": 1
+  },
+
+  "bannedWords": [
+    "genuine", "genuinely", "honest", "honestly", "durable",
+    "at scale", "present-state", "future-state", "passionate", "excited to apply"
+  ],
+
+  "creditForCode": {
+    "use": ["built", "created", "set up", "designed", "customized"],
+    "avoid": ["wrote", "coded", "engineered", "developed", "programmed", "from scratch"]
+  },
+
+  "locations": {
+    "The Pattern":                    { "display": "(Remote)",                 "ats": "Remote" },
+    "G2":                             { "display": "(Remote)",                 "ats": "Remote" },
+    "PetPlate":                       { "display": "(Remote)",                 "ats": "Remote" },
+    "Wisdom Panel":                   { "display": "(Hybrid, Portland, OR)",   "ats": "Portland, OR" },
+    "Wisdom Panel (by Mars Petcare)": { "display": "(Hybrid, Portland, OR)",   "ats": "Portland, OR" },
+    "Vacasa":                         { "display": "(On-Site, Portland, OR)",  "ats": "Portland, OR" }
+  },
+
+  "noTenureClaims": true,
+  "dateStyle": "Mon YYYY to Mon YYYY"
+}
