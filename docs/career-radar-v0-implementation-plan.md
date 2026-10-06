@@ -2,7 +2,7 @@
 
 Status: proposed implementation plan; no application or database implementation is authorized by this document.
 
-Progress note: the user subsequently authorized the database foundation, hosted setup, and the manual-tracking vertical slice. The foundation and static UI are implemented; the hosted migration is applied, public signup is disabled, and hosted types are generated. The slice includes résumé-builder navigation and Pages configuration generation, superseding the original deferrals below. Connection/assessment editing is deferred. Authenticated hosted acceptance and deployment remain outstanding. See [setup and validation](career-radar-v0.md). This document retains the original proposal; the implemented application follows the later requirement to supply public settings through environment variables and generate an ignored public-config module.
+Progress note: the user subsequently authorized the database foundation, hosted setup, and the manual-tracking vertical slice. The foundation and static UI are implemented; the hosted migration is applied, public signup is disabled, and hosted types are generated. The slice includes résumé-builder navigation and Pages configuration generation, superseding the original deferrals below. The browser SDK is now vendored. Connection/assessment editing is deferred. The slice is user-confirmed manually on the hosted project; automated authenticated hosted acceptance and Pages deployment verification remain outstanding. See [setup and validation](career-radar-v0.md). This document retains the original proposal; the implemented application follows the later requirement to supply public settings through environment variables and generate an ignored public-config module.
 
 ## Milestone and scope
 

@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createClient } from '@supabase/supabase-js';
+// Exercise the exact browser artifact, not just the npm module used for types.
+import { createClient } from '../vendor/supabase.js';
 import { createRadarDataAccess, StaleProspectError } from '../data.js';
 import { SCORE_FIELDS } from '../model.js';
 

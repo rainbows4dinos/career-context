@@ -1,0 +1,8 @@
+{
+  "package": "@supabase/supabase-js",
+  "version": "2.117.2",
+  "upstreamFile": "dist/umd/supabase.js",
+  "npmIntegrity": "sha512-eSG2VKnHR+Clp1PmidZ1/weJ8PJwoybjva3L2GgKqFG4YDS1Iqmc61psKGZP5xw6OMT2O7ZorPR42PY6q1BOXg==",
+  "upstreamSha256": "59d39487c3589843b410322d8a3d562ce022aba1e5ccb16898ef3fb2a0da2ecd",
+  "moduleSha256": "a75f27decd0628c0f53d465662fbaf785fc29932f43c731d879568a264ec8df3"
+}

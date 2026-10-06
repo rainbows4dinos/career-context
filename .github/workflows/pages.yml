@@ -31,8 +31,9 @@ jobs:
         with:
           node-version: '24'
 
-      # Public browser settings only. Keep résumé deployment working before
-      # the repository variables are configured; Radar shows its setup error.
+      # Public browser settings only. Missing variables allow résumé deployment
+      # and Radar shows its setup error. Invalid values fail the entire deploy;
+      # Pages continues serving the last successful deployment.
       - name: Generate Career Radar public configuration
         env:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}

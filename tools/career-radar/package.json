@@ -7,6 +7,8 @@
     "lint": "eslint .",
     "test": "node --test tests/*.test.js",
     "config:generate": "node scripts/generate-public-config.js",
+    "vendor:generate": "node scripts/vendor-supabase.js",
+    "vendor:check": "node scripts/vendor-supabase.js --check",
     "types:generate": "node scripts/generate-database-types.js",
     "types:local-snapshot": "node scripts/generate-local-types.js",
     "db:lint": "supabase db lint --local --workdir ../.."
