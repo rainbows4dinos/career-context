@@ -1,6 +1,6 @@
 # Career Radar v0: Manual Prospect Tracking
 
-Career Radar now has a static UI for sign-in, a board organized by all twelve statuses, manual prospect creation, core details/notes editing, explicit status changes, and status history. The approved two-table migration was applied to the hosted project on October 6, 2026; public signup is disabled. There is no discovery, scraping, URL ingestion, AI, assessment editor, connection editor, résumé integration, or application automation.
+Career Radar now has a static UI for sign-in, a board grouping twelve canonical statuses into five lifecycle columns, manual prospect creation, core details/notes editing, explicit status changes, and status history. The approved two-table migration was applied to the hosted project on October 6, 2026; public signup is disabled. There is no discovery, scraping, URL ingestion, AI, assessment editor, connection editor, résumé integration, or application automation.
 
 The résumé builder has one new navigation link to Radar. Its logic, the proxy Worker, and career-context files are unchanged. Radar's npm package remains scoped to `tools/career-radar/`; Pages adds only public configuration generation, without a frontend build step or dependency installation.
 
@@ -8,7 +8,7 @@ The résumé builder has one new navigation link to Radar. Its logic, the proxy 
 
 Open [Career Radar](../tools/career-radar/index.html) through a web server, or follow its link from the résumé builder. Sign in using the one provisioned Supabase Auth email/password user (separate from your Supabase dashboard login). There is no signup or password-reset UI.
 
-- `#/board`: horizontally scrolling columns with saved current status, counts, and prospect cards. Refresh explicitly to see changes made elsewhere.
+- `#/board`: five lifecycle columns with counts and prospect cards. **Prospects** groups prospect/interested; **Applying** and **Applied** each retain their own column; **In Process** groups recruiter/interviewing/final/offer; **Done** groups passed/rejected/withdrawn/closed. Cards in grouped columns display their exact saved status. Done is visually quieter and collapsed on each board render; select its heading to expand it. The columns fit desktop widths and scroll horizontally on smaller screens. Refresh explicitly to see changes made elsewhere.
 - `#/prospects/new`: only company and role are required. Notes and URL are immediately available; other core fields are under **More job details**.
 - `#/prospects/<uuid>`: edit details and notes, open a safe job link, or use **Change status**. Status saves separately from details; applied date is not inferred.
 
@@ -168,6 +168,7 @@ Tests include:
 - Real Supabase SDK queries with mocked HTTP responses: exact revision guards, patches, error propagation, create reconciliation, pagination, and status/history boundaries.
 - PostgreSQL execution of the actual migration and [SQL assertions](../supabase/tests/career_radar.sql): owner defaults, RLS across two users, anonymous denial, immutable ownership, constraints, preserved application dates, revisions, skipped/reopened statuses, denied history mutations, and rollback when an event write fails.
 - Application/database vocabulary checks for all statuses, work arrangements, and assessment score columns.
+- Board grouping covers all twelve canonical statuses exactly once, retains empty lifecycle columns, and preserves card identity, canonical status, list order, and exact revision strings.
 
 The embedded database harness models Supabase's roles and `auth.uid()` contract. It does not exercise actual JWT verification, hosted Auth, PostgREST, or the complete Supabase stack. HTTP query tests use the real SDK but mocked responses; they do not establish hosted API connectivity.
 
@@ -198,7 +199,7 @@ The vertical slice is **user-confirmed manually on the hosted project**, followi
 
 ### Vertical-slice validation
 
-Typecheck, lint, and all 24 tests pass. UI tests cover route validation, grouping cards by saved status, core form normalization without overwriting assessments/connections/status, and actionable network errors. Data-access tests now use the actual vendored browser SDK. Additional checks verify vendored bytes/licenses/provenance against the locked npm package and exercise SDK sign-in, persistent session restoration, authenticated requests, and sign-out using synthetic HTTP responses.
+Typecheck, lint, and all 26 tests pass. UI tests cover route validation, grouping canonical statuses into lifecycle columns without mutating records, core form normalization without overwriting assessments/connections/status, and actionable network errors. Data-access tests now use the actual vendored browser SDK. Additional checks verify vendored bytes/licenses/provenance against the locked npm package and exercise SDK sign-in, persistent session restoration, authenticated requests, and sign-out using synthetic HTTP responses.
 
 Browser acceptance used the real browser application and pinned Supabase SDK with a disposable local HTTP fixture backed by PGlite running the actual migration, roles, RLS, and triggers. Its Auth responses were synthetic; it did not connect to the hosted project. Verified:
 
@@ -210,10 +211,12 @@ Browser acceptance used the real browser application and pinned Supabase SDK wit
 
 After vendoring the SDK, a Chrome smoke check against the same disposable local fixture verified sign-in, prospect creation, session restoration and saved details after reload, status changes/history, board grouping, and sign-out with the repository-served module.
 
-No fixture records or credentials were written to hosted Supabase by Codex's tests. Hosted Auth/CRUD is user-confirmed manually; automated authenticated hosted acceptance remains open. GitHub Actions/Pages deployment and narrow-screen browser acceptance still need a smoke check. After configuring deployment variables, verify login, prospect editing, status changes, and reload/history on the deployed Pages site. No additional migration is needed for this UI.
+The five-column lifecycle presentation was checked separately in Chrome using the real view-model, renderer, and stylesheet with synthetic records and no database connection. All five columns fit at 1024px and 1280px without horizontal overflow; at 390px scrolling remains inside the board. Verified light/dark layouts, empty and completed-only boards, grouped status labels, mouse/keyboard Done expansion, completed-card navigation, all twelve editor status options, and collapse after refresh. This presentation check does not establish hosted persistence.
+
+No fixture records or credentials were written to hosted Supabase by Codex's tests. Hosted Auth/CRUD is user-confirmed manually; automated authenticated hosted acceptance remains open. Authenticated acceptance of the latest UI on deployed Pages still needs a smoke check. Verify login, prospect editing, status changes, and reload/history on the deployed Pages site. No additional migration is needed for this UI.
 
 ### Deliberate compromises
 
-The board shows twelve horizontally scrolling columns with no filtering, drag-and-drop, realtime subscriptions, or saved ordering. Refresh or revisit the board for another tab's changes. Details and status save independently. There is no delete, assessment editor, connection editor, signup, or password-recovery UI. Existing assessment/connection data is preserved by core edits. Drafts do not survive a confirmed reload/sign-out. Fonts still load through Google Fonts; all Radar JavaScript is served from the repository. The small stylesheet mirrors builder tokens rather than introducing a shared design system.
+The board groups statuses for presentation only; the editor still offers all twelve canonical statuses, and Supabase records/history are unchanged. Done's expanded state is not saved across refreshes or navigation. There is no filtering, drag-and-drop, realtime subscription, or saved ordering. Refresh or revisit the board for another tab's changes. Details and status save independently. There is no delete, assessment editor, connection editor, signup, or password-recovery UI. Existing assessment/connection data is preserved by core edits. Drafts do not survive a confirmed reload/sign-out. Fonts still load through Google Fonts; all Radar JavaScript is served from the repository. The small stylesheet mirrors builder tokens rather than introducing a shared design system.
 
 The next smallest feature milestone is manually editing a prospect's connections with the existing JSONB validation and revision guard. Verify Pages deployment before extending the slice; automated authenticated hosted acceptance remains a separate validation gap.

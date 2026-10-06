@@ -27,13 +27,20 @@ button:disabled { opacity:.5; cursor:wait }
 #notice,.feedback,#login-error { padding:.75rem 1rem; background:var(--accent-bg); border-radius:8px; overflow-wrap:anywhere }
 .error { color:var(--accent) }
 .view-heading { justify-content:space-between; margin-bottom:1rem }
-.board { display:flex; gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px }
-.column { flex:0 0 240px; background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:12px }
+.board { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px; align-items:start }
+.column { min-width:0; background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:12px }
 .column h3 { font:500 14px var(--sans); display:flex; justify-content:space-between; margin-bottom:1rem }
+.column-done { margin:0; background:var(--bg) }
+.column-done summary { margin:0 }
+.column-done summary h3 { display:inline; color:var(--muted) }
+.column-done summary .count { margin-left:.5rem }
+.column-done[open] summary { margin-bottom:1rem }
+.column-done .prospect-card strong { color:var(--muted) }
 .count { color:var(--muted) }
 .prospect-card { display:block; padding:12px; margin-bottom:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); text-decoration:none; overflow-wrap:anywhere }
 .prospect-card strong { display:block; font-weight:500; color:var(--accent) }
 .prospect-card span { display:block; margin-top:4px }
+.prospect-card .card-status { display:inline-block; padding:1px 6px; margin-top:8px; border-radius:4px; background:var(--surface2); color:var(--muted); font-size:12px; font-weight:400 }
 .prospect-card small { display:block; color:var(--muted); margin-top:8px }
 label { display:block; font-size:13px; font-weight:400; margin-bottom:1rem }
 input,select,textarea { display:block; width:100%; margin-top:6px; padding:10px 12px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-weight:300 }
@@ -46,4 +53,5 @@ details { margin:1rem 0 } summary { cursor:pointer; color:var(--muted); margin-b
 .status-controls label { flex:1; margin:0; min-width:170px }
 .history { padding-left:1.25rem } .history li { margin-bottom:.75rem }
 time { display:block; font-size:13px; color:var(--muted) }
-@media(max-width:600px) { body { padding:1rem } .field-grid { grid-template-columns:1fr } .panel { padding:1rem } .column { flex-basis:82vw } nav { gap:.75rem } nav #logout { margin-left:0 } }
+@media(max-width:1000px) { .board { grid-template-columns:repeat(5,200px) } }
+@media(max-width:600px) { body { padding:1rem } .field-grid { grid-template-columns:1fr } .panel { padding:1rem } .board { grid-template-columns:repeat(5,82vw) } nav { gap:.75rem } nav #logout { margin-left:0 } }

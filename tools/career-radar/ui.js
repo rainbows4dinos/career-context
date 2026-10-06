@@ -28,19 +28,25 @@ export function messageView(root, message, retry) {
 export function boardView(root, cards, refresh) {
   const heading = el('div', '', 'view-heading');
   heading.append(el('h2', `Prospects (${cards.length})`), button('Refresh', refresh));
-  const hint = el('p', cards.length ? 'Scroll across to see every status. Open a card to edit it or change its status.' : 'No prospects yet. Add a company and role you want to keep track of.', 'muted');
+  const hint = el('p', cards.length ? 'Open a card to edit it or change its status. Expand Done to see completed prospects.' : 'No prospects yet. Add a company and role you want to keep track of.', 'muted');
   const board = el('div', '', 'board');
   board.tabIndex = 0;
-  board.setAttribute('role', 'region'); board.setAttribute('aria-label', 'Prospects by status');
+  board.setAttribute('role', 'region'); board.setAttribute('aria-label', 'Prospects by lifecycle');
   for (const group of groupCards(cards)) {
-    const column = el('section', '', 'column');
-    const title = el('h3', statusLabel(group.status));
+    const done = group.id === 'done';
+    const column = done ? el('details', '', 'column column-done') : el('section', '', 'column');
+    const title = el('h3', `${group.label} `);
     title.append(el('span', String(group.cards.length), 'count'));
-    column.append(title);
+    if (done) {
+      const summary = el('summary'); summary.append(title); column.append(summary);
+    } else {
+      column.append(title);
+    }
     if (!group.cards.length) column.append(el('p', 'No prospects', 'empty-column'));
     for (const card of group.cards) {
       const node = link('', `#/prospects/${card.id}`); node.className = 'prospect-card';
       node.append(el('strong', card.company), el('span', card.title));
+      if (group.statuses.length > 1) node.append(el('span', statusLabel(card.status), 'card-status'));
       node.append(el('small', [card.location, card.work_arrangement && statusLabel(card.work_arrangement)].filter(Boolean).join(' · ') || 'Location not specified'));
       column.append(node);
     }

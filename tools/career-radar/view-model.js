@@ -1,4 +1,15 @@
-import { normalizePatch, STATUSES, validateId } from './model.js';
+import { normalizePatch, validateId } from './model.js';
+
+/** Presentation only: persisted statuses and the status editor stay canonical.
+ * @type {readonly {id: string, label: string, statuses: readonly import('./model.js').ProspectStatus[]}[]}
+ */
+export const BOARD_COLUMNS = [
+  { id: 'prospects', label: 'Prospects', statuses: ['prospect', 'interested'] },
+  { id: 'applying', label: 'Applying', statuses: ['applying'] },
+  { id: 'applied', label: 'Applied', statuses: ['applied'] },
+  { id: 'in-process', label: 'In Process', statuses: ['recruiter', 'interviewing', 'final', 'offer'] },
+  { id: 'done', label: 'Done', statuses: ['passed', 'rejected', 'withdrawn', 'closed'] }
+];
 
 /** @param {string} status */
 export function statusLabel(status) {
@@ -16,7 +27,7 @@ export function parseRoute(hash) {
 }
 /** @param {import('./data.js').ProspectCard[]} cards */
 export function groupCards(cards) {
-  return STATUSES.map(status => ({ status, cards: cards.filter(card => card.status === status) }));
+  return BOARD_COLUMNS.map(column => ({ ...column, cards: cards.filter(card => column.statuses.includes(card.status)) }));
 }
 /** Only core fields belong in this form; never clear assessments/connections.
  * @param {FormData} form @returns {import('./model.js').DetailsPatch}
