@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRoute, groupCards, readDetails, errorMessage } from '../view-model.js';
+import { parseRoute, groupCards, visibleCards, readDetails, errorMessage } from '../view-model.js';
 import { STATUSES } from '../model.js';
 
 const id = '11111111-1111-4111-8111-111111111111';
@@ -25,7 +25,7 @@ test('board groups every canonical status exactly once into five ordered lifecyc
   assert.deepEqual(groups.flatMap(group => group.statuses), STATUSES);
   assert.ok(groups.every(group => group.cards.length === 0));
 });
-test('board places cards by saved status without changing records, revision strings or list order', () => {
+test('board groups cards without changing records or revisions and retains other lifecycle groups’ input order', () => {
   const cards = STATUSES.toReversed().map((status, index) => Object.freeze({
     id: String(index), status, updated_at: '2026-10-06T12:34:56.123456+00:00'
   }));
@@ -46,6 +46,58 @@ test('board keeps empty lifecycle columns when all prospects are done', () => {
   const groups = groupCards([card]);
   assert.deepEqual(groups.map(group => group.cards.length), [0, 0, 0, 0, 1]);
   assert.equal(groups[4].cards[0], card);
+});
+test('Applied prioritizes real application dates, uses discovery/creation for undated records, and breaks ties deterministically', () => {
+  const created = '2026-10-06T12:00:00.123456+00:00';
+  const records = [
+    { id: 'undated-new', discovered_on: null, created_at: '2026-10-05T12:00:00Z' },
+    { id: 'known-old', applied_on: '2025-12-31' },
+    { id: 'undated-discovered', discovered_on: '2026-09-01' },
+    { id: 'known-new-b', applied_on: '2026-10-01' },
+    { id: 'undated-old', created_at: '2026-08-01T12:00:00Z' },
+    { id: 'known-new-a', applied_on: '2026-10-01' },
+    { id: 'known-new-earlier-created', applied_on: '2026-10-01', created_at: '2026-10-05T12:00:00Z' }
+  ].map(record => Object.freeze({
+    status: 'applied', applied_on: null, discovered_on: null, created_at: created,
+    updated_at: created, ...record
+  }));
+  Object.freeze(records);
+  const applied = groupCards(records).find(group => group.id === 'applied');
+  assert.deepEqual(applied.cards.map(card => card.id), [
+    'known-new-a', 'known-new-b', 'known-new-earlier-created', 'known-old',
+    'undated-new', 'undated-discovered', 'undated-old'
+  ]);
+  assert.equal(applied.cards.length, records.length);
+  for (const card of applied.cards) assert.equal(card, records.find(record => record.id === card.id));
+  assert.equal(records[0].applied_on, null);
+  assert.equal(records[2].applied_on, null);
+  assert.ok(records.every(card => card.updated_at === created && card.status === 'applied'));
+});
+test('Applied defaults to ten recent cards, expands to all 31, and collapses without losing records', () => {
+  const records = Array.from({ length: 31 }, (_, index) => Object.freeze({
+    id: String(index), status: 'applied', applied_on: `2026-08-${String(index + 1).padStart(2, '0')}`,
+    created_at: '2026-10-06T12:00:00Z', updated_at: '2026-10-06T12:00:00.123456+00:00'
+  }));
+  const applied = groupCards(records).find(group => group.id === 'applied');
+  const preview = visibleCards(applied);
+  assert.equal(preview.length, 10);
+  assert.deepEqual(preview.map(card => card.id), ['30', '29', '28', '27', '26', '25', '24', '23', '22', '21']);
+  assert.equal(visibleCards(applied, true), applied.cards);
+  assert.equal(visibleCards(applied, true).length, 31);
+  assert.deepEqual(visibleCards(applied, false), preview);
+  assert.equal(applied.cards.length, 31);
+  assert.equal(new Set(applied.cards.map(card => card.id)).size, 31);
+});
+test('Applied preview handles the ten-card boundary and does not limit other lifecycle groups', () => {
+  for (const count of [0, 9, 10, 11]) {
+    const cards = Array.from({ length: count }, (_, index) => ({ id: String(index) }));
+    assert.equal(visibleCards({ id: 'applied', cards }).length, Math.min(count, 10));
+    assert.equal(visibleCards({ id: 'applied', cards }, true).length, count);
+  }
+  const cards = Array.from({ length: 31 }, (_, index) => ({ id: String(index) }));
+  for (const id of ['prospects', 'applying', 'in-process', 'done']) {
+    assert.equal(visibleCards({ id, cards }), cards);
+  }
 });
 test('details form clears optional core fields without touching status, assessments or connections', () => {
   const form = new FormData();

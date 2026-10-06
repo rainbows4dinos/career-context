@@ -1,4 +1,4 @@
-import { groupCards, statusLabel } from './view-model.js';
+import { APPLIED_CARD_LIMIT, groupCards, statusLabel, visibleCards } from './view-model.js';
 import { STATUSES, WORK_ARRANGEMENTS, validateHttpUrl } from './model.js';
 
 /** @template {keyof HTMLElementTagNameMap} T @param {T} tag @param {string} [text] @param {string} [className] */
@@ -43,12 +43,27 @@ export function boardView(root, cards, refresh) {
       column.append(title);
     }
     if (!group.cards.length) column.append(el('p', 'No prospects', 'empty-column'));
-    for (const card of group.cards) {
-      const node = link('', `#/prospects/${card.id}`); node.className = 'prospect-card';
-      node.append(el('strong', card.company), el('span', card.title));
-      if (group.statuses.length > 1) node.append(el('span', statusLabel(card.status), 'card-status'));
-      node.append(el('small', [card.location, card.work_arrangement && statusLabel(card.work_arrangement)].filter(Boolean).join(' · ') || 'Location not specified'));
-      column.append(node);
+    const list = el('div'); list.id = `${group.id}-cards`;
+    let expanded = false;
+    function renderCards() {
+      list.replaceChildren(...visibleCards(group, expanded).map(card => {
+        const node = link('', `#/prospects/${card.id}`); node.className = 'prospect-card';
+        node.append(el('strong', card.company), el('span', card.title));
+        if (group.statuses.length > 1) node.append(el('span', statusLabel(card.status), 'card-status'));
+        node.append(el('small', [card.location, card.work_arrangement && statusLabel(card.work_arrangement)].filter(Boolean).join(' · ') || 'Location not specified'));
+        return node;
+      }));
+    }
+    renderCards(); column.append(list);
+    if (group.id === 'applied' && group.cards.length > APPLIED_CARD_LIMIT) {
+      const toggle = button(`Show all ${group.cards.length}`, () => {
+        expanded = !expanded;
+        renderCards();
+        toggle.textContent = expanded ? 'Show fewer' : `Show all ${group.cards.length}`;
+        toggle.setAttribute('aria-expanded', String(expanded));
+      }, 'secondary column-toggle');
+      toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-controls', list.id);
+      column.append(toggle);
     }
     board.append(column);
   }

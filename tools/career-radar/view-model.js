@@ -11,6 +11,21 @@ export const BOARD_COLUMNS = [
   { id: 'done', label: 'Done', statuses: ['passed', 'rejected', 'withdrawn', 'closed'] }
 ];
 
+export const APPLIED_CARD_LIMIT = 10;
+
+/** Known application dates first; undated imports use discovery/creation recency.
+ * Dates are ordering hints only, never inferred or written back.
+ * @param {import('./data.js').ProspectCard} a @param {import('./data.js').ProspectCard} b
+ */
+function compareAppliedCards(a, b) {
+  if (Boolean(a.applied_on) !== Boolean(b.applied_on)) return a.applied_on ? -1 : 1;
+  const aDate = a.applied_on ?? a.discovered_on ?? a.created_at;
+  const bDate = b.applied_on ?? b.discovered_on ?? b.created_at;
+  return Date.parse(bDate) - Date.parse(aDate)
+    || Date.parse(b.created_at) - Date.parse(a.created_at)
+    || a.id.localeCompare(b.id);
+}
+
 /** @param {string} status */
 export function statusLabel(status) {
   return status === 'final' ? 'Final round' : status.charAt(0).toUpperCase() + status.slice(1);
@@ -27,7 +42,17 @@ export function parseRoute(hash) {
 }
 /** @param {import('./data.js').ProspectCard[]} cards */
 export function groupCards(cards) {
-  return BOARD_COLUMNS.map(column => ({ ...column, cards: cards.filter(card => column.statuses.includes(card.status)) }));
+  return BOARD_COLUMNS.map(column => {
+    const grouped = cards.filter(card => column.statuses.includes(card.status));
+    if (column.id === 'applied') grouped.sort(compareAppliedCards);
+    return { ...column, cards: grouped };
+  });
+}
+/** Limit presentation only; the group retains every prospect and its total count.
+ * @param {{id: string, cards: import('./data.js').ProspectCard[]}} group @param {boolean} [expanded]
+ */
+export function visibleCards(group, expanded = false) {
+  return group.id === 'applied' && !expanded ? group.cards.slice(0, APPLIED_CARD_LIMIT) : group.cards;
 }
 /** Only core fields belong in this form; never clear assessments/connections.
  * @param {FormData} form @returns {import('./model.js').DetailsPatch}

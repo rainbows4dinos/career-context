@@ -104,12 +104,20 @@ test('status change writes current state only; history is queried separately', a
 });
 
 test('board queries narrow fields and paginate in stable order', async () => {
-  const { data, requests } = harness([{ body: Array.from({ length: 500 }, () => row) }, { body: [row] }]);
-  assert.equal((await data.listProspects()).length, 501);
+  const dated = { ...row, applied_on: '2026-09-01', discovered_on: '2026-08-31' };
+  const { data, requests } = harness([{ body: Array.from({ length: 500 }, () => row) }, { body: [dated] }]);
+  const cards = await data.listProspects();
+  assert.equal(cards.length, 501);
+  assert.equal(cards[0].applied_on, null);
+  assert.equal(cards[500].applied_on, '2026-09-01');
+  assert.equal(cards[500].discovered_on, '2026-08-31');
+  assert.equal(cards[500].updated_at, revision);
   assert.equal(requests[0].url.searchParams.get('order'), 'created_at.desc,id.asc');
   assert.equal(requests[0].url.searchParams.get('offset'), '0');
   assert.equal(requests[1].url.searchParams.get('offset'), '500');
   assert.equal(requests[0].url.searchParams.get('select').includes('job_description'), false);
+  assert.ok(requests[0].url.searchParams.get('select').split(',').includes('applied_on'));
+  assert.ok(requests[0].url.searchParams.get('select').split(',').includes('discovered_on'));
 });
 
 test('invalid input is rejected without HTTP calls', async () => {

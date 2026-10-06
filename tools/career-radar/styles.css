@@ -37,6 +37,7 @@ button:disabled { opacity:.5; cursor:wait }
 .column-done[open] summary { margin-bottom:1rem }
 .column-done .prospect-card strong { color:var(--muted) }
 .count { color:var(--muted) }
+.column-toggle { width:100%; padding:8px 12px; font-size:13px }
 .prospect-card { display:block; padding:12px; margin-bottom:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); text-decoration:none; overflow-wrap:anywhere }
 .prospect-card strong { display:block; font-weight:500; color:var(--accent) }
 .prospect-card span { display:block; margin-top:4px }
