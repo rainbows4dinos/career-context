@@ -2,3 +2,9 @@
 **/.DS_Store
 tools/.wrangler/
 node_modules/
+.env
+.env.*
+!.env.example
+supabase/.temp/
+supabase/.branches/
+tools/career-radar/public-env.js
