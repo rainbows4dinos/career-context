@@ -20,7 +20,7 @@ This repository is public. That is what lets the résumé builder fetch these fi
 
 Edit writing guidance in `voice-and-format.md` and countable constraints in `rules.json`. Preserve the emphasis-options format in `tone-and-positioning.md`, which the résumé tool parses.
 
-Career Radar can reuse career facts, positioning, and supporting evidence. Its search preferences, evaluation criteria, and opportunity records will be separate from résumé formatting rules and canonical career facts. Its storage approach remains to be decided; because this repository is public, where opportunity records live is a privacy decision as much as a format one.
+Career Radar can reuse career facts, positioning, and supporting evidence. Its search preferences, evaluation criteria, and opportunity records will be separate from résumé formatting rules and canonical career facts. Opportunity records will live in Supabase rather than in this repository, so that tracking a company does not mean publishing it.
 
 ## Repository instructions
 

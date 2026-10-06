@@ -28,15 +28,18 @@ Never invent career facts, metrics, or shipped outcomes. Respect role-specific s
 - `.github/workflows/pages.yml` publishes the repository root to GitHub Pages on pushes to `main` or manual dispatch. `.nojekyll` supports static serving.
 - Export libraries load from CDNs. There is no tracked package manifest, build system, or automated test suite.
 - Generated application data lives in browser memory; local storage currently persists theme preference only. There is no opportunity tracking store.
-- `Claude outputs/` contains committed sample documents. Preserve these artifacts unless the task calls for changing them.
+- `Claude outputs/` contains generated résumés and export samples. Preserve these artifacts unless the task calls for changing them.
+- `case-studies/` and `interview/` are currently empty, untracked local placeholders with no defined workflow. Git does not preserve empty directories, so they may be absent in other checkouts. No tool depends on them; their names do not establish a storage plan for future features.
 
 ## Development approach
 
 Preserve working code and established URLs. Prefer the smallest change that satisfies the task. Do not move context files, rename parser-dependent sections, split the résumé application, introduce a framework, or restructure deployment without a concrete requirement and an explicit migration plan.
 
-Multiple tools may read the same canonical career files. Each tool should consume only the sources relevant to its task. Career Radar can reuse facts, positioning, and framing; résumé bullet caps and cover-letter structure are not opportunity evaluation criteria. Define Radar-specific search preferences and evaluation policy separately when that work is authorized. Choose its persistence approach explicitly before implementing tracking.
+Multiple tools may read the same canonical career files. Each tool should consume only the sources relevant to its task. Career Radar can reuse facts, positioning, and framing; résumé bullet caps and cover-letter structure are not opportunity evaluation criteria. Define Radar-specific search preferences and evaluation policy separately when that work is authorized. Its persistence approach is settled: Supabase, per the storage note below.
 
-Keep API credentials out of browser code and committed files. Account for the Pages workflow publishing the repository root when deciding where future opportunity records belong.
+Keep API credentials out of browser code and committed files. The repository is public so the tools are reachable via GitHub Pages and the project can serve as a public case study. It also cannot be made private without replacing the résumé builder's runtime fetch of its context files from `raw.githubusercontent.com`. Anything committed anywhere in it is world-readable, regardless of whether GitHub Pages serves it.
+
+Opportunity records belong in Supabase rather than this repository. Because the résumé builder is a static page on a public origin, it can hold no secret: any Supabase access must be gated by row-level security or brokered server-side, never by a key embedded in the page. The Worker's origin allowlist and `TAILOR_KEY` are a cost speed bump, not authentication, and are not sufficient on their own in front of private records.
 
 ## Validation and collaboration
 
