@@ -1,15 +1,47 @@
 # Larry Reynolds Career Context
 
-Canonical professional context for resume tailoring, portfolio positioning, interview prep, and AI-assisted workflows.
+Shared professional context and personal career tools for Larry Reynolds: résumé tailoring, portfolio positioning, interview preparation, and opportunity evaluation.
 
-Files, in the order the tailor tool uses them:
+The résumé and cover-letter builder is the existing working tool. Career Radar is planned for discovering, evaluating, and tracking job opportunities. The résumé builder will remain as the project grows.
 
-- `resume-master.md` — the facts layer. Roles, dates, bullets, scope notes, target roles.
-- `experience-framing.md` — the why-it-mattered layer. Story angles and real numbers.
-- `voice-and-format.md` — voice and format reasoning: structure, anti-patterns, judgment calls. Anything generated from this repo follows it.
-- `rules.json` — the countable rules: bullet caps per role, word limits, banned words, role locations. The tool injects it into prompts, checks output against it, and builds its repair pass from it. Change a number here and nowhere else.
-- `tone-and-positioning.md` — emphasis focus chips for the tool. Not a tone source anymore.
-- `tools/resume-tailor.html` — the tailor app. Fetches the files above from this repo at runtime, so changes here only reach the tool once pushed to main.
-- `tools/proxy-worker.js` — Cloudflare Worker that holds the Anthropic key.
+## Shared career context
 
-Tone rules used to be duplicated here and in tone-and-positioning.md. They are not anymore. Edit voice-and-format.md instead.
+These files remain at the repository root so existing runtime URLs continue to work. Multiple tools can consume them without maintaining separate copies.
+
+This repository is public. That is what lets the résumé builder fetch these files without a key, and it means anything committed here is world-readable.
+
+| File | Responsibility |
+| --- | --- |
+| [resume-master.md](resume-master.md) | Career facts, roles, dates, scope notes, positioning, and target roles |
+| [experience-framing.md](experience-framing.md) | Why the work mattered, supporting stories, real metrics, and interview framing |
+| [voice-and-format.md](voice-and-format.md) | Authoritative writing policy for career communications, including résumé and cover-letter structure |
+| [rules.json](rules.json) | Structured application-document rules: bullet caps, word limits, banned words, code-credit language, and role locations |
+| [tone-and-positioning.md](tone-and-positioning.md) | Emphasis focus chips for the résumé UI; not the tone authority |
+
+Edit writing guidance in `voice-and-format.md` and countable constraints in `rules.json`. Preserve the emphasis-options format in `tone-and-positioning.md`, which the résumé tool parses.
+
+Career Radar can reuse career facts, positioning, and supporting evidence. Its search preferences, evaluation criteria, and opportunity records will be separate from résumé formatting rules and canonical career facts. Its storage approach remains to be decided; because this repository is public, where opportunity records live is a privacy decision as much as a format one.
+
+## Repository instructions
+
+[AGENTS.md](AGENTS.md) is the canonical, tool-agnostic source of development instructions. [CLAUDE.md](CLAUDE.md) imports it for Claude Code compatibility. Keep shared instructions in `AGENTS.md`.
+
+Repository agents should read `AGENTS.md` and the career files relevant to their task. Workflows based on uploaded documents should receive those files explicitly. Runtime applications load their own context; the résumé builder does not read `AGENTS.md` or `CLAUDE.md`.
+
+## Existing tools
+
+- [tools/resume-tailor.html](tools/resume-tailor.html): the résumé and cover-letter builder. One standalone page covering tailoring, revisions, QA warnings, and downloads.
+- [tools/proxy-worker.js](tools/proxy-worker.js): Cloudflare Worker that proxies Anthropic API requests using a server-side secret.
+- [tools/wrangler.toml](tools/wrangler.toml): configuration for the separately deployed Worker.
+- [.github/workflows/pages.yml](.github/workflows/pages.yml): publishes the repository root to GitHub Pages on pushes to `main` or manual dispatch.
+- `Claude outputs/`: generated résumés and export samples, kept as reference.
+
+The builder produces one download per application: a **Download Package** zip holding the résumé and cover letter as PDF and `.docx`, an ATS-plain résumé for Workday autofill, and a README describing them.
+
+For architecture and the constraints that apply when changing any of this, see [AGENTS.md](AGENTS.md).
+
+## Deployment and editing
+
+The site and the Worker deploy separately. Pushing to `main` publishes the repository root to GitHub Pages; the Worker ships on its own with `wrangler deploy`.
+
+The builder fetches the five shared files above from `main` at runtime, so editing one locally changes nothing until it is pushed — including when you serve the page from your own machine.
