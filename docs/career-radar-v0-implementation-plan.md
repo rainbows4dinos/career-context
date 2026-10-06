@@ -2,7 +2,7 @@
 
 Status: proposed implementation plan; no application or database implementation is authorized by this document.
 
-Progress note: the user subsequently authorized the database and typed data-access foundation only. That foundation is implemented in the repository; hosted migration application and the UI remain outstanding. See [foundation setup and validation](career-radar-v0.md). The configuration section below describes the original proposal; the implemented foundation follows the later requirement to supply public settings through environment variables and generate an ignored public-config module.
+Progress note: the user subsequently authorized the database and typed data-access foundation, then hosted setup. The foundation is implemented, the hosted migration is applied, public signup is disabled, and hosted types are generated. User provisioning, authenticated hosted validation, and the UI remain outstanding. See [foundation setup and validation](career-radar-v0.md). The configuration section below describes the original proposal; the implemented foundation follows the later requirement to supply public settings through environment variables and generate an ignored public-config module.
 
 ## Milestone and scope
 

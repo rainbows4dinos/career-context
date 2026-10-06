@@ -22,7 +22,7 @@ Edit writing guidance in `voice-and-format.md` and countable constraints in `rul
 
 Career Radar can reuse career facts, positioning, and supporting evidence. Its search preferences, evaluation criteria, and opportunity records will be separate from résumé formatting rules and canonical career facts. Opportunity records will live in Supabase rather than in this repository, so that tracking a company does not mean publishing it.
 
-Career Radar's database and typed data-access foundation now lives in `supabase/` and `tools/career-radar/`. There is no Radar UI yet, and the migration must be applied before the hosted database can be used. See [foundation setup and validation](docs/career-radar-v0.md) and the [implementation plan](docs/career-radar-v0-implementation-plan.md).
+Career Radar's database and typed data-access foundation lives in `supabase/` and `tools/career-radar/`. The initial migration is applied to the hosted project; there is no Radar UI yet. See [foundation setup and validation](docs/career-radar-v0.md) and the [implementation plan](docs/career-radar-v0-implementation-plan.md).
 
 ## Repository instructions
 
