@@ -1,8 +1,20 @@
-# Career Radar v0: Database Foundation
+# Career Radar v0: Manual Prospect Tracking
 
-The repository contains the approved two-table migration and typed Supabase/data-access foundation. The migration was applied to the hosted project on October 6, 2026; public signup is disabled. There is no UI, discovery, scraping, URL ingestion, AI assessment, résumé integration, or application automation.
+Career Radar now has a static UI for sign-in, a board organized by all twelve statuses, manual prospect creation, core details/notes editing, explicit status changes, and status history. The approved two-table migration was applied to the hosted project on October 6, 2026; public signup is disabled. There is no discovery, scraping, URL ingestion, AI, assessment editor, connection editor, résumé integration, or application automation.
 
-The existing résumé builder, proxy Worker, deployment workflow, and career-context files remain unchanged. Radar's npm package is scoped to `tools/career-radar/`; the existing static site still needs no build step.
+The résumé builder has one new navigation link to Radar. Its logic, the proxy Worker, and career-context files are unchanged. Radar's npm package remains scoped to `tools/career-radar/`; Pages adds only public configuration generation, without a frontend build step or dependency installation.
+
+## Use the application
+
+Open [Career Radar](../tools/career-radar/index.html) through a web server, or follow its link from the résumé builder. Sign in using the one provisioned Supabase Auth email/password user (separate from your Supabase dashboard login). There is no signup or password-reset UI.
+
+- `#/board`: horizontally scrolling columns with saved current status, counts, and prospect cards. Refresh explicitly to see changes made elsewhere.
+- `#/prospects/new`: only company and role are required. Notes and URL are immediately available; other core fields are under **More job details**.
+- `#/prospects/<uuid>`: edit details and notes, open a safe job link, or use **Change status**. Status saves separately from details; applied date is not inferred.
+
+Saves wait for database confirmation. Failed saves retain the draft; conflicts retain it and offer **Reload saved prospect**, which explicitly discards the draft. Create retries reconcile the same UUID before attempting another insert. Unsaved navigation and reload prompt before discarding. Drafts live only in memory and are lost on a confirmed reload or sign-out. Auth sessions persist through the SDK; prospect state lives in Supabase. A signed-out event clears private views and drafts in every open Radar tab.
+
+The UI builds user content with DOM text nodes, never HTML interpretation. It uses the résumé builder's font/color/radius tokens and shared `theme` preference without extracting or refactoring the builder's styles.
 
 ## Schema
 
@@ -69,9 +81,9 @@ npm run config:generate
 
 The generator validates the environment and writes ignored `public-env.js` containing only the URL and public key. It refuses secret/service-role keys and does not serialize the rest of the environment. This file contains public configuration, but remains uncommitted so environments can differ.
 
-GitHub Pages cannot access runtime environment variables. When a UI is later authorized, its deployment must generate this public module from deployment variables, then import it into the entry point. The current Pages workflow is deliberately unchanged and does not generate it yet.
+GitHub Pages cannot access runtime environment variables. Configure GitHub repository **Variables** `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` in **Settings → Secrets and variables → Actions**. The Pages workflow generates the module before uploading the static site. No operator token, database password, or service-role key belongs in those application variables. If either public variable is absent, deployment retains the résumé builder and Radar shows a setup/connection error. Invalid or secret keys cause configuration generation to fail visibly.
 
-The JavaScript uses the npm import `@supabase/supabase-js`. A future no-build browser entry point will need an import map to a pinned browser-compatible SDK matching `package.json`, or another explicitly reviewed dependency-loading approach. No HTML, import map, bundler, or UI entry point is added in this foundation.
+`index.html` maps `@supabase/supabase-js` to the matching pinned version on esm.sh. `bootstrap.js` loads public configuration and the application; missing configuration or unavailable CDN code produces a reload/setup error. There is no bundler. For local use, generate configuration, then serve the repository root (for example, `python3 -m http.server 8000`) and open `/tools/career-radar/`. Avoid `file://` URLs, which cannot load the module application correctly.
 
 ## Apply the migration
 
@@ -89,7 +101,7 @@ Review the dry run before applying. Use CLI login if `SUPABASE_ACCESS_TOKEN` is 
 
 Alternatively, apply the complete checked-in SQL file through the Supabase SQL Editor. Do not alter its contents ad hoc in the dashboard. Prefer CLI application so migration tracking remains consistent; do not then run CLI push over a manually applied migration without reconciling its history. For this initial migration only, [register_career_radar_v0.sql](../supabase/manual/register_career_radar_v0.sql) records its version after SQL Editor application. This operational script belongs outside `migrations/` and must not replace applying the actual schema.
 
-In the hosted Auth settings, disable public signup and provision your one email/password user. `supabase/config.toml` disables signup for local development; it does not change the hosted project's settings. The future application will use Supabase Auth + RLS, not the Worker's origin allowlist or `TAILOR_KEY`.
+In the hosted Auth settings, disable public signup and provision your one email/password user. `supabase/config.toml` disables signup for local development; it does not change the hosted project's settings. Radar uses Supabase Auth + RLS; the Worker's origin allowlist and `TAILOR_KEY` do not govern access to prospects.
 
 ## Generated types
 
@@ -118,7 +130,7 @@ Generated types describe structure, not RLS, grants, score ranges, or the exact 
 
 Create one client with `createRadarClient(env)` from `supabase-client.js`, then pass it to `createRadarDataAccess(client)` from `data.js`. Environment settings are supplied explicitly; the browser module does not read `process.env` or create an unconfigured client on import.
 
-The SDK manages persistent Auth sessions. This foundation provides no login UI; the future application must sign in via `client.auth.signInWithPassword` before accessing private records. Public credentials alone grant no record access.
+The SDK manages persistent Auth sessions. The UI signs in via `client.auth.signInWithPassword` before accessing private records. Public credentials alone grant no record access. Auth callbacks defer database reads until outside the SDK's auth lock.
 
 | Function | Contract |
 | --- | --- |
@@ -180,4 +192,24 @@ Docker and standalone PostgreSQL tools are unavailable. The Supabase CLI lint wa
 - Verified the public application configuration against the hosted API: both table reads return HTTP 401 / PostgreSQL `42501` (permission denied), rather than missing-table errors. No private rows were retrieved or synthetic fixtures inserted into the live database.
 - Downloaded hosted TypeScript definitions through the dashboard and replaced the bootstrap snapshot. Typecheck, lint, and all 18 local tests passed.
 
-Provisioning the one email/password user and authenticated hosted integration tests remain outstanding. Creating the password requires the user's direct entry in the dashboard; do not put it in repository files or chat. The CLI still lacks an operator login, so future CLI pushes/type generation require `supabase login` or an external operator token. The PostgreSQL harness and SDK tests remain separate checks, not substitutes for authenticated hosted validation.
+User provisioning was handed off and has not subsequently been verified by this implementation. Authenticated hosted integration tests remain outstanding. Creating the password requires the user's direct entry in the dashboard; do not put it in repository files or chat. The CLI still lacks an operator login, so future CLI pushes/type generation require `supabase login` or an external operator token. The PostgreSQL harness and SDK tests remain separate checks, not substitutes for authenticated hosted validation.
+
+### Vertical-slice validation
+
+Typecheck, lint, and all 22 tests pass. The added tests cover route validation, grouping cards by saved status, core form normalization without overwriting assessments/connections/status, and actionable network errors.
+
+Browser acceptance used the real browser application and pinned Supabase SDK with a disposable local HTTP fixture backed by PGlite running the actual migration, roles, RLS, and triggers. Its Auth responses were synthetic; it did not connect to the hosted project. Verified:
+
+- Sign in, empty board, manual add, open details, edit, explicit status change, and initial/transition history.
+- Direct detail reload retains saved values/status/history and SDK session; the board places the card under the saved status.
+- A failed save retains the draft; retry saves it. A competing save in a second tab produces a conflict without overwriting that revision.
+- Unsaved navigation asks once before discarding; sign-out returns to login. Both light and dark board layouts were visually inspected.
+- Résumé builder opens with its existing form and fetched emphasis options; its Radar link and Radar's return link work. Generation/export was not rerun because the only builder change is navigation.
+
+No fixture records or credentials were written to hosted Supabase. GitHub Actions/Pages deployment, narrow-screen browser acceptance, and real hosted Auth/CRUD still need a smoke check. After configuring deployment variables and signing in, add a real prospect, edit it, change status, reload its detail URL, and verify history. No additional migration is needed for this UI.
+
+### Deliberate compromises
+
+The board shows twelve horizontally scrolling columns with no filtering, drag-and-drop, realtime subscriptions, or saved ordering. Refresh or revisit the board for another tab's changes. Details and status save independently. There is no delete, assessment editor, connection editor, signup, or password-recovery UI. Existing assessment/connection data is preserved by core edits. Drafts do not survive a confirmed reload/sign-out. The browser SDK and fonts depend on external CDNs, and the small stylesheet mirrors builder tokens rather than introducing a shared design system.
+
+The next smallest feature milestone is manually editing a prospect's connections with the existing JSONB validation and revision guard. Complete hosted acceptance before extending the slice.

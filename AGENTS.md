@@ -2,7 +2,7 @@
 
 ## Purpose and scope
 
-This repository holds Larry Reynolds's canonical career context and personal career tools. The résumé and cover-letter builder is the existing working tool. Career Radar has a database migration and typed data-access foundation; its UI and discovery workflows are not implemented yet.
+This repository holds Larry Reynolds's canonical career context and personal career tools. The résumé and cover-letter builder remains a working tool. Career Radar supports manual prospect tracking, editing, status changes, and history through Supabase. Discovery and assessment workflows are not implemented yet.
 
 This file is the tool-agnostic source of repository instructions. `CLAUDE.md` imports it for Claude Code. Keep shared development instructions here rather than duplicating them in tool-specific files.
 
@@ -27,7 +27,7 @@ Never invent career facts, metrics, or shipped outcomes. Respect role-specific s
 - `tools/wrangler.toml` configures the Worker, deployed separately from the static site.
 - `.github/workflows/pages.yml` publishes the repository root to GitHub Pages on pushes to `main` or manual dispatch. `.nojekyll` supports static serving.
 - Résumé export libraries load from CDNs. The résumé builder has no package manifest, build system, or automated test suite. Its generated application data lives in browser memory; its local storage currently persists theme preference only.
-- `tools/career-radar/` has a scoped npm package: JavaScript checked with TypeScript/JSDoc, a typed Supabase client/data layer, environment-driven public configuration generation, and lint/tests. It does not yet have a UI. Dependencies and tooling must remain scoped to Radar.
+- `tools/career-radar/` is a separate static page with hash routes, email/password login, a status board, prospect forms, and status history. Its scoped npm package supplies JavaScript checked with TypeScript/JSDoc, a typed Supabase client/data layer, environment-driven public configuration generation, and lint/tests. The browser uses an import map to the pinned Supabase SDK on esm.sh. Dependencies and tooling must remain scoped to Radar.
 - `supabase/migrations/` defines the opportunity store: `prospects` with embedded connections and assessment columns, plus append-only `prospect_status_events`. RLS and database triggers enforce ownership and atomic status history. These files do not imply the migration has been applied to hosted Supabase.
 - `docs/career-radar-v0.md` owns setup, schema, credential configuration, and validation guidance, including hosted setup status. Database types are generated from Supabase; regenerate after applying schema changes. Local migration-based PostgreSQL introspection remains a bootstrap option.
 - `Claude outputs/` contains generated résumés and export samples. Preserve these artifacts unless the task calls for changing them.
@@ -43,7 +43,7 @@ Keep API credentials out of browser code and committed files. The repository is 
 
 Opportunity records belong in Supabase rather than this repository. Because the résumé builder is a static page on a public origin, it can hold no secret: any Supabase access must be gated by row-level security or brokered server-side, never by a key embedded in the page. The Worker's origin allowlist and `TAILOR_KEY` are a cost speed bump, not authentication, and are not sufficient on their own in front of private records.
 
-Radar uses Supabase Auth + RLS. Supply `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` through the environment; its public-config generator emits only these browser-safe settings. Never pass secret/service-role keys to the application. Keep operator credentials outside this repository. Generated `public-env.js` is ignored, and Pages has no runtime environment injection; future UI deployment must explicitly generate public configuration. Preserve Supabase's exact `updated_at` string for guarded writes, including microseconds.
+Radar uses Supabase Auth + RLS. Supply `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` through the environment; its public-config generator emits only these browser-safe settings. Never pass secret/service-role keys to the application. Keep operator credentials outside this repository. Generated `public-env.js` is ignored; Pages generates it from matching GitHub repository variables during deployment. Missing variables leave the résumé deployment operational and Radar shows a setup error. Preserve Supabase's exact `updated_at` string for guarded writes, including microseconds. Render user-entered content as text, preserve drafts on failed saves, and create history only through the database trigger.
 
 ## Validation and collaboration
 

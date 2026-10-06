@@ -11,7 +11,9 @@ export default [
       globals: {
         process: 'readonly', URL: 'readonly', crypto: 'readonly',
         console: 'readonly', Buffer: 'readonly', Response: 'readonly',
-        Request: 'readonly', Headers: 'readonly', setTimeout: 'readonly', atob: 'readonly'
+        Request: 'readonly', Headers: 'readonly', setTimeout: 'readonly', atob: 'readonly',
+        document: 'readonly', window: 'readonly', localStorage: 'readonly',
+        Element: 'readonly', HTMLInputElement: 'readonly', FormData: 'readonly'
       }
     }
   }

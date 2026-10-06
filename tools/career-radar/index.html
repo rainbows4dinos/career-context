@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Career Radar — Larry Reynolds</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Readex+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">
+    {"imports":{"@supabase/supabase-js":"https://esm.sh/@supabase/supabase-js@2.117.2?target=es2022"}}
+  </script>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div><h1>Career Radar</h1><p>Your prospects, from first interest to a decision.</p></div>
+      <button id="theme" type="button" class="secondary">Light theme</button>
+      <nav aria-label="Career tools"><a href="../resume-tailor.html">Résumé Builder</a><a href="#/board">Board</a><a href="#/prospects/new" id="add-link" hidden>Add prospect</a><button id="logout" class="secondary" hidden>Sign out</button></nav>
+    </header>
+    <p id="notice" role="status" aria-live="polite"></p>
+    <section id="login" class="panel narrow" hidden aria-labelledby="login-title">
+      <h2 id="login-title">Sign in to Career Radar</h2>
+      <p class="muted">Use your personal Radar account. Your prospects are private.</p>
+      <form id="login-form">
+        <label>Email<input name="email" type="email" autocomplete="username" required></label>
+        <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+        <p id="login-error" role="alert"></p>
+        <button class="primary" type="submit">Sign in</button>
+      </form>
+    </section>
+    <main id="workspace" tabindex="-1"><p>Connecting to Career Radar…</p></main>
+    <noscript><p>Career Radar needs JavaScript to sign in and save prospects.</p></noscript>
+  </div>
+  <script type="module" src="bootstrap.js"></script>
+</body>
+</html>

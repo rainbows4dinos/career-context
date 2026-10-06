@@ -4,7 +4,7 @@ import { readPublicConfig } from './config.js';
 /** @typedef {import('./database.types.js').Database} Database */
 
 /**
- * Create once in the future application entry point and share this client.
+ * Create once in the application entry point and share this client.
  * Credentials come from explicitly supplied environment configuration.
  * @param {Record<string, string | undefined>} env
  * @returns {import('@supabase/supabase-js').SupabaseClient<Database>}

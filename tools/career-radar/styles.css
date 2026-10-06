@@ -1,0 +1,49 @@
+/* Mirrors the résumé builder's tokens; keep its standalone stylesheet intact. */
+:root { color-scheme: dark; --bg:#232221; --surface:#2d2b29; --surface2:#363330; --border:#4F4D4A; --border-subtle:#3a3835; --text:#FFFBF6; --muted:#BAB8B5; --accent:#F26F6F; --accent-bg:rgba(242,111,111,.12); --success:#6FEAF2; --serif:'Crimson Pro',Georgia,serif; --sans:'Readex Pro',sans-serif; --radius:10px }
+body.light { color-scheme:light; --bg:#FFFBF6; --surface:#F5F2EC; --surface2:#EDE9E2; --border:#BAB8B5; --border-subtle:#DEDBD8; --text:#232221; --muted:#4F4D4A; --accent:#CA5C5C; --accent-bg:rgba(202,92,92,.1); --success:#377579 }
+* { box-sizing:border-box }
+[hidden] { display:none !important }
+body { margin:0; padding:2rem 1rem; background:var(--bg); color:var(--text); font:300 15px/1.6 var(--sans) }
+.shell { max-width:1400px; margin:auto }
+header { display:flex; flex-wrap:wrap; align-items:center; gap:1rem; border-bottom:1px solid var(--border-subtle); padding-bottom:1rem; margin-bottom:1.5rem }
+header > div { flex:1 }
+h1,h2,h3 { margin:0 0 .5rem; font-family:var(--serif); font-weight:600; line-height:1.2 }
+h1 { font-size:32px } h2 { font-size:26px } h3 { font-size:22px }
+p { margin:.5rem 0 1rem } header p { margin:0 }
+nav,.actions,.view-heading { display:flex; flex-wrap:wrap; align-items:center; gap:1rem }
+nav { width:100% } nav #logout { margin-left:auto }
+a { color:var(--accent); text-underline-offset:3px } a:hover { background:var(--accent-bg) }
+button,input,select,textarea { font:inherit; border-radius:8px }
+button { cursor:pointer; padding:10px 16px; border:1px solid var(--border); background:transparent; color:var(--text) }
+button:hover { border-color:var(--accent) }
+.primary { background:var(--accent); color:var(--bg); border-color:var(--accent); font-weight:500 }
+.secondary { color:var(--muted) }
+button:disabled { opacity:.5; cursor:wait }
+:focus-visible { outline:2px solid var(--accent); outline-offset:3px }
+.panel { background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:1.5rem; margin-bottom:1rem }
+.narrow { max-width:520px; margin:2rem auto }
+.muted,.empty-column { color:var(--muted) }
+#notice:empty,#login-error:empty,.feedback:empty { display:none }
+#notice,.feedback,#login-error { padding:.75rem 1rem; background:var(--accent-bg); border-radius:8px; overflow-wrap:anywhere }
+.error { color:var(--accent) }
+.view-heading { justify-content:space-between; margin-bottom:1rem }
+.board { display:flex; gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px }
+.column { flex:0 0 240px; background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:12px }
+.column h3 { font:500 14px var(--sans); display:flex; justify-content:space-between; margin-bottom:1rem }
+.count { color:var(--muted) }
+.prospect-card { display:block; padding:12px; margin-bottom:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); text-decoration:none; overflow-wrap:anywhere }
+.prospect-card strong { display:block; font-weight:500; color:var(--accent) }
+.prospect-card span { display:block; margin-top:4px }
+.prospect-card small { display:block; color:var(--muted); margin-top:8px }
+label { display:block; font-size:13px; font-weight:400; margin-bottom:1rem }
+input,select,textarea { display:block; width:100%; margin-top:6px; padding:10px 12px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-weight:300 }
+textarea { min-height:120px; resize:vertical }
+fieldset { padding:0; border:0; margin:0; min-width:0 }
+.field-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 16px }
+details { margin:1rem 0 } summary { cursor:pointer; color:var(--muted); margin-bottom:1rem }
+.editor { max-width:860px; margin:auto }
+.status-controls { display:flex; gap:12px; align-items:end; flex-wrap:wrap }
+.status-controls label { flex:1; margin:0; min-width:170px }
+.history { padding-left:1.25rem } .history li { margin-bottom:.75rem }
+time { display:block; font-size:13px; color:var(--muted) }
+@media(max-width:600px) { body { padding:1rem } .field-grid { grid-template-columns:1fr } .panel { padding:1rem } .column { flex-basis:82vw } nav { gap:.75rem } nav #logout { margin-left:0 } }
