@@ -22,6 +22,8 @@ Edit writing guidance in `voice-and-format.md` and countable constraints in `rul
 
 Career Radar can reuse career facts, positioning, and supporting evidence. Its search preferences, evaluation criteria, and opportunity records will be separate from résumé formatting rules and canonical career facts. Opportunity records will live in Supabase rather than in this repository, so that tracking a company does not mean publishing it.
 
+Keep personal job-search staging/seed files, reconciliation reports, backups, source excerpts, and generated import artifacts outside this public repository. The defensive patterns in `.gitignore` help prevent accidental commits of recognizable artifacts; they do not make files private. See [AGENTS.md](AGENTS.md#development-approach) for naming and handling guidance.
+
 Career Radar's database and typed application live in `supabase/` and `tools/career-radar/`. The initial migration is applied to the hosted project. See [setup and validation](docs/career-radar-v0.md) and the [implementation plan](docs/career-radar-v0-implementation-plan.md).
 
 For URL import, see [Greenhouse configuration and hosted results](docs/career-radar-greenhouse-ingestion.md), [Ashby/Lever implementation and deployment steps](docs/career-radar-ashby-lever-ingestion.md), and the [approved ingestion architecture](docs/career-radar-url-ingestion-plan.md).

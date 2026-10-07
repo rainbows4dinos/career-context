@@ -2,7 +2,7 @@
 
 ## Purpose and scope
 
-This repository holds Larry Reynolds's canonical career context and personal career tools. The résumé and cover-letter builder remains a working tool. Career Radar supports manual prospect tracking, editing, status changes, and history through Supabase. Discovery and assessment workflows are not implemented yet.
+This repository holds Larry Reynolds's canonical career context and personal career tools. The résumé and cover-letter builder remains a working tool. Career Radar supports manual prospect tracking, editing, status changes, history through Supabase, and editable job URL ingestion from Greenhouse, Ashby and Lever. Discovery and assessment workflows are not implemented yet.
 
 This file is the tool-agnostic source of repository instructions. `CLAUDE.md` imports it for Claude Code. Keep shared development instructions here rather than duplicating them in tool-specific files.
 
@@ -43,6 +43,8 @@ Multiple tools may read the same canonical career files. Each tool should consum
 Keep API credentials out of browser code and committed files. The repository is public so the tools are reachable via GitHub Pages and the project can serve as a public case study. It also cannot be made private without replacing the résumé builder's runtime fetch of its context files from `raw.githubusercontent.com`. Anything committed anywhere in it is world-readable, regardless of whether GitHub Pages serves it.
 
 Opportunity records belong in Supabase rather than this repository. Because the résumé builder is a static page on a public origin, it can hold no secret: any Supabase access must be gated by row-level security or brokered server-side, never by a key embedded in the page. The Worker's origin allowlist and `TAILOR_KEY` are a cost speed bump, not authentication, and are not sufficient on their own in front of private records.
+
+Keep personal historical staging/seed data, reconciliation reports, backups, source excerpts and generated import artifacts outside this repository. `.gitignore` guards directories named `career-radar-private/` or `career-radar-import-artifacts/` and recognizable artifact filenames against accidental staging. Use the guarded naming patterns when naming import artifacts; never force-add private data. These patterns are a backstop, not permission to store private files here: ignored files can still enter a locally uploaded Pages artifact, and arbitrary filenames are not automatically protected.
 
 Radar uses Supabase Auth + RLS. Supply `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` through the environment; its public-config generator emits only these browser-safe settings. Never pass secret/service-role keys to the application. Keep operator credentials outside this repository. Generated `public-env.js` is ignored; Pages generates it from matching GitHub repository variables during deployment. Missing variables leave the résumé deployment operational and Radar shows a setup error. Preserve Supabase's exact `updated_at` string for guarded writes, including microseconds. Render user-entered content as text, preserve drafts on failed saves, and create history only through the database trigger.
 

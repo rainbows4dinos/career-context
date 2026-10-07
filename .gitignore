@@ -8,3 +8,17 @@ node_modules/
 supabase/.temp/
 supabase/.branches/
 tools/career-radar/public-env.js
+
+# Private job-search import artifacts: keep outside the repository.
+# These unanchored patterns also guard accidental copies in subdirectories.
+# Do not ignore general JSON/SQL files: sanitized fixtures and migrations belong in Git.
+career-radar-private/
+career-radar-import-artifacts/
+career-radar-staging*.json
+career-radar-seed*.json
+career-radar-import*.json
+reconciled-import*.json
+reconciliation-report*.md
+career-radar-backup*.json
+prospects-backup*.json
+prospect-status-events-backup*.json
