@@ -2,7 +2,7 @@
 
 Date: October 7, 2026
 
-Status: Architecture approved by the user on October 7, 2026, with the decisions recorded below. Only the first Greenhouse vertical slice is authorized. Its local implementation and deployment instructions are in [the Greenhouse guide](career-radar-greenhouse-ingestion.md); hosted deployment/dogfooding remain outstanding. Other providers and discovery remain future work.
+Status: Architecture approved by the user on October 7, 2026, with the decisions recorded below. Only the first Greenhouse vertical slice is authorized. Its implementation, deployment and initial authenticated hosted acceptance are recorded in [the Greenhouse guide](career-radar-greenhouse-ingestion.md), including the remaining manual-create coverage gap. Other providers and discovery remain future work.
 
 ## Goal and scope
 

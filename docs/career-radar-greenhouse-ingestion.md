@@ -1,6 +1,6 @@
 # Career Radar: Greenhouse URL ingestion
 
-Implemented October 7, 2026. Local validation is complete; the Edge Function has **not been deployed or tested against hosted Supabase**. No schema migration or generated database-type regeneration is needed.
+Implemented and deployed October 7, 2026, from checkpoint `8540d9c`. The Greenhouse flow has been tested on deployed Pages with the real authenticated Radar account; results and the remaining manual-create coverage gap are recorded below. No schema migration or generated database-type regeneration is needed.
 
 ## Use
 
@@ -92,7 +92,9 @@ GitHub Pages and the Edge Function deploy separately. The existing Pages workflo
 
    `--use-api` permits server-side bundling without Docker. Keep the checked-in import map/configuration and JWT verification enabled. Do not use `--no-verify-jwt`. Operator login/access tokens stay outside source files. The [Supabase deployment guide](https://supabase.com/docs/guides/functions/deploy) covers deployment.
 
-4. Publish the static changes through the existing Pages workflow. Then sign in and dogfood one current Greenhouse link: retrieve, cancel (no row), retrieve again, edit, save, reload and inspect history. Repeat the same URL to check duplicate choices. Also check an unavailable posting and a disallowed host. Hosted authenticated function/deployment acceptance is still outstanding.
+4. Publish the static changes through the existing Pages workflow. Then sign in and dogfood one current Greenhouse link: retrieve, cancel (no row), retrieve again, edit, save, reload and inspect history. Repeat the same URL to check duplicate choices. Also check an unavailable posting and a disallowed host. Repeat these checks after future deployments; the initial hosted results are recorded below.
+
+The initial deployment configured only the three required `RADAR_*` settings, with the Pages origin alone in `RADAR_ALLOWED_ORIGINS`. Localhost origins are optional development additions, not required for hosted use. The deployed function is active with its import map and `verify_jwt = true`; existing Pages public variables were reused without modification.
 
 For a full local Supabase stack, `supabase functions serve job-ingest --env-file <private-file>` uses the same handler; configure the local public key and local Auth user UUID. Docker is required for that stack. The disposable fixture below is an independent substitute for browser-flow checks, not actual gateway/JWT deployment coverage.
 
@@ -130,6 +132,22 @@ Live smoke checks used five public GETs: one board lookup, two actual Greenhouse
 
 The extra HTTP smoke initially reached an existing Python static server on port 8000 (501), and an alternate loopback address timed out. The exported fetch entry was then run with the documented `deno serve --host=127.0.0.1 --port=8778` form on an isolated port; the check passed. No listener or certificate protection was disabled. See [Deno HTTP entry configuration](https://docs.deno.com/runtime/reference/cli/serve/).
 
+## Hosted acceptance — October 7, 2026
+
+Pages successfully published checkpoint `8540d9c` through [workflow run 37666916974](https://github.com/rainbows4dinos/career-context/actions/runs/37666916974). The function was separately deployed through API bundling, without Docker, migrations or privileged browser credentials.
+
+Using the real signed-in Pages application and a user-selected live Greenhouse posting:
+
+- Retrieval, tracking-parameter removal, editable facts and field-source labels worked. Missing employment type stayed blank; the pay-interval warning remained visible. Source and applied date were not inferred.
+- Editing and Cancel left all **40 existing prospects and 45 status events** byte-for-byte unchanged, verified against private read-only database exports.
+- Explicit Save created exactly **one prospect and one initial `null → prospect` event**. The new prospect retained the canonical URL, capture date, plain-text description and multiline compensation. Reload restored the same UUID, facts, status and history.
+- Repeating the posting through the alternate hosted alias detected the same canonical identity. Normal Save required duplicate review; Open existing reached the original UUID without merging or adding another record. The native draft-discard confirmation was accepted; browser automation retained stale dialog state afterward, so subsequent checks used a fresh tab.
+- An unavailable posting produced the expected fallback and left manual entry enabled.
+- The hosted manual form accepted core fields without retrieval and enforced required company/title validation. A second manual create was **not performed**: only one real prospect was supplied, and no disposable or duplicate production record was added. Actual manual creation remains covered by the passing local browser/create-path tests; a separate hosted manual save remains an acceptance gap.
+- Final database comparison found **41 prospects and 46 events**, with every pre-existing row, exact `updated_at` revision and history event unchanged. Backups, record-level evidence and screenshots remain outside the public repository.
+
+No application behavior difference between local and hosted ingestion was found. The Pages workflow succeeded with non-blocking runner/action deprecation notices; deployment configuration was not broadened to address them. Other ATS adapters and discovery remain unimplemented.
+
 ## Limits and next review
 
 - Only the two approved global hosted Greenhouse domains and documented individual API are implemented. Custom employer URLs and regional hosts need deliberate identity/allowlist decisions.
@@ -137,6 +155,6 @@ The extra HTTP smoke initially reached an existing Python static server on port 
 - Provider and requisition metadata is not persisted. Canonical URLs support same-posting matching; custom aliases and repostings can evade it. Same-title postings with distinct known IDs are kept separate. Missing-location same-company/title matches are review candidates, not proof of duplication.
 - Client checks cannot prevent simultaneous-tab duplicates without database uniqueness. No automatic merge is available. Existing UUIDs and revisions are untouched.
 - Preview drafts are in memory only. The function supplies current public facts, not a historical snapshot; expired postings cannot be recovered.
-- Hosted deployment, gateway JWT verification, exact Pages CORS and authenticated acceptance still need dogfooding. No live credentials, records or schema were changed during this implementation.
+- Hosted deployment, enabled gateway JWT verification, exact Pages CORS, unauthenticated rejection and the authenticated Greenhouse flow are verified. A separate hosted manual-create test remains open. Implementation itself changed no live records; the subsequently authorized hosted acceptance saved one real prospect through the browser's existing create path. No schema was changed.
 
 Before Ashby/Lever, retain per-field provenance and provider-specific date/pay semantics. Greenhouse confirmed that a returned posting URL can be a custom domain, pay intervals are unspecified, and employer metadata is not standardized; these must not silently become normalized facts. No broader architecture or schema change is justified by this slice. Review and dogfood Greenhouse first.
