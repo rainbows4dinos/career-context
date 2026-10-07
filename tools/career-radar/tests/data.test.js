@@ -120,6 +120,18 @@ test('board queries narrow fields and paginate in stable order', async () => {
   assert.ok(requests[0].url.searchParams.get('select').split(',').includes('discovered_on'));
 });
 
+test('duplicate identity query includes every page, job URL/status/date and exact revision', async () => {
+  const { data, requests } = harness([{ body: Array.from({ length: 500 }, () => row) }, { body: [{ ...row, job_url: 'https://example.invalid/job' }] }]);
+  const identities = await data.listProspectIdentities();
+  assert.equal(identities.length, 501);
+  assert.equal(identities[500].job_url, 'https://example.invalid/job');
+  assert.equal(identities[500].updated_at, revision);
+  assert.equal(requests[0].url.searchParams.get('select'), 'id,company,title,job_url,location,status,applied_on,updated_at');
+  assert.equal(requests[0].url.searchParams.get('order'), 'id.asc');
+  assert.equal(requests[1].url.searchParams.get('offset'), '500');
+  assert.equal(requests.every(request => request.method === 'GET'), true);
+});
+
 test('invalid input is rejected without HTTP calls', async () => {
   const { data, requests } = harness([]);
   await assert.rejects(data.updateProspect(id, { owner_id: id }, revision));

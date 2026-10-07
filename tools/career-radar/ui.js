@@ -107,7 +107,17 @@ export function editorView(root, row) {
   const details = el('details'); details.append(el('summary', 'More job details'));
   const extra = el('div', '', 'field-grid');
   for (const [name, label] of /** @type {const} */ ([['source','Source'], ['location','Location'], ['employment_type','Employment type'], ['compensation_text','Compensation range / type']])) {
-    extra.append(field(name, label, row?.[name] ?? ''));
+    extra.append(field(name, label, row?.[name] ?? '', name === 'compensation_text' ? 'textarea' : 'text'));
+  }
+  const source = extra.querySelector('input[name="source"]');
+  if (source) {
+    source.setAttribute('list', 'source-options');
+    const options = el('datalist'); options.id = 'source-options';
+    for (const value of ['ChatGPT', 'LinkedIn', 'Welcome to the Jungle', 'Referral', 'Company site', 'Other']) {
+      const option = el('option'); option.value = value; options.append(option);
+    }
+    extra.append(options);
+    source.closest('label')?.append(el('small', 'Optional discovery channel; any text is allowed.', 'muted'));
   }
   extra.append(selectField('work_arrangement', 'Work arrangement', WORK_ARRANGEMENTS, row?.work_arrangement ?? '', true));
   for (const [name, label] of /** @type {const} */ ([['posted_on','Posted date'], ['discovered_on','Discovered date'], ['applied_on','Applied date']])) extra.append(field(name, label, row?.[name] ?? '', 'date'));

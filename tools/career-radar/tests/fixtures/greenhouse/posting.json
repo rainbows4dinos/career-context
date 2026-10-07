@@ -1,0 +1,16 @@
+{
+  "id": 12345,
+  "company_name": "Example Studio",
+  "title": "Senior Product Designer",
+  "requisition_id": "DES-42",
+  "location": { "name": "Remote — United States" },
+  "first_published": "2026-09-30T09:00:00-04:00",
+  "updated_at": "2026-10-05T12:00:00Z",
+  "absolute_url": "https://example.invalid/careers?gh_jid=12345",
+  "content": "&lt;p&gt;Build thoughtful &amp;amp; accessible tools.&lt;/p&gt;&lt;h2&gt;Responsibilities&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;Design interactions.&lt;/li&gt;&lt;li&gt;Partner with engineers.&lt;/li&gt;&lt;/ul&gt;&lt;script&gt;doNotExecute()&lt;/script&gt;",
+  "metadata": [{ "name": "Employer-specific code", "value": "FT" }],
+  "pay_input_ranges": [
+    { "min_cents": 14000000, "max_cents": 18000000, "currency_type": "USD", "title": "United States", "blurb": "Range depends on experience." },
+    { "min_cents": 15500000, "max_cents": 19500000, "currency_type": "USD", "title": "New York", "blurb": "Applies to this location only." }
+  ]
+}

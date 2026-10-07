@@ -10,6 +10,7 @@ import {
 /** @typedef {import('./model.js').ProspectStatus} ProspectStatus */
 /** @typedef {import('./model.js').StatusEvent} StatusEvent */
 /** @typedef {Pick<Prospect, 'id'|'company'|'title'|'location'|'work_arrangement'|'status'|'applied_on'|'discovered_on'|'created_at'|'updated_at'>} ProspectCard */
+/** @typedef {Pick<Prospect, 'id'|'company'|'title'|'job_url'|'location'|'status'|'applied_on'|'updated_at'>} ProspectIdentity */
 
 export class StaleProspectError extends Error {
   constructor() {
@@ -32,6 +33,21 @@ function validateRevision(value) {
  * @param {import('@supabase/supabase-js').SupabaseClient<Database>} client
  */
 export function createRadarDataAccess(client) {
+  /** All owner-accessible identities, independently of board presentation limits.
+   * @returns {Promise<ProspectIdentity[]>}
+   */
+  async function listProspectIdentities() {
+    /** @type {ProspectIdentity[]} */
+    const prospects = [];
+    for (let offset = 0; ; offset += 500) {
+      const { data, error } = await client.from('prospects')
+        .select('id,company,title,job_url,location,status,applied_on,updated_at')
+        .order('id', { ascending: true }).range(offset, offset + 499);
+      if (error) throw error;
+      prospects.push(...data.map(row => ({ ...row, status: validateStatus(row.status) })));
+      if (data.length < 500) return prospects;
+    }
+  }
   /** @returns {Promise<ProspectCard[]>} */
   async function listProspects() {
     /** @type {ProspectCard[]} */
@@ -137,5 +153,5 @@ export function createRadarDataAccess(client) {
     }
   }
 
-  return { listProspects, getProspect, createProspect, updateProspect, updateAssessment, setConnections, changeStatus, listStatusEvents };
+  return { listProspects, listProspectIdentities, getProspect, createProspect, updateProspect, updateAssessment, setConnections, changeStatus, listStatusEvents };
 }

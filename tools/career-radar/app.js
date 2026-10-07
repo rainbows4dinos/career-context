@@ -2,6 +2,7 @@ import { createRadarDataAccess, StaleProspectError } from './data.js';
 import { errorMessage, parseRoute, readDetails } from './view-model.js';
 import { validateStatus } from './model.js';
 import { boardView, button, editorView, historyView, messageView } from './ui.js';
+import { mountIngestion } from './ingestion-ui.js';
 
 /** @param {import('@supabase/supabase-js').SupabaseClient<import('./database.types.js').Database>} client */
 export async function startRadar(client) {
@@ -59,6 +60,9 @@ export async function startRadar(client) {
   function busy(value) {
     pending = value;
     for (const fields of workspace.querySelectorAll('fieldset')) fields.disabled = value;
+    for (const cancel of workspace.querySelectorAll('button.ingestion-cancel')) {
+      /** @type {HTMLButtonElement} */ (cancel).disabled = value && !cancel.hasAttribute('data-retrieving');
+    }
     logout.disabled = value;
     workspace.setAttribute('aria-busy', String(value));
   }
@@ -82,6 +86,12 @@ export async function startRadar(client) {
         const createId = crypto.randomUUID();
         let attemptedCreate = false;
         let form = editorView(workspace, row);
+        const ingestion = route.kind === 'new' ? mountIngestion(form, {
+          client, data, createId, current, busy,
+          markDirty: () => { dirty = true; },
+          canReplace: () => !pending && (!dirty || window.confirm('Replace the job facts in this draft with a retrieved posting? Source, notes and applied date will be kept.')),
+          cancel: () => { busy(false); dirty = false; window.location.hash = '#/board'; }
+        }) : null;
         const bindDetails = () => {
           form.addEventListener('input', () => { dirty = true; });
           form.addEventListener('submit', async event => {
@@ -96,6 +106,9 @@ export async function startRadar(client) {
               else {
                 // A retry first reconciles an uncertain insert using the retained ID.
                 const previous = attemptedCreate ? await data.getProspect(createId) : null;
+                if (!previous && ingestion && !await ingestion.check(patch)) {
+                  feedback.textContent = 'Review the likely duplicates above before saving.'; return;
+                }
                 attemptedCreate = true;
                 row = previous ?? await data.createProspect({ ...patch, id: createId, company: patch.company ?? '', title: patch.title ?? '' });
               }

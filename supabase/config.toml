@@ -32,3 +32,9 @@ enabled = false
 
 [inbucket]
 enabled = false
+
+[functions.job-ingest]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/job-ingest/index.ts"
+import_map = "./functions/job-ingest/deno.json"

@@ -1,6 +1,6 @@
 # Career Radar v0: Manual Prospect Tracking
 
-Career Radar now has a static UI for sign-in, a board grouping twelve canonical statuses into five lifecycle columns, manual prospect creation, core details/notes editing, explicit status changes, and status history. The approved two-table migration was applied to the hosted project on October 6, 2026; public signup is disabled. There is no discovery, scraping, URL ingestion, AI, assessment editor, connection editor, résumé integration, or application automation.
+Career Radar now has a static UI for sign-in, a board grouping twelve canonical statuses into five lifecycle columns, manual prospect creation, core details/notes editing, explicit status changes, and status history. Greenhouse URL-to-preview ingestion is implemented locally with a separately deployed authenticated Edge Function; see [its setup, validation and limits](career-radar-greenhouse-ingestion.md). The approved two-table migration was applied to the hosted project on October 6, 2026; public signup is disabled. There is no discovery, arbitrary-site scraping, AI, assessment editor, connection editor, résumé integration, or application automation.
 
 The résumé builder has one new navigation link to Radar. Its logic, the proxy Worker, and career-context files are unchanged. Radar's npm package remains scoped to `tools/career-radar/`; Pages adds only public configuration generation, without a frontend build step or dependency installation.
 
@@ -9,7 +9,7 @@ The résumé builder has one new navigation link to Radar. Its logic, the proxy 
 Open [Career Radar](../tools/career-radar/index.html) through a web server, or follow its link from the résumé builder. Sign in using the one provisioned Supabase Auth email/password user (separate from your Supabase dashboard login). There is no signup or password-reset UI.
 
 - `#/board`: five lifecycle columns with counts and prospect cards. **Prospects** groups prospect/interested; **Applying** and **Applied** each retain their own column; **In Process** groups recruiter/interviewing/final/offer; **Done** groups passed/rejected/withdrawn/closed. Cards in grouped columns display their exact saved status. Done is visually quieter and collapsed on each board render; select its heading to expand it. The columns fit desktop widths and scroll horizontally on smaller screens. Refresh explicitly to see changes made elsewhere.
-- `#/prospects/new`: only company and role are required. Notes and URL are immediately available; other core fields are under **More job details**.
+- `#/prospects/new`: only company and role are required. Enter manually or retrieve an editable Greenhouse posting preview. Notes and URL are immediately available; other core fields are under **More job details**, which opens for a retrieved preview. Source is optional free text with channel suggestions; compensation supports multiple lines.
 - `#/prospects/<uuid>`: edit details and notes, open a safe job link, or use **Change status**. Status saves separately from details; applied date is not inferred.
 
 Applied shows ten cards by default, retaining its full header count. **Show all N** expands the full column; **Show fewer** restores the preview. Known `applied_on` dates come first, newest first. Undated prospects follow, ordered by `discovered_on` when present or `created_at` otherwise. Ties use creation time descending, then UUID ascending. Creation time is a fallback for visibility only, not an inferred application date; edits do not move undated prospects merely because `updated_at` changed. Every prospect is still fetched and remains available through the full column or its detail route.
@@ -141,6 +141,7 @@ The SDK manages persistent Auth sessions. The UI signs in via `client.auth.signI
 | Function | Contract |
 | --- | --- |
 | `listProspects()` | All paginated board fields, including application/discovery dates; fetched by creation time descending and ID ascending, with Applied presentation ordering in the view-model |
+| `listProspectIdentities()` | All paginated, owner-scoped UUID/company/title/job URL/location/status/application date/exact revision fields for duplicate review; independent of board preview limits |
 | `getProspect(id)` | Full prospect including assessment and validated connections; null if missing/inaccessible |
 | `createProspect(input)` | Requires retained UUID, company, title; database supplies owner/timestamps; returns saved row |
 | `updateProspect(id, patch, expectedUpdatedAt)` | Whitelisted detail/assessment/connection patch; never changes status or ownership |
@@ -204,7 +205,7 @@ The vertical slice is **user-confirmed manually on the hosted project**, followi
 
 ### Vertical-slice validation
 
-Typecheck, lint, and all 31 tests pass. UI tests cover route validation, grouping canonical statuses into lifecycle columns without mutating records, Applied ordering and preview expansion, application-date labels without timezone shifts or inferred dates, core form normalization without overwriting assessments/connections/status, and actionable network errors. Data-access tests now use the actual vendored browser SDK. Additional checks verify vendored bytes/licenses/provenance against the locked npm package and exercise SDK sign-in, persistent session restoration, authenticated requests, and sign-out using synthetic HTTP responses.
+Typecheck, lint, and all 45 tests pass; the ingestion function also passes its Deno typecheck/lint and two tests. See [Greenhouse validation](career-radar-greenhouse-ingestion.md#validation) for the new coverage. Existing UI tests cover route validation, grouping canonical statuses into lifecycle columns without mutating records, Applied ordering and preview expansion, application-date labels without timezone shifts or inferred dates, core form normalization without overwriting assessments/connections/status, and actionable network errors. Data-access tests use the actual vendored browser SDK. Additional checks verify vendored bytes/licenses/provenance against the locked npm package and exercise SDK sign-in, persistent session restoration, authenticated requests, and sign-out using synthetic HTTP responses.
 
 Browser acceptance used the real browser application and pinned Supabase SDK with a disposable local HTTP fixture backed by PGlite running the actual migration, roles, RLS, and triggers. Its Auth responses were synthetic; it did not connect to the hosted project. Verified:
 
@@ -226,4 +227,4 @@ No fixture records or credentials were written to hosted Supabase by Codex's tes
 
 The board groups statuses for presentation only; the editor still offers all twelve canonical statuses, and Supabase records/history are unchanged. Applied and Done expansion is not saved across refreshes or navigation. Application-age labels are not implemented. There is no filtering, drag-and-drop, realtime subscription, or saved ordering. Refresh or revisit the board for another tab's changes. Details and status save independently. There is no delete, assessment editor, connection editor, signup, or password-recovery UI. Existing assessment/connection data is preserved by core edits. Drafts do not survive a confirmed reload/sign-out. Fonts still load through Google Fonts; all Radar JavaScript is served from the repository. The small stylesheet mirrors builder tokens rather than introducing a shared design system.
 
-The next smallest feature milestone is manually editing a prospect's connections with the existing JSONB validation and revision guard. Verify Pages deployment before extending the slice; automated authenticated hosted acceptance remains a separate validation gap.
+The current authorized milestone is the [Greenhouse URL ingestion slice](career-radar-greenhouse-ingestion.md). Deploy and dogfood it before extending to other ATS platforms. Manual connection editing remains a separate future milestone; automated authenticated hosted acceptance remains a separate validation gap.

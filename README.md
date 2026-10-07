@@ -2,7 +2,7 @@
 
 Shared professional context and personal career tools for Larry Reynolds: résumé tailoring, portfolio positioning, interview preparation, and opportunity evaluation.
 
-The résumé and cover-letter builder and Career Radar are the existing tools. Radar currently supports manual job tracking; discovery and evaluation are future milestones. The résumé builder will remain as the project grows.
+The résumé and cover-letter builder and Career Radar are the existing tools. Radar supports manual job tracking and editable Greenhouse URL previews (the retrieval function deploys separately); discovery and evaluation are future milestones. The résumé builder will remain as the project grows.
 
 ## Shared career context
 
@@ -24,6 +24,8 @@ Career Radar can reuse career facts, positioning, and supporting evidence. Its s
 
 Career Radar's database and typed application live in `supabase/` and `tools/career-radar/`. The initial migration is applied to the hosted project. See [setup and validation](docs/career-radar-v0.md) and the [implementation plan](docs/career-radar-v0-implementation-plan.md).
 
+For the Greenhouse URL import slice, see [function deployment and validation](docs/career-radar-greenhouse-ingestion.md) and the [approved ingestion architecture](docs/career-radar-url-ingestion-plan.md).
+
 ## Repository instructions
 
 [AGENTS.md](AGENTS.md) is the canonical, tool-agnostic source of development instructions. [CLAUDE.md](CLAUDE.md) imports it for Claude Code compatibility. Keep shared instructions in `AGENTS.md`.
@@ -33,7 +35,7 @@ Repository agents should read `AGENTS.md` and the career files relevant to their
 ## Existing tools
 
 - [tools/resume-tailor.html](tools/resume-tailor.html): the résumé and cover-letter builder. One standalone page covering tailoring, revisions, QA warnings, and downloads.
-- [tools/career-radar/index.html](tools/career-radar/index.html): private manual prospect tracking with a status board, core details, and status history. Also linked from the résumé builder.
+- [tools/career-radar/index.html](tools/career-radar/index.html): private prospect tracking with a status board, core details, status history and Greenhouse posting previews. Also linked from the résumé builder.
 - [tools/proxy-worker.js](tools/proxy-worker.js): Cloudflare Worker that proxies Anthropic API requests using a server-side secret.
 - [tools/wrangler.toml](tools/wrangler.toml): configuration for the separately deployed Worker.
 - [.github/workflows/pages.yml](.github/workflows/pages.yml): publishes the repository root to GitHub Pages on pushes to `main` or manual dispatch.
@@ -45,7 +47,7 @@ For architecture and the constraints that apply when changing any of this, see [
 
 ## Deployment and editing
 
-The site and the Worker deploy separately. Pushing to `main` publishes the repository root to GitHub Pages; the Worker ships on its own with `wrangler deploy`.
+The site, résumé Worker and Radar ingestion function deploy separately. Pushing to `main` publishes the repository root to GitHub Pages; the Worker ships on its own with `wrangler deploy`, and the ingestion function uses the Supabase CLI.
 
 The builder fetches the five shared files above from `main` at runtime, so editing one locally changes nothing until it is pushed — including when you serve the page from your own machine.
 

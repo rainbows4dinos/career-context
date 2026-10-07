@@ -1,4 +1,4 @@
-/** @typedef {import('./database.types.js').Database} Database */
+/** @typedef {import('./database.types.ts').Database} Database */
 /** @typedef {Database['public']['Tables']['prospects']['Row']} ProspectRow */
 /** @typedef {Database['public']['Tables']['prospect_status_events']['Row']} StatusEvent */
 /** @typedef {'prospect'|'interested'|'applying'|'applied'|'recruiter'|'interviewing'|'final'|'offer'|'passed'|'rejected'|'withdrawn'|'closed'} ProspectStatus */
@@ -99,7 +99,7 @@ export function validateConnections(value) {
  */
 export function normalizePatch(patch) {
   if (!patch || typeof patch !== 'object' || Array.isArray(patch)) throw new Error('Patch must be an object');
-  /** @type {Record<string, import('./database.types.js').Json|undefined>} */
+  /** @type {Record<string, import('./database.types.ts').Json|undefined>} */
   const result = {};
   for (const [key, value] of Object.entries(patch)) {
     if (!EDITABLE_FIELDS.has(key)) throw new Error(`Field cannot be edited: ${key}`);

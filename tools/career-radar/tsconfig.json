@@ -12,6 +12,6 @@
     "skipLibCheck": true,
     "lib": ["ES2022", "DOM"]
   },
-  "include": ["*.js", "*.ts", "tests/types.test.ts"],
+  "include": ["*.js", "*.ts", "ingestion/*.js", "tests/types.test.ts"],
   "exclude": ["public-env.js"]
 }

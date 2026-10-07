@@ -10,8 +10,9 @@ export default [
       sourceType: 'module',
       globals: {
         process: 'readonly', URL: 'readonly', crypto: 'readonly',
-        console: 'readonly', Buffer: 'readonly', Response: 'readonly',
-        Request: 'readonly', Headers: 'readonly', setTimeout: 'readonly', atob: 'readonly',
+        console: 'readonly', Buffer: 'readonly', Response: 'readonly', fetch: 'readonly',
+        Request: 'readonly', Headers: 'readonly', setTimeout: 'readonly', clearTimeout: 'readonly', atob: 'readonly',
+        TextDecoder: 'readonly', AbortController: 'readonly', ReadableStream: 'readonly',
         document: 'readonly', window: 'readonly', localStorage: 'readonly',
         Element: 'readonly', HTMLInputElement: 'readonly', FormData: 'readonly'
       }
