@@ -2,7 +2,7 @@
 
 Shared professional context and personal career tools for Larry Reynolds: résumé tailoring, portfolio positioning, interview preparation, and opportunity evaluation.
 
-The résumé and cover-letter builder and Career Radar are the existing tools. Radar supports manual job tracking and editable job URL previews (Greenhouse deployed; Ashby/Lever implemented locally pending deployment); discovery and evaluation are future milestones. The résumé builder will remain as the project grows.
+The résumé and cover-letter builder and Career Radar are the existing tools. Radar supports manual job tracking and editable job URL previews (Greenhouse, Ashby and Lever deployed); discovery and evaluation are future milestones. The résumé builder will remain as the project grows.
 
 ## Shared career context
 

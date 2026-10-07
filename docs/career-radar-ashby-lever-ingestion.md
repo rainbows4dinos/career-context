@@ -1,6 +1,6 @@
 # Career Radar: Ashby and Lever URL ingestion
 
-Implemented locally October 7, 2026, extending the deployed Greenhouse slice. Ashby and Lever have **not been deployed or tested against hosted Radar**. This milestone changes no database schema, records, generated database types, browser configuration, dependency versions, résumé code or Worker. Review before deployment; Workday and discovery remain out of scope.
+Implemented, committed and deployed October 7, 2026, from checkpoint `f777986`, extending the deployed Greenhouse slice. Authenticated hosted acceptance passed for both adapters; results and the manual-entry limitation are recorded below. The implementation changes no database schema, generated database types, browser configuration, dependency versions, résumé code or Worker. User-approved acceptance saves are recorded below. Review and dogfood before Workday; discovery remains out of scope.
 
 ## Use and shared behavior
 
@@ -86,7 +86,7 @@ October 7 results: **68 Node tests and 4 Deno tests pass**, plus both typechecks
 
 The persistence tests use the actual SDK and migration-backed PGlite with RLS/triggers. Each new provider's retrieval/discard writes nothing, failed create retains its input, and retained-UUID retry creates one prospect and one normal initial event. The Deno tests independently exercise Auth-before-outbound handling for all providers.
 
-Local Chrome acceptance used the real app and SDK against the disposable fixture, never hosted Supabase. Verified both new providers' editable previews, Cancel without writes, Save/initial history/reload, partial-company validation, optional free-text Source, Ashby failed-save retention/retry, Lever EU recognition, duplicate review/blocking and explicit separate save. Greenhouse retrieval/Cancel/Save/history/reload and normal manual creation still work. Existing duplicate target UUIDs/history remain intact when opened from the board. The new-provider **Open existing link's draft-discard confirmation could not be completed through browser automation**, which stalled; this specific action remains a hosted dogfooding check. The existing confirmation/guard was preserved, not bypassed or changed.
+Local Chrome acceptance used the real app and SDK against the disposable fixture, never hosted Supabase. Verified both new providers' editable previews, Cancel without writes, Save/initial history/reload, partial-company validation, optional free-text Source, Ashby failed-save retention/retry, Lever EU recognition, duplicate review/blocking and explicit separate save. Greenhouse retrieval/Cancel/Save/history/reload and normal manual creation still work. Existing duplicate target UUIDs/history remain intact when opened from the board. The new-provider **Open existing link's draft-discard confirmation could not be completed through browser automation**, which stalled during local acceptance. Subsequent hosted acceptance completed this action for both providers through the native Chrome confirmation. The existing confirmation/guard was preserved, not bypassed or changed.
 
 To reproduce local browser checks:
 
@@ -98,7 +98,7 @@ Use the printed local URL and synthetic `radar@example.invalid` / `fixture-only-
 
 Two public live pipeline smoke checks passed without database writes: an Ashby Monarch Money posting (explicit employer/remote/pay/description; last-publication warning and blank Posted date) and a global Lever demo posting (explicit employer/location/workplace/pay interval, complete description and matched publication date). Tests do not depend on these pages and no live bodies were archived. EU was covered deterministically, not against a live EU posting. These checks are not hosted Edge Function/Pages acceptance.
 
-## Deployment after review
+## Deployment and configuration
 
 No new environment variables, secrets, schema migrations or generated database types are required. Retain the three already-configured server settings: `RADAR_PUBLISHABLE_KEY`, `RADAR_OWNER_ID`, `RADAR_ALLOWED_ORIGINS`. Browser settings and Pages workflow are unchanged.
 
@@ -110,7 +110,19 @@ supabase functions deploy job-ingest --project-ref liwszkldtfxihoyipbai --use-ap
 
 Keep `verify_jwt = true` and the checked-in Deno configuration; do not use `--no-verify-jwt`. Existing server settings should remain provisioned; see [the original configuration guide](career-radar-greenhouse-ingestion.md#deploy-and-configure) if reconfiguration is necessary. Publish the reviewed static changes using the existing Pages workflow after the function update. Do not publish the expanded browser support before updating the handler.
 
-Hosted acceptance remains required: real authenticated retrieval/edit/Cancel, one user-approved real save per provider, reload/history, duplicate Open existing/Save separately/Cancel, partial facts when available, Greenhouse and manual-entry regressions, and confirmation that pre-existing records remain unchanged. Keep private backups/acceptance artifacts outside the public repository. No deployment, commit or hosted prospect write was performed for this milestone.
+Repeat hosted acceptance after future deployments: real authenticated retrieval/edit/Cancel, user-approved saves, reload/history, duplicate Open existing/Save separately/Cancel, partial facts, Greenhouse/manual-entry regressions and unchanged pre-existing records. Keep private backups and record-level evidence outside this public repository. The initial results follow.
+
+## Hosted acceptance — October 7, 2026
+
+- Implementation checkpoint `f777986` was pushed to `main`; the GitHub Pages workflow succeeded. `job-ingest` version 2 is active with its import map and `verify_jwt = true`. Existing server/browser settings were reused; no schema, credential or origin change was needed.
+- The deployed endpoint rejected unauthenticated retrieval with 401 and returned 204 for the existing Pages origin preflight. The real signed-in Radar account retrieved both providers successfully.
+- Each provider produced an editable preview. Editing and Cancel left the prospect/history snapshots exactly unchanged. Two user-selected current jobs were saved through the existing create path, each with one normal initial event and persistence after reload. Missing salary/employment data remained blank; Ashby warned about last publication and kept Posted date blank.
+- Repeating each URL with tracking/application variants detected its original provider identity. Normal preview Save required duplicate review; Open existing reached the same UUID/history after the native unsaved-draft confirmation. No merge or duplicate save was performed through ingestion. Save separately was validated locally and not used to create extra production copies.
+- The first user-selected Ashby URL was unavailable, and its public page independently said Job not found. No record was created for that link; a replacement current URL supplied by the user passed.
+- Existing Greenhouse retrieval/duplicate detection and Cancel passed. The manual form retained required-field validation and successfully created through the normal path. That manual check also exposed the limitation below: manual Add bypasses ingestion duplicate review. Its unintended test duplicate was privately backed up and isolated for guarded cleanup requiring user approval.
+- The open browser initially loaded old Greenhouse-only assets despite a successful Pages publish. Hosted file bytes matched the checkpoint; the browser displayed the new controls after cache expiration/reload. No application behavior mismatch remained. Allow for static asset caching immediately after publishing.
+
+All 41 pre-existing prospects and 46 events were byte-for-byte unchanged in the read-only comparisons. Record-level backups, the cleanup script and screenshots remain outside the public repository. Final cleanup status is recorded after approval.
 
 ## Limits and lessons before Workday
 
@@ -119,7 +131,8 @@ Hosted acceptance remains required: real authenticated retrieval/edit/Cancel, on
 - Only hosted URL shapes are supported. No custom employer domains, board listings, authenticated/private postings or headless retrieval.
 - Ashby republication is not an original posting date. Lever publication depends on matched page metadata. Users may need to supply dates themselves.
 - Pay text intentionally retains tiers and qualifications, sometimes repetitively, rather than flattening them into a guessed numeric salary. Remote eligibility stays readable geography/description text.
+- Manual Add currently bypasses ingestion duplicate review and can create a duplicate. The new adapters do not change this existing behavior; extending review to manual creation is separate follow-up work.
 - Same-provider distinct IDs remain separate; cross-provider reposts can be possible candidates but never auto-merge. Client matching still cannot prevent concurrent-tab duplicates.
 - Do not assume Workday has an equivalent supported public API. Validate representative tenant/site URL identities and structured data in a separate spike before adding destinations. Keep its date, employer and description semantics explicit; a missing structured-data response should fall back to manual entry, not widen the retrieval boundary or introduce headless browsing.
 
-Stop here for review and hosted dogfooding. Workday is not implemented or authorized by this milestone.
+Stop here for review and continued hosted dogfooding. Workday is not implemented or authorized by this milestone.

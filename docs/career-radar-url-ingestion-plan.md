@@ -2,7 +2,7 @@
 
 Date: October 7, 2026
 
-Status: Architecture approved by the user on October 7, 2026, with the decisions recorded below. Greenhouse was the first authorized slice; its deployment and authenticated hosted acceptance are recorded in [the Greenhouse guide](career-radar-greenhouse-ingestion.md). The user subsequently authorized Ashby and Lever using that reference architecture; their local implementation, validation and pending deployment are recorded in [the adapter guide](career-radar-ashby-lever-ingestion.md). Workday, generic employer retrieval and discovery remain future work.
+Status: Architecture approved by the user on October 7, 2026, with the decisions recorded below. Greenhouse was the first authorized slice; its deployment and authenticated hosted acceptance are recorded in [the Greenhouse guide](career-radar-greenhouse-ingestion.md). The user subsequently authorized Ashby and Lever using that reference architecture; their implementation, deployment and authenticated hosted validation are recorded in [the adapter guide](career-radar-ashby-lever-ingestion.md). Workday, generic employer retrieval and discovery remain future work.
 
 ## Goal and scope
 
@@ -220,7 +220,7 @@ Greenhouse is implemented, deployed and authenticated hosted acceptance is recor
 
 ### Subsequent Ashby/Lever authorization
 
-The user approved the next two provider adapters with the same authentication, review/save flow, source/discovery semantics and bounded allowlist. These are now implemented and locally validated; review and hosted deployment/acceptance come next. Ashby uses its public board API plus exact hosted employer metadata, keeps all compensation tiers/geography, and warns about last publication without filling `posted_on`. Lever supports global/EU individual APIs plus exact hosted employer metadata and complete description sections. The shared preview contract adds provider/method variants and optional Lever region without a breaking shape change. See [implementation details and limits](career-radar-ashby-lever-ingestion.md).
+The user approved the next two provider adapters with the same authentication, review/save flow, source/discovery semantics and bounded allowlist. These are implemented, deployed and validated locally and with authenticated hosted acceptance. Review and dogfood before Workday. Ashby uses its public board API plus exact hosted employer metadata, keeps all compensation tiers/geography, and warns about last publication without filling `posted_on`. Lever supports global/EU individual APIs plus exact hosted employer metadata and complete description sections. The shared preview contract adds provider/method variants and optional Lever region without a breaking shape change. See [implementation details and limits](career-radar-ashby-lever-ingestion.md).
 
 No Workday, generic arbitrary-host retrieval, discovery, AI, automatic merge or schema change is authorized or implemented by this extension.
 

@@ -2,13 +2,13 @@
 
 Implemented and deployed October 7, 2026, from checkpoint `8540d9c`. The Greenhouse flow has been tested on deployed Pages with the real authenticated Radar account; results and the remaining manual-create coverage gap are recorded below. No schema migration or generated database-type regeneration is needed.
 
-This guide records the Greenhouse reference slice and its hosted acceptance. For the subsequent locally implemented adapters and current shared module inventory, see [Ashby/Lever ingestion](career-radar-ashby-lever-ingestion.md). Their deployment and hosted acceptance are still pending.
+This guide records the Greenhouse reference slice and its hosted acceptance. For the subsequent deployed adapters and current shared module inventory, see [Ashby/Lever ingestion](career-radar-ashby-lever-ingestion.md). Their deployment and authenticated hosted acceptance are recorded there.
 
 ## Use
 
 On **Add prospect**, paste a hosted Greenhouse job link and select **Retrieve posting**. Retrieval produces an editable preview; it never saves a prospect. Review extracted fields, missing-field labels, and warnings, then select **Save prospect** or **Cancel**. Company and title remain required. The manual form works without the function being deployed.
 
-Supported links use `boards.greenhouse.io/<board>/jobs/<id>`, `job-boards.greenhouse.io/<board>/jobs/<id>`, or `/embed/job_app?for=<board>&token=<id>` on those hosts. HTTPS only. Tracking parameters, fragments and the two hosted aliases normalize to `https://job-boards.greenhouse.io/<board>/jobs/<id>`. Custom employer URLs, regional Greenhouse hosts and board listings are unsupported; their original input remains visible for manual entry. The new local implementation additionally recognizes hosted Ashby/Lever identities as described in the linked guide; they require redeployment.
+Supported links use `boards.greenhouse.io/<board>/jobs/<id>`, `job-boards.greenhouse.io/<board>/jobs/<id>`, or `/embed/job_app?for=<board>&token=<id>` on those hosts. HTTPS only. Tracking parameters, fragments and the two hosted aliases normalize to `https://job-boards.greenhouse.io/<board>/jobs/<id>`. Custom employer URLs, regional Greenhouse hosts and board listings are unsupported; their original input remains visible for manual entry. The new local implementation additionally recognizes hosted Ashby/Lever identities as described in the linked guide; they are deployed with the same function.
 
 **Source** is an optional discovery channel, with suggestions and arbitrary text allowed. It is never filled with the ATS provider. Manual ingestion initializes **Discovered date** to the date first captured in Radar, using UTC; it is editable. The pipeline also accepts an explicit caller-supplied discovery date for future reuse. Applied date, assessment and connections are not inferred. New prospects use the existing `prospect` default.
 
@@ -148,7 +148,7 @@ Using the real signed-in Pages application and a user-selected live Greenhouse p
 - The hosted manual form accepted core fields without retrieval and enforced required company/title validation. A second manual create was **not performed**: only one real prospect was supplied, and no disposable or duplicate production record was added. Actual manual creation remains covered by the passing local browser/create-path tests; a separate hosted manual save remains an acceptance gap.
 - Final database comparison found **41 prospects and 46 events**, with every pre-existing row, exact `updated_at` revision and history event unchanged. Backups, record-level evidence and screenshots remain outside the public repository.
 
-No application behavior difference between local and hosted ingestion was found. The Pages workflow succeeded with non-blocking runner/action deprecation notices; deployment configuration was not broadened to address them. At this Greenhouse deployment checkpoint other ATS adapters and discovery were unimplemented. Ashby/Lever have since been implemented locally, without another deployment.
+No application behavior difference between local and hosted ingestion was found. The Pages workflow succeeded with non-blocking runner/action deprecation notices; deployment configuration was not broadened to address them. At this Greenhouse deployment checkpoint other ATS adapters and discovery were unimplemented. Ashby/Lever have since been deployed and validated; see the linked adapter guide.
 
 ## Limits and next review
 
