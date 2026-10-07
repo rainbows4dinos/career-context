@@ -1,4 +1,4 @@
-import { APPLIED_CARD_LIMIT, groupCards, statusLabel, visibleCards } from './view-model.js';
+import { APPLIED_CARD_LIMIT, formatAppliedDate, groupCards, statusLabel, visibleCards } from './view-model.js';
 import { STATUSES, WORK_ARRANGEMENTS, validateHttpUrl } from './model.js';
 
 /** @template {keyof HTMLElementTagNameMap} T @param {T} tag @param {string} [text] @param {string} [className] */
@@ -50,7 +50,11 @@ export function boardView(root, cards, refresh) {
         const node = link('', `#/prospects/${card.id}`); node.className = 'prospect-card';
         node.append(el('strong', card.company), el('span', card.title));
         if (group.statuses.length > 1) node.append(el('span', statusLabel(card.status), 'card-status'));
-        node.append(el('small', [card.location, card.work_arrangement && statusLabel(card.work_arrangement)].filter(Boolean).join(' · ') || 'Location not specified'));
+        const appliedDate = formatAppliedDate(card.applied_on);
+        if (appliedDate) {
+          const time = el('time', `Applied ${appliedDate}`); time.dateTime = card.applied_on ?? '';
+          node.append(time);
+        }
         return node;
       }));
     }

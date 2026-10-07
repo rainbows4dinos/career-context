@@ -1,9 +1,27 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRoute, groupCards, visibleCards, readDetails, errorMessage } from '../view-model.js';
+import { parseRoute, groupCards, visibleCards, formatAppliedDate, readDetails, errorMessage } from '../view-model.js';
 import { STATUSES } from '../model.js';
 
 const id = '11111111-1111-4111-8111-111111111111';
+test('card application dates preserve the saved calendar day across viewer timezones', () => {
+  const previousTimezone = process.env.TZ;
+  try {
+    for (const timezone of ['America/Los_Angeles', 'Pacific/Honolulu', 'Pacific/Kiritimati']) {
+      process.env.TZ = timezone;
+      assert.equal(formatAppliedDate('2026-10-01'), 'Oct 1, 2026');
+      assert.equal(formatAppliedDate('2024-02-29'), 'Feb 29, 2024');
+    }
+  } finally {
+    if (previousTimezone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousTimezone;
+  }
+});
+test('missing or invalid application dates have no card label or inferred fallback', () => {
+  for (const date of [null, undefined, '', 'unknown', '2026-02-29', '2026-04-31', '2026-13-01', '2026-10-01T00:00:00Z']) {
+    assert.equal(formatAppliedDate(date), null);
+  }
+});
 test('hash routes work under a Pages subdirectory and reject malformed prospect IDs', () => {
   assert.deepEqual(parseRoute(''), { kind: 'board' });
   assert.deepEqual(parseRoute('#/board'), { kind: 'board' });

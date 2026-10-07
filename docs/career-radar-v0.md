@@ -14,6 +14,8 @@ Open [Career Radar](../tools/career-radar/index.html) through a web server, or f
 
 Applied shows ten cards by default, retaining its full header count. **Show all N** expands the full column; **Show fewer** restores the preview. Known `applied_on` dates come first, newest first. Undated prospects follow, ordered by `discovered_on` when present or `created_at` otherwise. Ties use creation time descending, then UUID ascending. Creation time is a fallback for visibility only, not an inferred application date; edits do not move undated prospects merely because `updated_at` changed. Every prospect is still fetched and remains available through the full column or its detail route.
 
+Cards with a saved `applied_on` date show **Applied Oct 1, 2026** beneath the role/status, in any lifecycle column. The calendar date is formatted without a timezone shift. Unknown dates have no date label; discovery/creation timestamps are never displayed as application dates. Location and work arrangement remain editable in prospect details but are omitted from board cards.
+
 Saves wait for database confirmation. Failed saves retain the draft; conflicts retain it and offer **Reload saved prospect**, which explicitly discards the draft. Create retries reconcile the same UUID before attempting another insert. Unsaved navigation and reload prompt before discarding. Drafts live only in memory and are lost on a confirmed reload or sign-out. Auth sessions persist through the SDK; prospect state lives in Supabase. A signed-out event clears private views and drafts in every open Radar tab.
 
 The UI builds user content with DOM text nodes, never HTML interpretation. It uses the résumé builder's font/color/radius tokens and shared `theme` preference without extracting or refactoring the builder's styles.
@@ -202,7 +204,7 @@ The vertical slice is **user-confirmed manually on the hosted project**, followi
 
 ### Vertical-slice validation
 
-Typecheck, lint, and all 29 tests pass. UI tests cover route validation, grouping canonical statuses into lifecycle columns without mutating records, Applied ordering and preview expansion, core form normalization without overwriting assessments/connections/status, and actionable network errors. Data-access tests now use the actual vendored browser SDK. Additional checks verify vendored bytes/licenses/provenance against the locked npm package and exercise SDK sign-in, persistent session restoration, authenticated requests, and sign-out using synthetic HTTP responses.
+Typecheck, lint, and all 31 tests pass. UI tests cover route validation, grouping canonical statuses into lifecycle columns without mutating records, Applied ordering and preview expansion, application-date labels without timezone shifts or inferred dates, core form normalization without overwriting assessments/connections/status, and actionable network errors. Data-access tests now use the actual vendored browser SDK. Additional checks verify vendored bytes/licenses/provenance against the locked npm package and exercise SDK sign-in, persistent session restoration, authenticated requests, and sign-out using synthetic HTTP responses.
 
 Browser acceptance used the real browser application and pinned Supabase SDK with a disposable local HTTP fixture backed by PGlite running the actual migration, roles, RLS, and triggers. Its Auth responses were synthetic; it did not connect to the hosted project. Verified:
 

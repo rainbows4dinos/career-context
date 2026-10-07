@@ -30,6 +30,15 @@ function compareAppliedCards(a, b) {
 export function statusLabel(status) {
   return status === 'final' ? 'Final round' : status.charAt(0).toUpperCase() + status.slice(1);
 }
+/** Calendar dates must not shift to the previous day in the viewer's timezone.
+ * @param {string|null} date
+ */
+export function formatAppliedDate(date) {
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  const parsed = new Date(`${date}T00:00:00Z`);
+  if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) return null;
+  return parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+}
 /** @param {string} hash @returns {{kind: 'board'|'new'|'detail'|'missing', id?: string}} */
 export function parseRoute(hash) {
   if (!hash || hash === '#/board') return { kind: 'board' };
