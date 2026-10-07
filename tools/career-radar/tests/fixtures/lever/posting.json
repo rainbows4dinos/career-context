@@ -1,0 +1,20 @@
+{
+  "id": "22222222-bbbb-4222-8222-222222222222",
+  "text": "Senior Product Designer",
+  "hostedUrl": "https://jobs.lever.co/example/22222222-bbbb-4222-8222-222222222222",
+  "applyUrl": "https://jobs.lever.co/example/22222222-bbbb-4222-8222-222222222222/apply",
+  "categories": { "location": "New York", "allLocations": ["New York", "Toronto, Canada"], "commitment": "Full-time" },
+  "country": "US",
+  "workplaceType": "hybrid",
+  "createdAt": 1000000000000,
+  "opening": "<p>Opening paragraph.</p>",
+  "descriptionBody": "<p>Main role details.</p>",
+  "description": "<p>Opening paragraph.</p><p>Main role details.</p>",
+  "lists": [
+    { "text": "Requirements", "content": "<li>Design clear interactions.</li><li>Collaborate across teams.</li>" },
+    { "text": "Benefits", "content": "<li>Flexible hours.</li>" }
+  ],
+  "additional": "<p>Closing notice &amp; accommodations.</p><script>doNotExecute()</script>",
+  "salaryRange": { "currency": "USD", "interval": "per-year-salary", "min": 140000, "max": 180000 },
+  "salaryDescription": "<p>Location and experience determine range applicability.</p>"
+}

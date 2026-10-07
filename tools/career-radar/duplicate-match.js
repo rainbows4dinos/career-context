@@ -1,11 +1,11 @@
-import { recognizeGreenhouse } from './ingestion/greenhouse-url.js';
+import { recognizePosting, samePosting } from './ingestion/posting-url.js';
 
 /** @param {string|null|undefined} value */
 function normalized(value) { return (value ?? '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US'); }
 /** @param {string|null|undefined} value */
 function posting(value) {
   if (!value) return null;
-  try { const url = new URL(value); if (url.protocol === 'http:') url.protocol = 'https:'; return recognizeGreenhouse(url.href); }
+  try { const url = new URL(value); if (url.protocol === 'http:') url.protocol = 'https:'; return recognizePosting(url.href); }
   catch { return null; }
 }
 /** @param {string|null|undefined} value */
@@ -24,8 +24,9 @@ export function duplicateCandidates(draft, prospects, ignoreId) {
   return prospects.flatMap(prospect => {
     if (prospect.id === ignoreId) return [];
     const other = posting(prospect.job_url);
+    if (identity && other && samePosting(identity, other)) return [{ prospect, strength: 'strong', reason: 'Same provider, board/site, region and posting ID' }];
     if (url && url === canonical(prospect.job_url)) return [{ prospect, strength: 'strong', reason: 'Same canonical job URL / posting identity' }];
-    if (identity && other && identity.canonical_url !== other.canonical_url) return [];
+    if (identity && other && identity.provider === other.provider && !samePosting(identity, other)) return [];
     const sameRole = normalized(draft.company) && normalized(draft.title) && normalized(draft.company) === normalized(prospect.company) && normalized(draft.title) === normalized(prospect.title);
     const conflictingLocation = normalized(draft.location) && normalized(prospect.location) && normalized(draft.location) !== normalized(prospect.location);
     return sameRole && !conflictingLocation ? [{ prospect, strength: 'possible', reason: 'Same company and title; posting identity is not conclusive' }] : [];

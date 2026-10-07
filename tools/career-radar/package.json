@@ -8,7 +8,7 @@
     "test": "node --test tests/*.test.js",
     "functions:typecheck": "deno check --frozen --config ../../supabase/functions/job-ingest/deno.json ../../supabase/functions/job-ingest/index.ts",
     "functions:lint": "deno lint ../../supabase/functions/job-ingest/index.ts ../../supabase/functions/job-ingest/index.test.ts",
-    "test:functions": "deno test --frozen --allow-read=tests/fixtures/greenhouse --config ../../supabase/functions/job-ingest/deno.json ../../supabase/functions/job-ingest/index.test.ts",
+    "test:functions": "deno test --frozen --allow-read=tests/fixtures/greenhouse,tests/fixtures/ashby,tests/fixtures/lever --config ../../supabase/functions/job-ingest/deno.json ../../supabase/functions/job-ingest/index.test.ts",
     "config:generate": "node scripts/generate-public-config.js",
     "vendor:generate": "node scripts/vendor-supabase.js",
     "vendor:check": "node scripts/vendor-supabase.js --check",

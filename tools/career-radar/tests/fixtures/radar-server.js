@@ -1,4 +1,4 @@
-// Disposable acceptance harness only. Synthetic Auth/Greenhouse; real schema,
+// Disposable acceptance harness only. Synthetic Auth/ATS data; real schema,
 // RLS, revision trigger, history trigger and vendored browser SDK. Never hosted.
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -6,6 +6,7 @@ import { resolve, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createLocalDatabase } from '../../scripts/local-database.js';
 import { createIngestionHandler } from '../../ingestion/handler.js';
+import { recognizePosting } from '../../ingestion/posting-url.js';
 
 export async function startFixture(port = 0) {
   const db = await createLocalDatabase();
@@ -13,6 +14,10 @@ export async function startFixture(port = 0) {
   await db.query('insert into auth.users(id) values ($1)', [owner]);
   const root = fileURLToPath(new URL('../../', import.meta.url));
   const posting = JSON.parse(await readFile(new URL('./greenhouse/posting.json', import.meta.url), 'utf8'));
+  const ashby = JSON.parse(await readFile(new URL('./ashby/board.json', import.meta.url), 'utf8'));
+  const lever = JSON.parse(await readFile(new URL('./lever/posting.json', import.meta.url), 'utf8'));
+  const ashbyPage = await readFile(new URL('./ashby/posting.html', import.meta.url), 'utf8');
+  const leverPage = await readFile(new URL('./lever/posting.html', import.meta.url), 'utf8');
   const user = { id: owner, aud: 'authenticated', role: 'authenticated', email: 'radar@example.invalid', created_at: new Date().toISOString(), app_metadata: {}, user_metadata: {}, is_anonymous: false };
   const encode = value => Buffer.from(JSON.stringify(value)).toString('base64url');
   const token = `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ sub: owner, role: 'authenticated', aud: 'authenticated', exp: Math.floor(Date.now() / 1000) + 3600 })}.synthetic`;
@@ -42,6 +47,20 @@ export async function startFixture(port = 0) {
         const handler = createIngestionHandler({ ownerId: owner, allowedOrigins: [origin],
           authenticate: async value => value === token ? owner : null,
           fetcher: async target => {
+            const destination = new URL(String(target));
+            if (destination.hostname.includes('ashbyhq.com') || destination.hostname.endsWith('lever.co')) {
+              const identity = recognizePosting(JSON.parse(text).url);
+              const id = identity.posting_id;
+              if (id.endsWith('000000000404')) return Response.json({}, { status: 404 });
+              const missing = id === '33333333-cccc-4333-8333-333333333333';
+              if (destination.hostname === 'api.ashbyhq.com') {
+                const raw = { ...(missing ? { title: 'Designer' } : ashby.jobs[1]), id, jobUrl: `https://jobs.ashbyhq.com/example/${id}` };
+                return Response.json({ ...ashby, jobs: [ashby.jobs[0], raw] });
+              }
+              if (destination.hostname.startsWith('api.')) return Response.json({ ...(missing ? { text: 'Designer' } : lever), id, hostedUrl: `https://${identity.provider === 'lever' && identity.region === 'eu' ? 'jobs.eu.lever.co' : 'jobs.lever.co'}/example/${id}` });
+              const page = missing ? '<html>No employer metadata</html>' : (identity.provider === 'ashby' ? ashbyPage.replaceAll(ashby.jobs[1].id, id) : leverPage);
+              return new Response(page, { headers: { 'content-type': 'text/html' } });
+            }
             const id = /\/jobs\/(\d+)/.exec(String(target))?.[1];
             if (id === '404') return Response.json({}, { status: 404 });
             if (id === '99999') await new Promise(done => setTimeout(done, 5000));

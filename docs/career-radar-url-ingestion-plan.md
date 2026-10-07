@@ -2,7 +2,7 @@
 
 Date: October 7, 2026
 
-Status: Architecture approved by the user on October 7, 2026, with the decisions recorded below. Only the first Greenhouse vertical slice is authorized. Its implementation, deployment and initial authenticated hosted acceptance are recorded in [the Greenhouse guide](career-radar-greenhouse-ingestion.md), including the remaining manual-create coverage gap. Other providers and discovery remain future work.
+Status: Architecture approved by the user on October 7, 2026, with the decisions recorded below. Greenhouse was the first authorized slice; its deployment and authenticated hosted acceptance are recorded in [the Greenhouse guide](career-radar-greenhouse-ingestion.md). The user subsequently authorized Ashby and Lever using that reference architecture; their local implementation, validation and pending deployment are recorded in [the adapter guide](career-radar-ashby-lever-ingestion.md). Workday, generic employer retrieval and discovery remain future work.
 
 ## Goal and scope
 
@@ -208,7 +208,7 @@ Browser acceptance should verify that retrieval and cancellation write nothing, 
 
 Live ATS pages should be occasional smoke checks, not the basis of the test suite. Retain the existing scoped typecheck, lint, and tests; add coverage for the server entry point and shared modules without introducing a frontend framework.
 
-## Approved decisions and current stopping point
+## Approved decisions for the initial Greenhouse milestone
 
 1. **Initial coverage:** Greenhouse only through the first complete vertical slice. Ashby/Lever are future targets; no Workday or generic employer retrieval now.
 2. **Retrieval boundary:** global hosted Greenhouse identities and internally constructed API destinations only; no unrestricted fetching or extra employer allowlist.
@@ -216,6 +216,12 @@ Live ATS pages should be occasional smoke checks, not the basis of the test suit
 4. **Field semantics:** optional, editable `source` is the discovery channel with common suggestions and arbitrary text. Provider identity is preview metadata. Manual URL ingestion uses the first capture date in Radar for `discovered_on`; do not infer personal encounter dates. The caller can supply a discovery date to shared normalization later.
 5. **Duplicates:** conservative candidates with Open existing / Save separately / Cancel, no automatic merge. Recheck before existing create-path persistence.
 
-Contract, fixtures, bounded retrieval and the browser Greenhouse slice are implemented and locally validated. The Edge Function has not been deployed; review and hosted dogfooding come next. This document does not authorize additional providers, automated discovery, schema changes or unrelated features.
+Greenhouse is implemented, deployed and authenticated hosted acceptance is recorded in its guide. The decisions above describe that initial milestone.
+
+### Subsequent Ashby/Lever authorization
+
+The user approved the next two provider adapters with the same authentication, review/save flow, source/discovery semantics and bounded allowlist. These are now implemented and locally validated; review and hosted deployment/acceptance come next. Ashby uses its public board API plus exact hosted employer metadata, keeps all compensation tiers/geography, and warns about last publication without filling `posted_on`. Lever supports global/EU individual APIs plus exact hosted employer metadata and complete description sections. The shared preview contract adds provider/method variants and optional Lever region without a breaking shape change. See [implementation details and limits](career-radar-ashby-lever-ingestion.md).
+
+No Workday, generic arbitrary-host retrieval, discovery, AI, automatic merge or schema change is authorized or implemented by this extension.
 
 Raw-page archives, ingestion tables, queues, headless browsing, automatic merges, and discovery scheduling can wait. The first durable milestone is a secure URL-to-preview flow using the current prospect model and existing save behavior.

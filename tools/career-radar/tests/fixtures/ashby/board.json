@@ -1,0 +1,45 @@
+{
+  "apiVersion": "1",
+  "jobs": [
+    {
+      "id": "99999999-aaaa-4999-8999-999999999999",
+      "title": "Senior Product Designer",
+      "jobUrl": "https://jobs.ashbyhq.com/example/99999999-aaaa-4999-8999-999999999999"
+    },
+    {
+      "id": "11111111-aaaa-4111-8111-111111111111",
+      "title": "Senior Product Designer",
+      "jobUrl": "https://jobs.ashbyhq.com/example/11111111-aaaa-4111-8111-111111111111",
+      "applyUrl": "https://jobs.ashbyhq.com/example/11111111-aaaa-4111-8111-111111111111/application",
+      "location": "Remote — United States",
+      "address": { "postalAddress": { "addressCountry": "United States" } },
+      "secondaryLocations": [{ "location": "Toronto", "address": { "addressRegion": "Ontario", "addressCountry": "Canada" } }],
+      "isListed": true,
+      "isRemote": true,
+      "workplaceType": "Remote",
+      "employmentType": "FullTime",
+      "publishedAt": "2026-10-06T12:00:00.000Z",
+      "descriptionHtml": "<h2>About the role</h2><p>Build thoughtful &amp; accessible tools.</p><h2>Responsibilities</h2><ul><li>Design interactions.</li><li>Collaborate across teams.</li></ul><p>Closing notice.</p><script>doNotExecute()</script>",
+      "descriptionPlain": "Build thoughtful & accessible tools.",
+      "compensation": {
+        "compensationTierSummary": "$140K–$195K • Equity • Location dependent",
+        "compensationTiers": [
+          {
+            "title": "United States",
+            "tierSummary": "$140K–$180K • Equity",
+            "additionalInformation": "Range depends on experience and location.",
+            "components": [
+              { "compensationType": "Salary", "summary": "$140K–$180K", "currencyCode": "USD", "minValue": 140000, "maxValue": 180000, "interval": "1 YEAR" },
+              { "compensationType": "EquityPercentage", "summary": "0.5%–1.75%", "currencyCode": null, "minValue": 0.5, "maxValue": 1.75, "interval": "NONE" }
+            ]
+          },
+          {
+            "title": "New York",
+            "tierSummary": "$155K–$195K",
+            "components": [{ "compensationType": "Salary", "summary": "$155K–$195K", "currencyCode": "USD", "minValue": 155000, "maxValue": 195000, "interval": "1 YEAR" }]
+          }
+        ]
+      }
+    }
+  ]
+}

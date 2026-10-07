@@ -2,6 +2,7 @@ import { retrieveJob } from './ingestion-client.js';
 import { duplicateCandidates } from './duplicate-match.js';
 import { el, button } from './ui.js';
 import { errorMessage, statusLabel } from './view-model.js';
+import { PROVIDER_NAMES } from './ingestion/posting-url.js';
 
 /** UI adapter only: editable preview and explicit duplicate decisions.
  * @param {HTMLFormElement} form
@@ -9,10 +10,10 @@ import { errorMessage, statusLabel } from './view-model.js';
  */
 export function mountIngestion(form, options) {
   const panel = el('section', '', 'panel ingestion');
-  panel.append(el('h3', 'Import a Greenhouse posting'), el('p', 'Paste a hosted Greenhouse job link, then review before saving. Other sites can be entered manually.', 'muted'));
+  panel.append(el('h3', 'Import a job posting'), el('p', 'Paste a hosted Greenhouse, Ashby or Lever job link, then review before saving. Other sites can be entered manually.', 'muted'));
   const retrieveForm = el('form');
   const fields = el('fieldset');
-  const label = el('label', 'Greenhouse job URL'); const input = el('input'); input.type = 'url'; input.required = true; input.maxLength = 2048; label.append(input);
+  const label = el('label', 'Job posting URL'); const input = el('input'); input.type = 'url'; input.required = true; input.maxLength = 2048; label.append(input);
   const retrieve = el('button', 'Retrieve posting', 'primary'); retrieve.type = 'submit';
   fields.append(label, retrieve); retrieveForm.append(fields);
   const cancel = button('Cancel', () => { controller?.abort(); options.cancel(); }, 'secondary ingestion-cancel');
@@ -63,13 +64,13 @@ export function mountIngestion(form, options) {
         if (!control) continue;
         control.value = String(preview.draft[/** @type {keyof typeof preview.draft} */ (name)] ?? '');
         control.closest('label')?.querySelector('.field-origin')?.remove();
-        control.closest('label')?.append(el('small', preview.field_sources[name] ? (name === 'discovered_on' ? 'First captured in Radar (UTC); editable' : 'Extracted from Greenhouse') : 'Not supplied; complete if known', 'field-origin'));
+        control.closest('label')?.append(el('small', preview.field_sources[name] ? (name === 'discovered_on' ? 'First captured in Radar (UTC); editable' : `Extracted from ${PROVIDER_NAMES[preview.identity.provider]}`) : 'Not supplied; complete if known', 'field-origin'));
       }
       const details = form.querySelector('details'); if (details) details.open = true;
       const save = form.querySelector('button[type="submit"]'); if (save) save.textContent = 'Save prospect';
       hasPreview = true; options.markDirty();
       const warnings = el('ul', '', 'muted'); for (const warning of preview.warnings) warnings.append(el('li', warning));
-      feedback.replaceChildren(el('h3', 'Preview — review before saving'), el('p', `Greenhouse · ${preview.identity.board} · Posting ${preview.identity.posting_id}${preview.identity.requisition_id ? ' · Requisition ' + preview.identity.requisition_id : ''}`, 'muted'), warnings);
+      feedback.replaceChildren(el('h3', 'Preview — review before saving'), el('p', `${PROVIDER_NAMES[preview.identity.provider]} · ${preview.identity.board}${'region' in preview.identity && preview.identity.region ? ' · ' + preview.identity.region.toUpperCase() : ''} · Posting ${preview.identity.posting_id}${preview.identity.requisition_id ? ' · Requisition ' + preview.identity.requisition_id : ''}`, 'muted'), warnings);
       const candidates = duplicateCandidates(preview.draft, await options.data.listProspectIdentities(), options.createId);
       if (options.current() && !active.signal.aborted) showDuplicates(candidates, preview.draft);
     } catch (error) {

@@ -1,5 +1,5 @@
-import { ingestGreenhouse } from './greenhouse.js';
-import { IngestionError } from './greenhouse-url.js';
+import { ingestPosting } from './pipeline.js';
+import { IngestionError } from './errors.js';
 import { readBounded } from './bounded-fetch.js';
 
 /** HTTP boundary; dependencies injected for deterministic function tests.
@@ -42,7 +42,7 @@ export function createIngestionHandler(options) {
       if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).some(key => key !== 'url') || typeof body.url !== 'string') {
         throw new IngestionError('invalid_request', 'Supply only a posting URL.');
       }
-      const preview = await ingestGreenhouse(body.url.trim(), { fetcher: options.fetcher, signal: controller.signal });
+      const preview = await ingestPosting(body.url.trim(), { fetcher: options.fetcher, signal: controller.signal });
       controller.signal.throwIfAborted();
       return reply(preview);
     } catch (error) {

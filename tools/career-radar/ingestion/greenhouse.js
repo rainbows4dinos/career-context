@@ -1,36 +1,10 @@
-import { Parser } from 'htmlparser2';
-import { decodeHTML } from 'entities';
+import { descriptionText } from './posting-facts.js';
+export { descriptionText } from './posting-facts.js';
 import { normalizePatch } from '../model.js';
 import { IngestionError, recognizeGreenhouse } from './greenhouse-url.js';
 import { retrievePosting } from './bounded-fetch.js';
 
-/** @typedef {{draft: import('../model.js').DetailsPatch, identity: ReturnType<typeof recognizeGreenhouse> & {requisition_id: string|null}, original_url: string, retrieved_at: string, method: 'greenhouse-job-board-api', field_sources: Record<string,string>, warnings: string[]}} IngestionPreview */
-
-/** Inert parsing only: no script execution, resources or remote contexts.
- * Greenhouse descriptions may have up to two additional HTML-entity layers.
- * @param {string} html
- */
-export function descriptionText(html) {
-  let decoded = html;
-  for (let i = 0; i < 2 && !/<[A-Za-z!/][^>]*>/.test(decoded) && /&(?:amp;)?(?:lt|#0*60|#x0*3c);/i.test(decoded); i++) decoded = decodeHTML(decoded);
-  const blocks = new Set(['p', 'div', 'section', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'blockquote', 'tr']);
-  const forbidden = new Set(['script', 'style', 'iframe', 'object', 'svg', 'template']);
-  let ignored = 0;
-  let text = '';
-  const parser = new Parser({
-    onopentag(name) {
-      if (forbidden.has(name)) ignored++;
-      if (!ignored && blocks.has(name)) text += name === 'li' ? '\n• ' : '\n';
-    },
-    ontext(value) { if (!ignored) text += value; },
-    onclosetag(name) {
-      if (forbidden.has(name)) ignored = Math.max(0, ignored - 1);
-      if (!ignored && blocks.has(name)) text += '\n';
-    }
-  }, { decodeEntities: true });
-  parser.end(decoded);
-  return text.replace(/[^\S\n]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
-}
+/** @typedef {import('./preview.js').IngestionPreview} IngestionPreview */
 
 /** @param {unknown} value */
 function object(value) { return value && typeof value === 'object' && !Array.isArray(value) ? /** @type {Record<string,unknown>} */ (value) : {}; }
