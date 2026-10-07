@@ -21,7 +21,8 @@ Never invent career facts, metrics, or shipped outcomes. Respect role-specific s
 
 ## Existing architecture
 
-- `tools/resume-tailor.html` is a standalone static application containing the UI, context loading, Claude prompts, streaming generation, revisions, QA warnings, and PDF/DOCX/ZIP exports.
+- `tools/resume-tailor.html` is a static application containing the UI, context loading, Claude prompts, streaming generation, revisions, QA warnings, and PDF/DOCX/ZIP exports.
+- `tools/shared/tokens.css` owns both applications' existing color foundations, dark/light semantic mappings, font families and minimal spacing/radius scales. Each app retains local legacy aliases and component styling. Builder's `--muted` is tertiary text; Radar's is secondary text. Keep aliases on `body` so `body.light` resolves correctly. The Builder HTML now requires its sibling shared stylesheet; résumé document-preview rules and export formatting remain local. See `docs/shared-design-tokens.md` for boundaries and validation.
 - It fetches the five root context/configuration files above from `https://raw.githubusercontent.com/rainbows4dinos/career-context/main` at runtime. Local edits to those files do not affect the tool until pushed to `main`, even when the HTML is served locally.
 - `tools/proxy-worker.js` is a Cloudflare Worker proxy for Anthropic requests. It supports streaming, restricts origins and models, and uses the `ANTHROPIC_API_KEY` secret. Its optional `TAILOR_KEY` is a shared-key speed bump, not user authentication.
 - `tools/wrangler.toml` configures the Worker, deployed separately from the static site.

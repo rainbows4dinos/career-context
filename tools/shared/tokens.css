@@ -1,0 +1,83 @@
+/* Shared foundations only: no resets, component rules or application behavior. */
+:root {
+  --ds-neutral-950: #232221;
+  --ds-neutral-900: #2d2b29;
+  --ds-neutral-850: #363330;
+  --ds-neutral-800: #3a3835;
+  --ds-neutral-700: #4F4D4A;
+  --ds-neutral-600: #7a7870;
+  --ds-neutral-500: #94918D;
+  --ds-neutral-400: #BAB8B5;
+  --ds-neutral-300: #DEDBD8;
+  --ds-neutral-200: #EDE9E2;
+  --ds-neutral-100: #F5F2EC;
+  --ds-neutral-50: #FFFBF6;
+  --ds-coral-400: #F26F6F;
+  --ds-coral-600: #CA5C5C;
+  --ds-cyan-300: #6FEAF2;
+  --ds-teal-700: #377579;
+  --ds-gold-300: #F2C56F;
+  --ds-gold-700: #796237;
+
+  --ds-coral-dark-bg: rgba(242, 111, 111, 0.12);
+  --ds-coral-dark-border: rgba(242, 111, 111, 0.35);
+  --ds-coral-light-bg: rgba(202, 92, 92, 0.1);
+  --ds-coral-light-border: rgba(202, 92, 92, 0.3);
+  --ds-cyan-bg: rgba(111, 234, 242, 0.1);
+  --ds-teal-bg: rgba(55, 117, 121, 0.1);
+  --ds-gold-dark-bg: rgba(242, 197, 111, 0.12);
+  --ds-gold-dark-border: rgba(242, 197, 111, 0.3);
+  --ds-gold-light-bg: rgba(121, 98, 55, 0.08);
+  --ds-gold-light-border: rgba(121, 98, 55, 0.25);
+
+  --ds-font-serif: 'Crimson Pro', Georgia, serif;
+  --ds-font-sans: 'Readex Pro', sans-serif;
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;
+  --ds-radius-lg: 10px;
+}
+
+/* Repeat semantics on the theme element so references resolve in that mode. */
+:root, body {
+  --ds-surface-page: var(--ds-neutral-950);
+  --ds-surface-raised: var(--ds-neutral-900);
+  --ds-surface-inset: var(--ds-neutral-850);
+  --ds-border-control: var(--ds-neutral-700);
+  --ds-border-subtle: var(--ds-neutral-800);
+  --ds-text-primary: var(--ds-neutral-50);
+  --ds-text-secondary: var(--ds-neutral-400);
+  --ds-text-tertiary: var(--ds-neutral-500);
+  --ds-accent: var(--ds-coral-400);
+  --ds-accent-bg: var(--ds-coral-dark-bg);
+  --ds-accent-border: var(--ds-coral-dark-border);
+  --ds-success: var(--ds-cyan-300);
+  --ds-success-bg: var(--ds-cyan-bg);
+  --ds-warning: var(--ds-gold-300);
+  --ds-warning-bg: var(--ds-gold-dark-bg);
+  --ds-warning-border: var(--ds-gold-dark-border);
+  --ds-error: var(--ds-accent);
+  --ds-radius-panel: var(--ds-radius-lg);
+}
+
+body.light {
+  --ds-surface-page: var(--ds-neutral-50);
+  --ds-surface-raised: var(--ds-neutral-100);
+  --ds-surface-inset: var(--ds-neutral-200);
+  --ds-border-control: var(--ds-neutral-400);
+  --ds-border-subtle: var(--ds-neutral-300);
+  --ds-text-primary: var(--ds-neutral-950);
+  --ds-text-secondary: var(--ds-neutral-700);
+  --ds-text-tertiary: var(--ds-neutral-600);
+  --ds-accent: var(--ds-coral-600);
+  --ds-accent-bg: var(--ds-coral-light-bg);
+  --ds-accent-border: var(--ds-coral-light-border);
+  --ds-success: var(--ds-teal-700);
+  --ds-success-bg: var(--ds-teal-bg);
+  --ds-warning: var(--ds-gold-700);
+  --ds-warning-bg: var(--ds-gold-light-bg);
+  --ds-warning-border: var(--ds-gold-light-border);
+}

@@ -36,7 +36,7 @@ Repository agents should read `AGENTS.md` and the career files relevant to their
 
 ## Existing tools
 
-- [tools/resume-tailor.html](tools/resume-tailor.html): the résumé and cover-letter builder. One standalone page covering tailoring, revisions, QA warnings, and downloads.
+- [tools/resume-tailor.html](tools/resume-tailor.html): the résumé and cover-letter builder. One static page covering tailoring, revisions, QA warnings, and downloads.
 - [tools/career-radar/index.html](tools/career-radar/index.html): private prospect tracking with a status board, core details, status history and editable posting previews. Also linked from the résumé builder.
 - [tools/proxy-worker.js](tools/proxy-worker.js): Cloudflare Worker that proxies Anthropic API requests using a server-side secret.
 - [tools/wrangler.toml](tools/wrangler.toml): configuration for the separately deployed Worker.
@@ -46,6 +46,8 @@ Repository agents should read `AGENTS.md` and the career files relevant to their
 The builder produces one download per application: a **Download Package** zip holding the résumé and cover letter as PDF and `.docx`, an ATS-plain résumé for Workday autofill, and a README describing them.
 
 For architecture and the constraints that apply when changing any of this, see [AGENTS.md](AGENTS.md).
+
+Both tools share a [design-token stylesheet](tools/shared/tokens.css), with local component styling. See the [token implementation and validation](docs/shared-design-tokens.md). When copying the résumé HTML elsewhere, keep `tools/shared/tokens.css` at the same relative path.
 
 ## Deployment and editing
 
