@@ -1,6 +1,6 @@
 # Career Radar: limited Workday ingestion
 
-Implemented October 7, 2026, following the approved compatibility spike. Local validation is complete; hosted deployment/acceptance will be recorded below after verification. No database migration, generated type change, new dependency, browser setting, résumé change or Worker change is required.
+Implemented and deployed October 7, 2026, from checkpoint `bffc310`, following the approved compatibility spike. Local validation and authenticated hosted retrieval/preview acceptance passed. No database migration, generated type change, new dependency, browser setting, résumé change or Worker change is required.
 
 ## Supported links and identity
 
@@ -67,7 +67,7 @@ Local Chrome acceptance uses the disposable fixture server:
 node tests/fixtures/radar-server.js
 ```
 
-Sign in with the printed synthetic credentials. The full Workday fixture is `https://example.wd5.myworkdayjobs.com/en-US/External_Careers/job/Example-City/Senior-Product-Designer_REQ-123-1`; remove locale/location to test duplicate aliases. Anchors ending `REQ-999`, `REQ-404`, `REQ-403` exercise partial facts, unavailable and inaccessible outcomes. Retrieval/edit/Cancel left zero rows/events; a failed Save preserved the edited preview, retry created one prospect/event and reload restored both.
+Sign in with the printed synthetic credentials. The full Workday fixture is `https://example.wd5.myworkdayjobs.com/en-US/External_Careers/job/Example-City/Senior-Product-Designer_REQ-123-1`; remove locale/location to test duplicate aliases. Anchors ending `REQ-999`, `REQ-404`, `REQ-403` exercise partial facts, unavailable and inaccessible outcomes. Retrieval/edit/Cancel left zero rows/events; a failed Save preserved the edited preview, retry created one prospect/event and reload restored both. Locale/location-alias duplicate review opened the original UUID/history after the existing native draft-discard confirmation. Missing Company blocked Save, 403 displayed inaccessible rather than expired, and normal manual creation succeeded in the disposable fixture.
 
 Limited native-fetch smoke checks succeeded for public NVIDIA, McKesson and Penn postings. These exercised tenant/shared families, legal names, missing unlabeled pay, a real remote conflict and an explicit hourly pay section. They do not guarantee all tenants or Supabase egress behavior; hosted acceptance is separate.
 
@@ -83,6 +83,16 @@ git push origin main
 Keep `verify_jwt = true`; never use `--no-verify-jwt`. The existing Pages workflow publishes the static changes and generates browser-safe config. See [initial server setup](career-radar-greenhouse-ingestion.md#deploy-and-configure) for configuration details.
 
 Hosted checks must use the real signed-in account: retrieve real hosted links, review/edit, Cancel with no writes, partial/error behavior and existing-provider/manual regressions. Avoid disposable production prospects; Save/retry/history/reload and distinct-identity duplicate cases are covered locally. Keep read-only before/after record snapshots outside this public repository. Record actual hosted results rather than treating local tests as production acceptance.
+
+## Hosted results — October 7, 2026
+
+- Checkpoint `bffc310` was pushed to `main`; Pages workflow `37689753897` succeeded. `job-ingest` version 3 is active with its existing import map and `verify_jwt = true`. No new settings or credential changes were needed.
+- The deployed function rejected unauthenticated POST with 401 and returned 204 for the existing Pages-origin preflight.
+- Real signed-in retrieval passed for [NVIDIA (wd5)](https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite/job/US-CA-Remote/Senior-Product-Manager--AI-Physics_JR2021069), [McKesson (wd3)](https://mckesson.wd3.myworkdayjobs.com/en-US/External_Careers/job/Product-Designer_JR0152759-1), and [Penn (shared wd1)](https://wd1.myworkdaysite.com/recruiting/upenn/careers-at-penn/job/ryan-veterinary-hospital/icu-veterinary-nurse-assistant_jr00120131-1). These were retrieval/preview/Cancel tests, not recommendations or saved opportunities.
+- All three previews preserved explicit legal names, complete posting anchors and separate requisitions. McKesson retained all 22 locations/geographic eligibility and left its conflicting Hybrid/TELECOMMUTE arrangement blank with a warning. NVIDIA's unlabeled salary prose and McKesson's unsupported pay-heading shape stayed blank for manual review. Penn's bounded hourly pay section and qualification paragraph were preserved. Publication dates came from matched metadata, not relative text.
+- Preview edits and Cancel wrote nothing. Greenhouse, Ashby and Lever retrieval, existing duplicate detection and Cancel passed against current postings. Hosted manual required-field validation, editing and Cancel passed; actual manual Save and Workday Save/retry/history/reload were exercised locally, without creating disposable production prospects. Workday alias/distinct-anchor duplicate cases were verified locally, not through an extra hosted save.
+- Read-only before/after snapshots matched exactly: **43 prospects and 48 history events**, all fields unchanged. Private snapshots/screenshots remain outside the repository. No production prospect or audit event was created during this milestone's acceptance.
+- Chrome initially retained old provider modules despite successful Pages deployment. Hosted bytes matched the checkpoint; one reload with DevTools cache disabled loaded the current assets and resolved the mismatch. The temporary cache setting was restored and DevTools closed. No application behavior mismatch remained. If Workday is reported unsupported immediately after publishing, refresh stale static assets before changing provider logic.
 
 ## Limitations and follow-up
 
