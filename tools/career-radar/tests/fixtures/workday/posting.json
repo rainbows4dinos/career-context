@@ -1,0 +1,23 @@
+{
+  "jobPostingInfo": {
+    "id": "11111111222233334444555566667777",
+    "title": "Senior Product Designer",
+    "jobPostingId": "Senior-Product-Designer_REQ-123-1",
+    "jobPostingSiteId": "External_Careers",
+    "jobReqId": "REQ-123",
+    "location": "Example City",
+    "additionalLocations": ["Second City", "Example City"],
+    "country": { "descriptor": "Example Country" },
+    "remoteType": "Hybrid",
+    "timeType": "Full time",
+    "postedOn": "Posted Yesterday",
+    "startDate": "2026-10-06",
+    "posted": true,
+    "canApply": true,
+    "externalUrl": "https://example.wd5.myworkdayjobs.com/External_Careers/job/Example-City/Senior-Product-Designer_REQ-123-1",
+    "jobDescription": "<p>Design thoughtful products &amp; accessible interactions.</p><ul><li>Research user needs.</li><li>Collaborate with engineers.</li></ul><h2>Annual Salary Range</h2><p>Example City: USD 120,000 - 160,000 annually.</p><p>Second City: USD 110,000 - 150,000 annually.</p><p>Salary offers depend on experience and work location.</p><h2>Benefits</h2><p>Health coverage and leave.</p><script>doNotExecute()</script><iframe src='http://127.0.0.1/private'></iframe>"
+  },
+  "hiringOrganization": { "name": "2100 Example Legal Entity LLC", "url": "" },
+  "similarJobs": [],
+  "userAuthenticated": false
+}

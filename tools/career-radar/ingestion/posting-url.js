@@ -1,8 +1,9 @@
 import { IngestionError } from './errors.js';
 import { recognizeGreenhouse } from './greenhouse-url.js';
+import { recognizeWorkday } from './workday-url.js';
 
-export const PROVIDER_NAMES = /** @type {const} */ ({ greenhouse: 'Greenhouse', ashby: 'Ashby', lever: 'Lever' });
-export const INGESTION_METHODS = /** @type {const} */ ({ greenhouse: 'greenhouse-job-board-api', ashby: 'ashby-job-posting-api', lever: 'lever-postings-api' });
+export const PROVIDER_NAMES = /** @type {const} */ ({ greenhouse: 'Greenhouse', ashby: 'Ashby', lever: 'Lever', workday: 'Workday' });
+export const INGESTION_METHODS = /** @type {const} */ ({ greenhouse: 'greenhouse-job-board-api', ashby: 'ashby-job-posting-api', lever: 'lever-postings-api', workday: 'workday-cxs-detail' });
 const UUID = '[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}';
 const ASHBY = new RegExp(`^/([A-Za-z0-9_-]{1,100})/(${UUID})(?:/application)?/?$`);
 const LEVER = new RegExp(`^/([A-Za-z0-9_-]{1,100})/(${UUID})(?:/apply)?/?$`);
@@ -29,6 +30,7 @@ export function recognizePosting(input) {
     throw new IngestionError('invalid_url', 'Use an HTTPS posting URL without credentials or a custom port.');
   }
   if (['boards.greenhouse.io', 'job-boards.greenhouse.io'].includes(url.hostname)) return recognizeGreenhouse(input);
+  if (url.hostname.endsWith('.myworkdayjobs.com') || url.hostname.endsWith('.myworkdaysite.com')) return recognizeWorkday(input);
   if (url.hostname === 'jobs.ashbyhq.com') {
     const match = ASHBY.exec(url.pathname);
     if (!match) throw new IngestionError('unsupported_url', 'Use an Ashby job detail URL, not a board listing.');
@@ -49,7 +51,7 @@ export function recognizePosting(input) {
       canonical_url: canonical(url, `https://${url.hostname}/${board}/${posting_id}`, ['source', 'lever-source', 'lever-origin', 'lever-via']),
       retrieval_url: `https://${apiHost}/v0/postings/${board}/${posting_id}?mode=json` };
   }
-  throw new IngestionError('unsupported_url', 'URL import supports hosted Greenhouse, Ashby and Lever job links. Other sites can still be entered manually.');
+  throw new IngestionError('unsupported_url', 'URL import supports hosted Greenhouse, Ashby, Lever and limited Workday job links. Other sites can still be entered manually.');
 }
 
 /** Ignore tracking/unknown query differences when comparing a known posting.

@@ -2,7 +2,7 @@
 
 Date: October 7, 2026
 
-Status: Architecture approved by the user on October 7, 2026, with the decisions recorded below. Greenhouse was the first authorized slice; its deployment and authenticated hosted acceptance are recorded in [the Greenhouse guide](career-radar-greenhouse-ingestion.md). The user subsequently authorized Ashby and Lever using that reference architecture; their implementation, deployment and authenticated hosted validation are recorded in [the adapter guide](career-radar-ashby-lever-ingestion.md). Workday, generic employer retrieval and discovery remain future work.
+Status: Architecture approved by the user on October 7, 2026, with the decisions recorded below. Greenhouse was the first authorized slice; its deployment and authenticated hosted acceptance are recorded in [the Greenhouse guide](career-radar-greenhouse-ingestion.md). The user subsequently authorized Ashby and Lever using that reference architecture; their implementation, deployment and authenticated hosted validation are recorded in [the adapter guide](career-radar-ashby-lever-ingestion.md). The user subsequently approved limited Workday ingestion after its compatibility spike; see [implementation, limits and deployment status](career-radar-workday-ingestion.md). Generic employer retrieval and discovery remain future work.
 
 ## Goal and scope
 
@@ -225,3 +225,7 @@ The user approved the next two provider adapters with the same authentication, r
 No Workday, generic arbitrary-host retrieval, discovery, AI, automatic merge or schema change is authorized or implemented by this extension.
 
 Raw-page archives, ingestion tables, queues, headless browsing, automatic merges, and discovery scheduling can wait. The first durable milestone is a secure URL-to-preview flow using the current prospect model and existing save behavior.
+
+## Workday extension — October 7, 2026
+
+After the compatibility spike, the user approved a limited adapter for validated Workday hosted URL families and clusters (1, 3, 5, 103). CXS detail is primary; matching inert JSON-LD is optional. Preserve full posting anchors separately from requisitions, legal names and geographic restrictions; conflicting arrangement/date facts and ambiguous pay remain blank for review. A 403 is inaccessible, not automatically expired. The existing bounded authenticated function, preview, conservative duplicate review and explicit persistence remain authoritative. See [the Workday guide](career-radar-workday-ingestion.md) for validation and hosted status. No generic retrieval, database change, discovery or AI was added. The earlier milestone decisions above describe their original scope.

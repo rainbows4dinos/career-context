@@ -2,7 +2,7 @@
 
 Shared professional context and personal career tools for Larry Reynolds: résumé tailoring, portfolio positioning, interview preparation, and opportunity evaluation.
 
-The résumé and cover-letter builder and Career Radar are the existing tools. Radar supports manual job tracking and editable job URL previews (Greenhouse, Ashby and Lever deployed); discovery and evaluation are future milestones. The résumé builder will remain as the project grows.
+The résumé and cover-letter builder and Career Radar are the existing tools. Radar supports manual job tracking and editable job URL previews (Greenhouse, Ashby and Lever deployed; limited Workday added); discovery and evaluation are future milestones. The résumé builder will remain as the project grows.
 
 ## Shared career context
 
@@ -26,7 +26,7 @@ Keep personal job-search staging/seed files, reconciliation reports, backups, so
 
 Career Radar's database and typed application live in `supabase/` and `tools/career-radar/`. The initial migration is applied to the hosted project. See [setup and validation](docs/career-radar-v0.md) and the [implementation plan](docs/career-radar-v0-implementation-plan.md).
 
-For URL import, see [Greenhouse configuration and hosted results](docs/career-radar-greenhouse-ingestion.md), [Ashby/Lever implementation and deployment steps](docs/career-radar-ashby-lever-ingestion.md), and the [approved ingestion architecture](docs/career-radar-url-ingestion-plan.md).
+For URL import, see [Greenhouse configuration and hosted results](docs/career-radar-greenhouse-ingestion.md), [Ashby/Lever implementation and deployment steps](docs/career-radar-ashby-lever-ingestion.md), [limited Workday support and deployment](docs/career-radar-workday-ingestion.md), and the [approved ingestion architecture](docs/career-radar-url-ingestion-plan.md).
 
 ## Repository instructions
 

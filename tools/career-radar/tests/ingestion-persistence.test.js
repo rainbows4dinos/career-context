@@ -32,7 +32,8 @@ test('authenticated retrieve/cancel write nothing; explicit existing create path
 
 for (const [provider, url] of [
   ['Ashby','https://jobs.ashbyhq.com/example/11111111-aaaa-4111-8111-111111111111'],
-  ['Lever','https://jobs.lever.co/example/22222222-bbbb-4222-8222-222222222222']
+  ['Lever','https://jobs.lever.co/example/22222222-bbbb-4222-8222-222222222222'],
+  ['Workday','https://example.wd5.myworkdayjobs.com/en-US/External_Careers/job/Example-City/Senior-Product-Designer_REQ-123-1']
 ]) test(`${provider} authenticated preview/Cancel writes nothing; failed save preserves facts and normal retry creates one prospect/history event`, async () => {
   const fixture = await startFixture();
   const client = createClient(fixture.origin, 'sb_publishable_synthetic', { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
@@ -41,12 +42,13 @@ for (const [provider, url] of [
     const preview = await retrieveJob(client, url, new AbortController().signal);
     const stats = () => fetch(fixture.origin + '/__fixture').then(response => response.json());
     assert.deepEqual(await stats(), { prospects: 0, events: 0, retrieves: 1, attempts: 0 });
-    assert.equal(preview.draft.company,'Example Studio');
+    const company = provider === 'Workday' ? '2100 Example Legal Entity LLC' : 'Example Studio';
+    assert.equal(preview.draft.company,company);
     const data = createRadarDataAccess(client);
     const input = { ...preview.draft, id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', company: preview.draft.company, title: preview.draft.title };
     await fetch(fixture.origin + '/__fixture/fail-next-save', { method: 'POST' });
     await assert.rejects(data.createProspect(input), error => error.code === 'TEST_FAILURE');
-    assert.equal(preview.draft.company,'Example Studio'); assert.equal(await data.getProspect(input.id),null);
+    assert.equal(preview.draft.company,company); assert.equal(await data.getProspect(input.id),null);
     const saved = await data.createProspect(input);
     assert.equal(saved.id,input.id);assert.equal(saved.status,'prospect');assert.equal(saved.applied_on,null);assert.equal(saved.source,null);
     const history = await data.listStatusEvents(saved.id);

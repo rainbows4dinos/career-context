@@ -16,12 +16,12 @@ Deno.test('production dependencies normalize the sanitized Greenhouse fixture un
   assert.doesNotMatch(result.draft.job_description!, /doNotExecute|<p>/);
 });
 
-for (const provider of ['ashby', 'lever'] as const) {
+for (const provider of ['ashby', 'lever', 'workday'] as const) {
   Deno.test(`${provider} Deno handler uses authenticated bounded API/page retrieval and the shared preview contract`, async () => {
     const path = '../../../tools/career-radar/tests/fixtures/';
     const data = JSON.parse(await Deno.readTextFile(new URL(`${path}${provider}/${provider === 'ashby' ? 'board.json' : 'posting.json'}`, import.meta.url)));
     const page = await Deno.readTextFile(new URL(`${path}${provider}/posting.html`, import.meta.url));
-    const postingUrl = provider === 'ashby' ? data.jobs[1].jobUrl : data.hostedUrl;
+    const postingUrl = provider === 'ashby' ? data.jobs[1].jobUrl : provider === 'workday' ? data.jobPostingInfo.externalUrl : data.hostedUrl;
     const destinations: string[] = [];
     const handler = createIngestionHandler({ ownerId, allowedOrigins: ['https://example.github.io'], authenticate: () => Promise.resolve(ownerId),
       fetcher: (target, init) => {
@@ -36,7 +36,7 @@ for (const provider of ['ashby', 'lever'] as const) {
     assert.equal(response.status, 200); assert.equal(destinations.length, 2);
     assert.equal(destinations[0], recognizePosting(postingUrl).retrieval_url);
     const preview = await response.json();
-    assert.equal(preview.identity.provider, provider); assert.equal(preview.draft.company, 'Example Studio');
+    assert.equal(preview.identity.provider, provider); assert.equal(preview.draft.company, provider === 'workday' ? '2100 Example Legal Entity LLC' : 'Example Studio');
     assert.equal('status' in preview.draft, false); assert.equal('source' in preview.draft, false);
     assert.equal(response.headers.get('cache-control'), 'no-store');
   });

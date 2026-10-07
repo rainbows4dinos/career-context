@@ -18,6 +18,8 @@ export async function startFixture(port = 0) {
   const lever = JSON.parse(await readFile(new URL('./lever/posting.json', import.meta.url), 'utf8'));
   const ashbyPage = await readFile(new URL('./ashby/posting.html', import.meta.url), 'utf8');
   const leverPage = await readFile(new URL('./lever/posting.html', import.meta.url), 'utf8');
+  const workday = JSON.parse(await readFile(new URL('./workday/posting.json', import.meta.url), 'utf8'));
+  const workdayPage = await readFile(new URL('./workday/posting.html', import.meta.url), 'utf8');
   const user = { id: owner, aud: 'authenticated', role: 'authenticated', email: 'radar@example.invalid', created_at: new Date().toISOString(), app_metadata: {}, user_metadata: {}, is_anonymous: false };
   const encode = value => Buffer.from(JSON.stringify(value)).toString('base64url');
   const token = `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ sub: owner, role: 'authenticated', aud: 'authenticated', exp: Math.floor(Date.now() / 1000) + 3600 })}.synthetic`;
@@ -48,6 +50,17 @@ export async function startFixture(port = 0) {
           authenticate: async value => value === token ? owner : null,
           fetcher: async target => {
             const destination = new URL(String(target));
+            if (destination.hostname.endsWith('.myworkdayjobs.com') || destination.hostname.endsWith('.myworkdaysite.com')) {
+              const identity = recognizePosting(JSON.parse(text).url);
+              if (destination.pathname.includes('/wday/cxs/')) {
+                if (identity.posting_id.endsWith('req-404')) return Response.json({}, { status: 404 });
+                if (identity.posting_id.endsWith('req-403')) return Response.json({}, { status: 403 });
+                const missing = identity.posting_id.endsWith('req-999');
+                return Response.json({ ...workday, hiringOrganization: missing ? {} : workday.hiringOrganization,
+                  jobPostingInfo: { ...(missing ? { title: 'Senior Product Designer' } : workday.jobPostingInfo), jobPostingId: identity.posting_id, jobPostingSiteId: identity.provider === 'workday' ? identity.site : '', externalUrl: identity.canonical_url, jobReqId: 'REQ-123' } });
+              }
+              return new Response(identity.posting_id.endsWith('req-999') ? '<html>No metadata</html>' : workdayPage, { headers: { 'content-type': 'text/html' } });
+            }
             if (destination.hostname.includes('ashbyhq.com') || destination.hostname.endsWith('lever.co')) {
               const identity = recognizePosting(JSON.parse(text).url);
               const id = identity.posting_id;

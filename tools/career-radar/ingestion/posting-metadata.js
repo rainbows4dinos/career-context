@@ -3,12 +3,10 @@ import { retrievePosting } from './bounded-fetch.js';
 import { object, text } from './posting-facts.js';
 import { recognizePosting, samePosting, PROVIDER_NAMES } from './posting-url.js';
 
-/** Bounded JSON-LD parsing from a known ATS page only. No script execution,
- * resource loading, remote contexts, canonical-link following or DOM scraping.
- * @param {string} html @param {import('./preview.js').PostingIdentity} identity
- * @param {string|null} expectedTitle @param {string[]} warnings
+/** Inert bounded collection only; provider callers own identity matching.
+ * @param {string} html @param {string[]} warnings
  */
-export function postingMetadata(html, identity, expectedTitle, warnings) {
+export function jobPostingObjects(html, warnings) {
   /** @type {unknown[]} */ const roots = [];
   let active = false, buffer = '', scripts = 0;
   const parser = new Parser({
@@ -28,6 +26,15 @@ export function postingMetadata(html, identity, expectedTitle, warnings) {
     if (types.includes('JobPosting')) candidates.push(item);
     if (item['@graph']) queue.push({ value: item['@graph'], depth: depth + 1 });
   }
+  return candidates;
+}
+
+/** Existing Ashby/Lever identity policy remains unchanged.
+ * @param {string} html @param {import('./preview.js').PostingIdentity} identity
+ * @param {string|null} expectedTitle @param {string[]} warnings
+ */
+export function postingMetadata(html, identity, expectedTitle, warnings) {
+  const candidates = jobPostingObjects(html, warnings);
   const normalized = /** @param {string} value */ value => value.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
   const matches = candidates.filter(item => {
     const id = text(object(item.identifier).value) ?? text(item.identifier);
