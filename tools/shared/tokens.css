@@ -16,8 +16,8 @@
   --ds-coral-600: #CA5C5C;
   --ds-cyan-300: #6FEAF2;
   --ds-teal-700: #377579;
-  --ds-gold-300: #F2C56F;
-  --ds-gold-700: #796237;
+  --ds-gold-300: #f6d391;
+  --ds-gold-700: #f3bc58;
 
   --ds-coral-dark-bg: rgba(242, 111, 111, 0.12);
   --ds-coral-dark-border: rgba(242, 111, 111, 0.35);
@@ -25,7 +25,7 @@
   --ds-coral-light-border: rgba(202, 92, 92, 0.3);
   --ds-cyan-bg: rgba(111, 234, 242, 0.1);
   --ds-teal-bg: rgba(55, 117, 121, 0.1);
-  --ds-gold-dark-bg: rgba(242, 197, 111, 0.12);
+  --ds-gold-dark-bg: rgba(242, 207, 142, 0.12);
   --ds-gold-dark-border: rgba(242, 197, 111, 0.3);
   --ds-gold-light-bg: rgba(121, 98, 55, 0.08);
   --ds-gold-light-border: rgba(121, 98, 55, 0.25);
@@ -51,9 +51,9 @@
   --ds-text-primary: var(--ds-neutral-50);
   --ds-text-secondary: var(--ds-neutral-400);
   --ds-text-tertiary: var(--ds-neutral-500);
-  --ds-accent: var(--ds-coral-400);
-  --ds-accent-bg: var(--ds-coral-dark-bg);
-  --ds-accent-border: var(--ds-coral-dark-border);
+  --ds-accent: var(--ds-gold-300);
+  --ds-accent-bg: var(--ds-gold-dark-bg);
+  --ds-accent-border: var(--ds-gold-dark-border);
   --ds-success: var(--ds-cyan-300);
   --ds-success-bg: var(--ds-cyan-bg);
   --ds-warning: var(--ds-gold-300);
@@ -72,9 +72,9 @@ body.light {
   --ds-text-primary: var(--ds-neutral-950);
   --ds-text-secondary: var(--ds-neutral-700);
   --ds-text-tertiary: var(--ds-neutral-600);
-  --ds-accent: var(--ds-coral-600);
-  --ds-accent-bg: var(--ds-coral-light-bg);
-  --ds-accent-border: var(--ds-coral-light-border);
+  --ds-accent: var(--ds-gold-700);
+  --ds-accent-bg: var(--ds-gold-light-bg);
+  --ds-accent-border: var(--ds-gold-light-border);
   --ds-success: var(--ds-teal-700);
   --ds-success-bg: var(--ds-teal-bg);
   --ds-warning: var(--ds-gold-700);
