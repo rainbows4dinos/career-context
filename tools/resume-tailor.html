@@ -207,6 +207,7 @@
   </div>
 
   <!-- Pane 0: Input -->
+  <p id="handoffNotice" role="status" hidden></p>
   <div id="pane0">
     <div class="card">
       <div class="field-row">
@@ -275,11 +276,50 @@
 </div>
 
 <!-- docx loaded lazily on first download click -->
+<script type="module">
+import { HANDOFF_PARAM, clearExpiredHandoffs, readHandoff, consumeHandoff } from './shared/resume-handoff.mjs';
+
+function receiveRadarJob() {
+  const url = new URL(location.href);
+  const params = new URLSearchParams(url.hash.slice(1));
+  const requested = params.has(HANDOFF_PARAM);
+  const notice = document.getElementById('handoffNotice');
+  try {
+    const storage = window.localStorage;
+    const handoff = readHandoff(storage, url);
+    if (handoff) {
+      const applied = consumeHandoff(storage, handoff, {
+        company: document.getElementById('company'),
+        title: document.getElementById('jobTitle'),
+        description: document.getElementById('jobDesc')
+      }, () => window.confirm('Replace the company, job title and job description already entered here with the job sent from Career Radar? Other content and settings will be kept.'));
+      notice.hidden = false;
+      notice.textContent = applied ? 'Job details received from Career Radar. Review them before generating.' : 'Transfer declined. Your existing job details were kept.';
+    }
+    try { clearExpiredHandoffs(storage, url); } catch { /* abandoned-payload cleanup is best effort */ }
+  } catch (error) {
+    if (requested) {
+      notice.hidden = false;
+      notice.textContent = error instanceof Error && error.message.startsWith('This job transfer')
+        ? error.message : 'Could not receive job details because browser storage is unavailable. Your existing content was kept. Try sending again or copy the fields manually.';
+    }
+  } finally {
+    if (requested) {
+      params.delete(HANDOFF_PARAM);
+      url.hash = params.toString();
+      history.replaceState(history.state, '', url);
+    }
+  }
+}
+receiveRadarJob();
+window.addEventListener('hashchange', receiveRadarJob);
+</script>
 <script>
 // ─── Theme ────────────────────────────────────────────────────────────────────
 (function() {
   // Default dark; restore saved preference if present
-  const saved = localStorage.getItem('theme');
+  let saved;
+  try { saved = localStorage.getItem('theme'); } catch { /* use default if storage is blocked */ }
   if (saved === 'light') document.body.classList.add('light');
 })();
 
@@ -324,7 +364,7 @@ document.addEventListener('DOMContentLoaded', showVersion);
 
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
-  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch { /* keep the in-memory theme */ }
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────

@@ -28,6 +28,8 @@ export async function startFixture(port = 0) {
   let origin = '';
   const server = createServer(async (req, res) => {
     const url = new URL(req.url, origin);
+    // Also exercise static project Pages URLs without changing the synthetic API origin.
+    url.pathname = url.pathname.replace(/^\/career-context(?=\/tools\/)/, '');
     const send = (body, status = 200) => { res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify(body)); };
     try {
       let text = '';
@@ -125,6 +127,12 @@ export async function startFixture(port = 0) {
       if (url.pathname === '/tools/career-radar/public-env.js') {
         res.writeHead(200, { 'content-type': 'text/javascript' });
         res.end(`export default ${JSON.stringify({ SUPABASE_URL: origin, SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_synthetic' })};`); return;
+      }
+      // Serve only the Builder and shared assets needed for same-origin handoff acceptance.
+      if (url.pathname === '/tools/resume-tailor.html' || /^\/tools\/shared\/[\w-]+\.(css|mjs)$/.test(url.pathname)) {
+        const bytes = await readFile(resolve(root, '../..', url.pathname.slice(1)));
+        res.writeHead(200, { 'content-type': url.pathname.endsWith('.html') ? 'text/html' : url.pathname.endsWith('.css') ? 'text/css' : 'text/javascript', 'cache-control': 'no-store' });
+        res.end(bytes); return;
       }
       const relative = url.pathname.replace(/^\/tools\/career-radar\//, '');
       if (!url.pathname.startsWith('/tools/career-radar/') || relative.split('/').some(part => part.startsWith('.') || part === 'node_modules') || !/\.(?:html|js|css)$/.test(relative)) { send({}, 404); return; }

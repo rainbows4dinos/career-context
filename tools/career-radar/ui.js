@@ -1,5 +1,6 @@
 import { APPLIED_CARD_LIMIT, formatAppliedDate, groupCards, statusLabel, visibleCards } from './view-model.js';
 import { STATUSES, WORK_ARRANGEMENTS, validateHttpUrl } from './model.js';
+import { createHandoff, HANDOFF_TTL } from '../shared/resume-handoff.mjs';
 
 /** @template {keyof HTMLElementTagNameMap} T @param {T} tag @param {string} [text] @param {string} [className] */
 export function el(tag, text = '', className = '') {
@@ -125,7 +126,38 @@ export function editorView(root, row) {
   fields.append(details);
   const feedback = el('p', '', 'feedback'); feedback.id = 'save-feedback'; feedback.setAttribute('role','status');
   const save = el('button', row ? 'Save details' : 'Add prospect', 'primary'); save.type = 'submit';
-  fields.append(feedback, save); form.append(fields); editor.append(form);
+  fields.append(feedback, save);
+  if (row) {
+    const feedback = el('p', '', 'feedback'); feedback.setAttribute('role', 'status');
+    const send = button('Send to Résumé Builder', () => {
+      let key = '';
+      let tab;
+      try {
+        const destination = new URL('../resume-tailor.html', window.location.href);
+        const handoff = createHandoff(window.localStorage, destination, {
+          company: row.company, title: row.title, description: row.job_description ?? ''
+        });
+        key = handoff.key;
+        // Open synchronously from the click, then detach the opener before navigation.
+        tab = window.open('about:blank', '_blank');
+        if (!tab) throw new Error('Allow pop-ups for this site, then try again.');
+        tab.opener = null;
+        tab.location.replace(handoff.url.href);
+        feedback.classList.remove('error');
+        feedback.textContent = 'Opened Résumé Builder with this prospect’s saved job details.';
+        setTimeout(() => { try { window.localStorage.removeItem(key); } catch { /* read enforces expiry */ } }, HANDOFF_TTL);
+      } catch (error) {
+        tab?.close();
+        if (key) { try { window.localStorage.removeItem(key); } catch { /* expires on read */ } }
+        feedback.classList.add('error');
+        feedback.textContent = error instanceof Error && error.message.startsWith('Allow pop-ups')
+          ? error.message : 'Could not send job details. Browser storage may be unavailable or full. Your prospect is unchanged; try again or copy the fields manually.';
+      }
+    });
+    const actions = el('div', '', 'actions'); actions.append(save, send);
+    fields.append(actions, feedback);
+  }
+  form.append(fields); editor.append(form);
   if (row) {
     const section = el('section', '', 'panel'); section.append(el('h3', 'Status'));
     const statusForm = el('form', '', 'status-controls'); statusForm.id = 'status-form';
