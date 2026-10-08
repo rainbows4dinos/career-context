@@ -104,7 +104,7 @@ export function editorView(root, row) {
   const fields = el('fieldset');
   const grid = el('div', '', 'field-grid');
   grid.append(field('company', 'Company *', row?.company ?? ''), field('title', 'Role / title *', row?.title ?? ''));
-  fields.append(grid, field('job_url', 'Job URL', row?.job_url ?? '', 'url'), field('notes', 'Notes', row?.notes ?? '', 'textarea'));
+  fields.append(grid, field('job_url', 'Job URL', row?.job_url ?? '', 'url'), field('job_description', 'Job description', row?.job_description ?? '', 'textarea'));
   const details = el('details'); details.append(el('summary', 'More job details'));
   const extra = el('div', '', 'field-grid');
   for (const [name, label] of /** @type {const} */ ([['source','Source'], ['location','Location'], ['employment_type','Employment type'], ['compensation_text','Compensation range / type']])) {
@@ -122,7 +122,7 @@ export function editorView(root, row) {
   }
   extra.append(selectField('work_arrangement', 'Work arrangement', WORK_ARRANGEMENTS, row?.work_arrangement ?? '', true));
   for (const [name, label] of /** @type {const} */ ([['posted_on','Posted date'], ['discovered_on','Discovered date'], ['applied_on','Applied date']])) extra.append(field(name, label, row?.[name] ?? '', 'date'));
-  details.append(extra, field('job_description', 'Job description', row?.job_description ?? '', 'textarea'));
+  details.append(extra, field('notes', 'Notes', row?.notes ?? '', 'textarea'));
   fields.append(details);
   const feedback = el('p', '', 'feedback'); feedback.id = 'save-feedback'; feedback.setAttribute('role','status');
   const save = el('button', row ? 'Save details' : 'Add prospect', 'primary'); save.type = 'submit';
