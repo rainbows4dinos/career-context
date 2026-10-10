@@ -9,6 +9,12 @@ test('committed SDK, licenses and checksums match the pinned npm package', () =>
   });
 });
 
+test('Gravity icon sprite, catalog, license and provenance match the pinned package', () => {
+  execFileSync(process.execPath, ['scripts/vendor-icons.js', '--check'], {
+    cwd: new URL('..', import.meta.url), stdio: 'pipe'
+  });
+});
+
 test('vendored SDK signs in, restores its session, and sends authenticated Data API requests', async () => {
   const storage = new Map();
   const user = { id: '11111111-1111-4111-8111-111111111111', email: 'test@example.com' };

@@ -1,0 +1,6 @@
+.gravity-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: -.125em;
+  fill: currentColor;
+}

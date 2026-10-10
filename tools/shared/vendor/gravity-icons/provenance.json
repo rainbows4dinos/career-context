@@ -1,0 +1,8 @@
+{
+  "package": "@gravity-ui/icons",
+  "version": "2.22.0",
+  "upstreamDirectory": "svgs/",
+  "npmIntegrity": "sha512-v304kVTXbtsq8b3Uq3ZnX9R3LnRdECToeLspDgCs92C9fcID4C7dJqS3PywHKEaM4PFEZO8LRp/6JQbIm9UjHA==",
+  "iconCount": 799,
+  "spriteSha256": "c881774dc42f4a03f1bcfaaf90e0079899745a826c94d382f4000319b1190f75"
+}

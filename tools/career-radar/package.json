@@ -12,6 +12,8 @@
     "config:generate": "node scripts/generate-public-config.js",
     "vendor:generate": "node scripts/vendor-supabase.js",
     "vendor:check": "node scripts/vendor-supabase.js --check",
+    "icons:generate": "node scripts/vendor-icons.js",
+    "icons:check": "node scripts/vendor-icons.js --check",
     "types:generate": "node scripts/generate-database-types.js",
     "types:local-snapshot": "node scripts/generate-local-types.js",
     "db:lint": "supabase db lint --local --workdir ../.."
@@ -24,6 +26,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",
     "@eslint/js": "10.0.1",
+    "@gravity-ui/icons": "2.22.0",
     "@types/node": "26.6.4",
     "deno": "2.9.6",
     "eslint": "10.12.0",
