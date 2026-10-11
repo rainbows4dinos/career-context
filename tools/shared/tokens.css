@@ -234,7 +234,7 @@ body.light {
   --ds-action-secondary-border: var(--ds-secondary-700);
   --ds-link-default: var(--ds-secondary-700);
   --ds-link-hover: var(--ds-secondary-700);
-  --ds-focus-ring: var(--ds-secondary-400);
+  --ds-focus-ring: var(--ds-secondary-700);
   --ds-selection-bg: var(--ds-secondary-100);
   --ds-selection-fg: var(--ds-secondary-700);
   --ds-selection-border: var(--ds-secondary-700);
