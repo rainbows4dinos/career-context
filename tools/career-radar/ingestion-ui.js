@@ -64,12 +64,12 @@ export function mountIngestion(form, options) {
         if (!control) continue;
         control.value = String(preview.draft[/** @type {keyof typeof preview.draft} */ (name)] ?? '');
         control.closest('label')?.querySelector('.field-origin')?.remove();
-        control.closest('label')?.append(el('small', preview.field_sources[name] ? (name === 'discovered_on' ? 'First captured in Radar (UTC); editable' : `Extracted from ${PROVIDER_NAMES[preview.identity.provider]}`) : 'Not supplied; complete if known', 'field-origin'));
+        control.closest('label')?.append(el('small', preview.field_sources[name] ? (name === 'discovered_on' ? 'First captured in Prospect Tracker (UTC); editable' : `Extracted from ${PROVIDER_NAMES[preview.identity.provider]}`) : 'Not supplied; complete if known', 'field-origin'));
       }
       const details = form.querySelector('details'); if (details) details.open = true;
       const save = form.querySelector('button[type="submit"]'); if (save) save.textContent = 'Save prospect';
       hasPreview = true; options.markDirty();
-      const warnings = el('ul', '', 'muted'); for (const warning of preview.warnings) warnings.append(el('li', warning));
+      const warnings = el('ul', '', 'muted'); for (const warning of preview.warnings) warnings.append(el('li', warning.replace('does not change Radar status', 'does not change Prospect Tracker status')));
       feedback.replaceChildren(el('h3', 'Preview — review before saving'), el('p', `${PROVIDER_NAMES[preview.identity.provider]} · ${preview.identity.board}${'region' in preview.identity && preview.identity.region ? ' · ' + preview.identity.region.toUpperCase() : ''} · Posting ${preview.identity.posting_id}${preview.identity.requisition_id ? ' · Requisition ' + preview.identity.requisition_id : ''}`, 'muted'), warnings);
       const candidates = duplicateCandidates(preview.draft, await options.data.listProspectIdentities(), options.createId);
       if (options.current() && !active.signal.aborted) showDuplicates(candidates, preview.draft);

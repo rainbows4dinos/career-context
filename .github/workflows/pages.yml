@@ -34,7 +34,7 @@ jobs:
       # Public browser settings only. Missing variables allow résumé deployment
       # and Radar shows its setup error. Invalid values fail the entire deploy;
       # Pages continues serving the last successful deployment.
-      - name: Generate Career Radar public configuration
+      - name: Generate Prospect Tracker public configuration
         env:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
@@ -42,7 +42,7 @@ jobs:
           if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_PUBLISHABLE_KEY" ]; then
             node tools/career-radar/scripts/generate-public-config.js
           else
-            echo "::notice::Set SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY repository variables to enable Career Radar."
+            echo "::notice::Set SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY repository variables to enable Prospect Tracker."
           fi
 
       # The repo is already a static site, so the root is uploaded as-is.

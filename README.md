@@ -1,8 +1,8 @@
-# Larry Reynolds Career Context
+# nextchapter
 
 Shared professional context and personal career tools for Larry Reynolds: résumé tailoring, portfolio positioning, interview preparation, and opportunity evaluation.
 
-The résumé and cover-letter builder and Career Radar are the existing tools. Radar supports manual job tracking and editable job URL previews (Greenhouse, Ashby, Lever and limited Workday deployed); discovery and evaluation are future milestones. The résumé builder will remain as the project grows.
+nextchapter connects three applications: Career Radar (coming soon) for discovery and evaluation, Prospect Tracker for managing prospects and applications, and Résumé Builder for tailored application materials. Prospect Tracker retains existing manual tracking and editable job URL previews (Greenhouse, Ashby, Lever and limited Workday).
 
 ## Shared career context
 
@@ -24,7 +24,7 @@ Career Radar can reuse career facts, positioning, and supporting evidence. Its s
 
 Keep personal job-search staging/seed files, reconciliation reports, backups, source excerpts, and generated import artifacts outside this public repository. The defensive patterns in `.gitignore` help prevent accidental commits of recognizable artifacts; they do not make files private. See [AGENTS.md](AGENTS.md#development-approach) for naming and handling guidance.
 
-Career Radar's database and typed application live in `supabase/` and `tools/career-radar/`. The initial migration is applied to the hosted project. See [setup and validation](docs/career-radar-v0.md) and the [implementation plan](docs/career-radar-v0-implementation-plan.md).
+Prospect Tracker's database and typed application live in `supabase/` and `tools/career-radar/`. The initial migration is applied to the hosted project. See [setup and validation](docs/career-radar-v0.md) and the [implementation plan](docs/career-radar-v0-implementation-plan.md).
 
 For URL import, see [Greenhouse configuration and hosted results](docs/career-radar-greenhouse-ingestion.md), [Ashby/Lever implementation and deployment steps](docs/career-radar-ashby-lever-ingestion.md), [limited Workday support and deployment](docs/career-radar-workday-ingestion.md), and the [approved ingestion architecture](docs/career-radar-url-ingestion-plan.md).
 
@@ -37,7 +37,8 @@ Repository agents should read `AGENTS.md` and the career files relevant to their
 ## Existing tools
 
 - [tools/resume-tailor.html](tools/resume-tailor.html): the résumé and cover-letter builder. One static page covering tailoring, revisions, QA warnings, and downloads.
-- [tools/career-radar/index.html](tools/career-radar/index.html): private prospect tracking with a status board, core details, status history and editable posting previews. Also linked from the résumé builder.
+- [tools/career-radar.html](tools/career-radar.html): Career Radar coming soon; discovery and evaluation are not implemented.
+- [tools/career-radar/index.html](tools/career-radar/index.html): Prospect Tracker, private prospect tracking with a status board, core details, status history and editable posting previews. Also linked from the résumé builder.
 - [tools/proxy-worker.js](tools/proxy-worker.js): Cloudflare Worker that proxies Anthropic API requests using a server-side secret.
 - [tools/wrangler.toml](tools/wrangler.toml): configuration for the separately deployed Worker.
 - [.github/workflows/pages.yml](.github/workflows/pages.yml): publishes the repository root to GitHub Pages on pushes to `main` or manual dispatch.
@@ -47,7 +48,7 @@ The builder produces one download per application: a **Download Package** zip ho
 
 For architecture and the constraints that apply when changing any of this, see [AGENTS.md](AGENTS.md).
 
-Both tools share a [design-token stylesheet](tools/shared/tokens.css), with local component styling. See the [token implementation and validation](docs/shared-design-tokens.md). When copying the résumé HTML elsewhere, keep `tools/shared/tokens.css` at the same relative path.
+The applications share [navigation and Builder’s theme switch](docs/nextchapter-navigation.md) and a [design-token stylesheet](tools/shared/tokens.css), with local component styling. See the [token implementation and validation](docs/shared-design-tokens.md). When copying the résumé HTML elsewhere, keep `tools/shared/tokens.css` at the same relative path.
 
 ## Deployment and editing
 
@@ -55,4 +56,6 @@ The site, résumé Worker and Radar ingestion function deploy separately. Pushin
 
 The builder fetches the five shared files above from `main` at runtime, so editing one locally changes nothing until it is pushed — including when you serve the page from your own machine.
 
-For Radar deployment, configure GitHub repository **Variables** named `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` under **Settings → Secrets and variables → Actions**. Pages generates the public configuration during deployment. Sign in with your provisioned Supabase Auth user; the Supabase dashboard account is separate.
+For Prospect Tracker deployment, configure GitHub repository **Variables** named `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` under **Settings → Secrets and variables → Actions**. Pages generates the public configuration during deployment. Sign in with your provisioned Supabase Auth user; the Supabase dashboard account is separate.
+
+The repository remains named `career-context`. See the [repository rename readiness assessment](docs/nextchapter-repository-rename.md) before renaming it.

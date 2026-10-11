@@ -52,14 +52,14 @@ export function readHandoff(storage, url, now = Date.now()) {
   const params = new URLSearchParams(url.hash.slice(1));
   if (!params.has(HANDOFF_PARAM)) return null;
   const token = params.get(HANDOFF_PARAM);
-  if (!TOKEN.test(token ?? '')) throw new Error('This job transfer is invalid. Send it again from Career Radar.');
+  if (!TOKEN.test(token ?? '')) throw new Error('This job transfer is invalid. Send it again from Prospect Tracker.');
   const key = prefix(url) + token;
   const raw = storage.getItem(key);
   let payload;
   try { payload = JSON.parse(raw ?? 'null'); } catch { /* malformed */ }
   if (!valid(payload, now)) {
     storage.removeItem(key);
-    throw new Error('This job transfer is missing, expired or invalid. Send it again from Career Radar.');
+    throw new Error('This job transfer is missing, expired or invalid. Send it again from Prospect Tracker.');
   }
   return { key, job: payload.job };
 }

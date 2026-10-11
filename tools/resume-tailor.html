@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Resume Tailor — Larry Reynolds</title>
+<title>Résumé Builder — nextchapter</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Readex+Pro:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
 <link rel="stylesheet" href="shared/tokens.css" />
 <link rel="stylesheet" href="shared/icons.css" />
+<link rel="stylesheet" href="shared/navigation.css" />
+<script type="module" src="shared/navigation.mjs"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
   /* Legacy aliases resolve on body so body.light uses the shared light mappings. */
@@ -44,8 +46,8 @@
 
   /* Header */
   header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle) }
-  header h1 { font-family: var(--serif); font-size: 32px; font-weight: 600; letter-spacing: -0.01em; color: var(--text) }
-  header p { font-size: 15px; color: var(--text); margin-top: 5px; font-weight: 300; letter-spacing: 0.01em }
+  header h1, .app-heading h1 { font-family: var(--serif); font-size: 32px; font-weight: 600; letter-spacing: -0.01em; color: var(--text) }
+  header p, .app-heading p { font-size: 15px; color: var(--text); margin-top: 5px; font-weight: 300; letter-spacing: 0.01em }
 
   /* Cards */
   .card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 1.75rem; margin-bottom: 1rem }
@@ -148,58 +150,15 @@
   @media print { .revised-highlight { background: none; color: inherit } .revised-note { display: none } }
   @media (max-width: 600px) { .field-row { grid-template-columns: 1fr } .revise-bar button { width: 100% } .tab-bar { flex-wrap: wrap } .tab-actions { width: 100%; margin-left: 0; padding: 8px 0 } .tab-actions button { flex: 1 } }
 
-  /* ── Theme toggle ── */
-  header { position: relative }
-  .theme-toggle {
-    position: absolute; top: 0; right: 0;
-    height: 28px; cursor: pointer; user-select: none;
-    display: flex; align-items: center;
-  }
-  .toggle-track {
-    width: 52px; height: 28px; border-radius: 999px;
-    background: var(--surface2); border: 1px solid var(--border);
-    position: relative; transition: background 0.2s, border-color 0.2s;
-    display: flex; align-items: center;
-  }
-  .toggle-thumb {
-    position: absolute; top: 3px;
-    width: 20px; height: 20px; border-radius: 50%;
-    background: var(--accent); transition: transform 0.2s, background 0.2s;
-    z-index: 1;
-  }
-  /* Dark mode: thumb right, sun icon visible left */
-  body:not(.light) .toggle-thumb { transform: translateX(25px) }
-  body:not(.light) .toggle-icon-sun { opacity: 1 }
-  body:not(.light) .toggle-icon-moon { opacity: 0 }
-  /* Light mode: thumb left, moon icon visible right */
-  body.light .toggle-thumb { transform: translateX(4px) }
-  body.light .toggle-icon-sun { opacity: 0 }
-  body.light .toggle-icon-moon { opacity: 1 }
-  .toggle-icon-sun, .toggle-icon-moon {
-    position: absolute; font-size: 14px; line-height: 1;
-    color: var(--text); transition: opacity 0.15s;
-    display: flex; align-items: center; justify-content: center;
-    width: 20px; height: 20px;
-  }
-  .toggle-icon-sun  { left: 3px }
-  .toggle-icon-moon { right: 3px }
-  .theme-toggle:hover .toggle-track { border-color: var(--muted) }
 </style>
 </head>
 <body>
 <div class="shell">
-  <header>
-    <h1>Larry's Super Cool Resume Tool <span id="buildTag" style="font-size:11px;font-weight:400;opacity:0.5;vertical-align:middle"></span></h1>
-    <nav aria-label="Career tools"><a href="career-radar/">Career Radar →</a></nav>
+  <header id="nextchapter-header" data-app="builder"></header>
+  <section class="app-heading" aria-labelledby="builder-title" style="margin-bottom:2.5rem">
+    <h1 id="builder-title">Résumé Builder <span id="buildTag" style="font-size:11px;font-weight:400;opacity:0.5;vertical-align:middle"></span></h1>
     <p style="max-width: 90%;">Custom resume and cover letter generator using my job-hunting context files, docx templates, and Claude. Learn more on my <a href="https://github.com/rainbows4dinos/career-context" target="_blank">GitHub page</a>. Check out my portfolio at <a href="https://www.larryjr.design" target="_blank">www.larryjr.design</a></p>
-    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
-      <div class="toggle-track">
-        <div class="toggle-thumb"></div>
-        <span class="material-icons-outlined toggle-icon-sun">light_mode</span>
-        <span class="material-icons-outlined toggle-icon-moon">dark_mode</span>
-      </div>
-    </div>
-  </header>
+  </section>
 
   <div class="step-bar">
     <div class="step active" id="step0">1. Job details</div>
@@ -293,9 +252,9 @@ function receiveRadarJob() {
         company: document.getElementById('company'),
         title: document.getElementById('jobTitle'),
         description: document.getElementById('jobDesc')
-      }, () => window.confirm('Replace the company, job title and job description already entered here with the job sent from Career Radar? Other content and settings will be kept.'));
+      }, () => window.confirm('Replace the company, job title and job description already entered here with the job sent from Prospect Tracker? Other content and settings will be kept.'));
       notice.hidden = false;
-      notice.textContent = applied ? 'Job details received from Career Radar. Review them before generating.' : 'Transfer declined. Your existing job details were kept.';
+      notice.textContent = applied ? 'Job details received from Prospect Tracker. Review them before generating.' : 'Transfer declined. Your existing job details were kept.';
     }
     try { clearExpiredHandoffs(storage, url); } catch { /* abandoned-payload cleanup is best effort */ }
   } catch (error) {
@@ -316,14 +275,6 @@ receiveRadarJob();
 window.addEventListener('hashchange', receiveRadarJob);
 </script>
 <script>
-// ─── Theme ────────────────────────────────────────────────────────────────────
-(function() {
-  // Default dark; restore saved preference if present
-  let saved;
-  try { saved = localStorage.getItem('theme'); } catch { /* use default if storage is blocked */ }
-  if (saved === 'light') document.body.classList.add('light');
-})();
-
 // Version tag: reads the latest commit for this file from GitHub, then compares it
 // against the deploy time of the page actually running. Catches a cached page.
 async function showVersion() {
@@ -362,11 +313,6 @@ async function showVersion() {
 }
 
 document.addEventListener('DOMContentLoaded', showVersion);
-
-function toggleTheme() {
-  const isLight = document.body.classList.toggle('light');
-  try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch { /* keep the in-memory theme */ }
-}
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 const BUILD = '2026-10-05-a'; // fallback only, the version tag is read from GitHub at load
