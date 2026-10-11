@@ -149,8 +149,8 @@
 :root, body {
   color-scheme: dark;
   --ds-background-page: var(--ds-neutral-950);
-  --ds-surface-default: var(--ds-neutral-900);
-  --ds-surface-raised: var(--ds-neutral-800);
+  --ds-surface-default: var(--ds-surface-raised);
+  --ds-surface-raised: var(--ds-neutral-900);
   --ds-surface-sunken: var(--ds-neutral-950);
   --ds-border-subtle: var(--ds-neutral-700);
   --ds-border-control: var(--ds-neutral-400);
@@ -214,7 +214,7 @@
 body.light {
   color-scheme: light;
   --ds-background-page: var(--ds-neutral-100);
-  --ds-surface-default: var(--ds-neutral-50);
+  --ds-surface-default: var(--ds-surface-raised);
   --ds-surface-raised: var(--ds-neutral-50);
   --ds-surface-sunken: var(--ds-neutral-200);
   --ds-border-subtle: var(--ds-neutral-300);
