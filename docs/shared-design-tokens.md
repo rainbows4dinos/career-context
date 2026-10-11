@@ -1,5 +1,7 @@
 # Shared design tokens: Milestone 1
 
+Historical extraction snapshot. The October 11 [Phase 1 shared foundations](nextchapter-shared-foundations-phase1.md) supersede the palette, font families, semantic values and native-control behavior described below; the ownership and export boundaries still apply.
+
 Implemented October 7, 2026 against baseline `1e1533a`, following the approved [foundation audit](shared-design-foundation-audit.md). Only token extraction is implemented; component consolidation and theme redesign remain deferred.
 
 ## Ownership and loading

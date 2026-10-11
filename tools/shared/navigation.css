@@ -4,7 +4,7 @@
 .nextchapter-header nav { display:flex; flex-wrap:wrap; gap:.5rem 1rem; width:100%; align-items:center }
 .nextchapter-header nav a { color:var(--ds-text-secondary); padding:4px 0; text-decoration:none }
 .nextchapter-header nav a[aria-current="page"] { color:var(--ds-accent); text-decoration:underline; text-underline-offset:6px; text-decoration-thickness:2px }
-.nextchapter-header a:focus-visible, .nextchapter-header button:focus-visible { outline:2px solid var(--ds-accent); outline-offset:4px; border-radius:3px }
+.nextchapter-header a:focus-visible, .nextchapter-header button:focus-visible { outline:var(--ds-focus-width) solid var(--ds-focus-ring); outline-offset:var(--ds-focus-offset); border-radius:3px }
   .theme-toggle {
     position: relative; margin-left: auto; padding: 0; border: 0; background: transparent;
     height: 28px; cursor: pointer; user-select: none;

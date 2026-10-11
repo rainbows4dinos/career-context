@@ -31,16 +31,16 @@ a { color:var(--accent); text-underline-offset:3px } a:hover { background:var(--
 button,input,select,textarea { font:inherit; border-radius:8px }
 button { cursor:pointer; padding:10px 16px; border:1px solid var(--border); background:transparent; color:var(--text) }
 button:hover { border-color:var(--accent) }
-.primary { background:var(--accent); color:var(--bg); border-color:var(--accent); font-weight:500 }
+.primary { background:var(--ds-action-primary-bg); color:var(--ds-action-primary-fg); border-color:var(--ds-action-primary-border); font-weight:500 }
 .secondary { color:var(--muted) }
 button:disabled { opacity:.5; cursor:wait }
-:focus-visible { outline:2px solid var(--accent); outline-offset:3px }
+:focus-visible { outline:var(--ds-focus-width) solid var(--ds-focus-ring); outline-offset:var(--ds-focus-offset) }
 .panel { background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:1.5rem; margin-bottom:1rem }
 .narrow { max-width:520px; margin:2rem auto }
 .muted,.empty-column { color:var(--muted) }
 #notice:empty,#login-error:empty,.feedback:empty { display:none }
 #notice,.feedback,#login-error { padding:.75rem 1rem; background:var(--accent-bg); border-radius:8px; overflow-wrap:anywhere }
-.error { color:var(--accent) }
+.error { color:var(--ds-error) }
 .view-heading { justify-content:space-between; margin-bottom:1rem }
 .board { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px; align-items:start }
 .column { min-width:0; background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:12px }
