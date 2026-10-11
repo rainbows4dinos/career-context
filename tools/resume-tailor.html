@@ -69,15 +69,12 @@
 
   /* Toggle pills */
   .toggles { display: flex; flex-wrap: wrap; gap: 8px }
-  .tog { font-size: 13px; font-weight: 400; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; user-select: none; letter-spacing: 0.01em }
-  .tog:hover { border-color: var(--muted-light); color: var(--muted-light) }
-  .tog.on { background: var(--accent-bg); color: var(--accent); border-color: var(--accent-border) }
 
   /* Step bar */
-  .step-bar { display: flex; gap: 6px; margin-bottom: 1.75rem }
-  .step { flex: 1; font-size: 12px; font-weight: 400; color: var(--muted); padding: 6px 4px; text-align: center; border-bottom: 2px solid var(--border-subtle); transition: all 0.2s; letter-spacing: 0.03em }
-  .step.active { color: var(--accent); border-color: var(--accent); font-weight: 500 }
-  .step.done { color: var(--success); border-color: var(--success) }
+  .step-bar.nc-step-progress { margin-bottom: 1.75rem }
+  button.primary { flex: 1 }
+  .tab-actions button.primary { flex: 0 0 auto }
+  .revise-bar .nc-button { align-self: flex-end; flex-shrink: 0 }
 
   /* Loading */
   .loading-card { text-align: center; padding: 3.5rem 2rem }
@@ -94,11 +91,6 @@
   .tab-bar { display: flex; align-items: flex-end; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1.5rem }
   /* Actions ride at the right end of the tab bar, sitting just off the rule */
   .tab-actions { margin-left: auto; display: flex; gap: 8px; padding-bottom: 6px }
-  .tab-actions button.primary { flex: 0 0 auto; padding: 8px 16px }
-  .tab-actions button.secondary { padding: 8px 16px }
-  .tab { font-size: 14px; font-weight: 400; padding: 8px 20px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s }
-  .tab:hover { color: var(--muted-light) }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500 }
 
   /* Resume preview */
   .resume-name { font-family: var(--serif); font-size: 26px; font-weight: 600; letter-spacing: -0.01em; color: var(--text) }
@@ -122,11 +114,6 @@
   .cl-body p { margin-bottom: 1.1rem }
 
   /* Buttons */
-  button.primary { flex: 1; padding: 12px; font-family: var(--sans); font-size: 14px; font-weight: 500; letter-spacing: 0.02em; background: var(--ds-action-primary-bg); color: var(--ds-action-primary-fg); border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.15s }
-  button.primary:hover { opacity: 0.88 }
-  button.primary:disabled { opacity: 0.35; cursor: not-allowed }
-  button.secondary { padding: 11px 20px; font-family: var(--sans); font-size: 14px; font-weight: 400; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s }
-  button.secondary:hover { border-color: var(--muted-light); color: var(--muted-light) }
 
   /* Download note */
   .dl-note { font-size: 13px; color: var(--muted); margin-top: 10px; font-weight: 300 }
@@ -136,9 +123,6 @@
   .revise-bar textarea { width: 100%; min-height: 80px; font-family: var(--sans); font-size: 15px; font-weight: 300; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 13px; outline: none; transition: border-color 0.15s }
   .revise-bar textarea::placeholder { color: var(--muted) }
   .revise-bar textarea:focus { border-color: var(--accent) }
-  .revise-bar button { align-self: flex-end; white-space: nowrap; padding: 10px 18px; font-family: var(--sans); font-size: 14px; font-weight: 500; background: var(--ds-action-primary-bg); color: var(--ds-action-primary-fg); border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.15s; flex-shrink: 0 }
-  .revise-bar button:hover { opacity: 0.88 }
-  .revise-bar button:disabled { opacity: 0.35; cursor: not-allowed }
   .revise-status { display: none; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin-bottom: 1rem; font-weight: 300 }
   .revise-status.visible { display: flex }
   .revise-spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; flex-shrink: 0 }
@@ -151,6 +135,7 @@
   @media (max-width: 600px) { .field-row { grid-template-columns: 1fr } .revise-bar button { width: 100% } .tab-bar { flex-wrap: wrap } .tab-actions { width: 100%; margin-left: 0; padding: 8px 0 } .tab-actions button { flex: 1 } }
 
 </style>
+<link rel="stylesheet" href="shared/components.css" />
 </head>
 <body>
 <div class="shell">
@@ -160,11 +145,11 @@
     <p style="max-width: 90%;">Custom resume and cover letter generator using my job-hunting context files, docx templates, and Claude. Learn more on my <a href="https://github.com/rainbows4dinos/career-context" target="_blank">GitHub page</a>. Check out my portfolio at <a href="https://www.larryjr.design" target="_blank">www.larryjr.design</a></p>
   </section>
 
-  <div class="step-bar">
-    <div class="step active" id="step0">1. Job details</div>
-    <div class="step" id="step1">2. Generating</div>
-    <div class="step" id="step2">3. Preview + Download</div>
-  </div>
+  <ol class="step-bar nc-step-progress" aria-label="Application progress">
+    <li class="nc-step-progress__stage"><div class="nc-step nc-step--active" id="step0" aria-current="step"><span class="nc-step__badge"><svg class="gravity-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="shared/vendor/gravity-icons/sprite.svg#circle-number-1"></use></svg></span><span class="nc-step__label">Job details</span><span class="nc-visually-hidden" data-step-state>Current</span></div></li>
+    <li class="nc-step-progress__stage"><div class="nc-step nc-step--upcoming" id="step1"><span class="nc-step__badge"><svg class="gravity-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="shared/vendor/gravity-icons/sprite.svg#circle-number-2"></use></svg></span><span class="nc-step__label">Generating</span><span class="nc-visually-hidden" data-step-state>Upcoming</span></div></li>
+    <li class="nc-step-progress__stage"><div class="nc-step nc-step--upcoming" id="step2"><span class="nc-step__badge"><svg class="gravity-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="shared/vendor/gravity-icons/sprite.svg#circle-number-3"></use></svg></span><span class="nc-step__label">Preview + Download</span><span class="nc-visually-hidden" data-step-state>Upcoming</span></div></li>
+  </ol>
 
   <!-- Pane 0: Input -->
   <p id="handoffNotice" role="status" hidden></p>
@@ -198,7 +183,7 @@
         <label>Additional notes</label>
         <textarea id="extraNotes" style="min-height:72px" placeholder="e.g. De-emphasize management, highlight Figma expertise"></textarea>
       </div>
-      <button class="primary" onclick="goTailor()">Generate Resume + Cover Letter</button>
+      <button class="primary nc-button nc-button--primary nc-button--lg" onclick="goTailor()">Generate Resume + Cover Letter</button>
     </div>
   </div>
 
@@ -214,22 +199,24 @@
   <!-- Pane 2: Preview -->
   <div id="pane2" style="display:none">
     <div class="tab-bar">
-      <div class="tab active" onclick="showTab('resume',this)">Resume</div>
-      <div class="tab" onclick="showTab('cl',this)">Cover Letter</div>
+      <div class="nc-pill-tabs" role="tablist" aria-label="Application documents" id="documentTabs">
+        <button type="button" class="tab nc-pill-tab" id="resumeTab" role="tab" data-tab="resume" aria-selected="true" aria-controls="tabResume" tabindex="0" onclick="showTab('resume',this)">Resume</button>
+        <button type="button" class="tab nc-pill-tab" id="clTab" role="tab" data-tab="cl" aria-selected="false" aria-controls="tabCL" tabindex="-1" onclick="showTab('cl',this)">Cover Letter</button>
+      </div>
       <div class="tab-actions">
-        <button class="primary" id="dlAll" onclick="downloadBundle()">Download Package</button>
-        <button class="secondary" onclick="startOver()">Start New Application</button>
+        <button class="primary nc-button nc-button--primary nc-button--lg" id="dlAll" onclick="downloadBundle()">Download Package</button>
+        <button class="secondary nc-button nc-button--tertiary nc-button--lg" onclick="startOver()">Start New Application</button>
       </div>
     </div>
-    <div id="tabResume"><div class="card" id="resumeOut"></div></div>
-    <div id="tabCL" style="display:none"><div class="card" id="clOut"></div></div>
+    <div id="tabResume" role="tabpanel" aria-labelledby="resumeTab" tabindex="0"><div class="card" id="resumeOut"></div></div>
+    <div id="tabCL" role="tabpanel" aria-labelledby="clTab" tabindex="0" hidden style="display:none"><div class="card" id="clOut"></div></div>
     <div class="revise-status" id="reviseStatus">
       <div class="revise-spinner"></div>
       <span id="reviseStatusText">Revising...</span>
     </div>
     <div class="revise-bar">
       <textarea id="reviseNote" rows="1" placeholder="Ask for a revision — e.g. Make the opening punchier, or drop the Elevate bullet" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();goRevise()}"></textarea>
-      <button onclick="goRevise()" id="reviseBtn">Request Revision</button>
+      <button class="nc-button nc-button--primary nc-button--lg" onclick="goRevise()" id="reviseBtn">Request Revision</button>
     </div>
     <p class="dl-note">Download Package gives you a zip that unpacks into one folder named for the company and role, with all five files inside.<br>PDF for sending and attaching. Docx for job boards that parse it, and for hand edits before sending. Both keep selectable text so an ATS can read them.<br>ATS plain is for Workday autofill only: one column, one fact per line, no tabs or parentheticals. It looks plain because that is what parses.</p>
   </div>
@@ -390,9 +377,16 @@ function renderChips(toneMarkdown) {
     container.innerHTML = '<span style="font-size:13px;color:var(--muted);font-weight:300">No focus options found in tone-and-positioning.md</span>';
     return;
   }
-  container.innerHTML = chips.map(c =>
-    `<span class="tog" onclick="toggleFocus(this)" data-val="${c.val}">${c.label}</span>`
-  ).join('');
+  container.replaceChildren(...chips.map(c => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'tog nc-chip nc-chip--sm';
+    chip.dataset.val = c.val;
+    chip.textContent = c.label;
+    chip.setAttribute('aria-pressed', 'false');
+    chip.addEventListener('click', () => toggleFocus(chip));
+    return chip;
+  }));
 }
 
 let focusSelected = [];
@@ -400,14 +394,21 @@ let generatedData = null;
 let activeTab = 'resume';
 
 function toggleFocus(el) {
-  el.classList.toggle('on');
+  const selected = el.classList.toggle('on');
+  el.classList.toggle('nc-chip--selected', selected);
+  el.setAttribute('aria-pressed', String(selected));
   const v = el.dataset.val;
   focusSelected = focusSelected.includes(v) ? focusSelected.filter(x=>x!==v) : [...focusSelected,v];
 }
 
 function setStep(n) {
   ['step0','step1','step2'].forEach((id,i)=>{
-    document.getElementById(id).className='step'+(i<n?' done':i===n?' active':'');
+    const step = document.getElementById(id);
+    step.className = 'step nc-step nc-step--' + (i<n ? 'completed' : i===n ? 'active' : 'upcoming');
+    if (i===n) step.setAttribute('aria-current', 'step');
+    else step.removeAttribute('aria-current');
+    step.querySelector('[data-step-state]').textContent = i<n ? 'Completed' : i===n ? 'Current' : 'Upcoming';
+    step.querySelector('use').setAttribute('href', 'shared/vendor/gravity-icons/sprite.svg#' + (i<n ? 'circle-check' : 'circle-number-' + (i+1)));
   });
   ['pane0','pane1','pane2'].forEach((id,i)=>{
     document.getElementById(id).style.display=i===n?'':'none';
@@ -416,16 +417,38 @@ function setStep(n) {
 
 function showTab(tab, el) {
   activeTab = tab;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('tabResume').style.display = tab==='resume'?'':'none';
-  document.getElementById('tabCL').style.display = tab==='cl'?'':'none';
+  document.querySelectorAll('#documentTabs [role="tab"]').forEach(t => {
+    const selected = t === el;
+    t.setAttribute('aria-selected', String(selected));
+    t.tabIndex = selected ? 0 : -1;
+    const panel = document.getElementById(t.getAttribute('aria-controls'));
+    panel.hidden = !selected;
+    panel.style.display = selected ? '' : 'none';
+  });
 }
+
+document.getElementById('documentTabs').addEventListener('keydown', event => {
+  const tabs = [...document.querySelectorAll('#documentTabs [role="tab"]')];
+  const index = tabs.indexOf(document.activeElement);
+  if (index < 0) return;
+  let next;
+  if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+  else if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
+  else if (event.key === 'Home') next = 0;
+  else if (event.key === 'End') next = tabs.length - 1;
+  else return;
+  event.preventDefault();
+  tabs[next].focus();
+});
+document.getElementById('documentTabs').addEventListener('focusin', event => {
+  const tab = event.target;
+  if (tab instanceof HTMLButtonElement && tab.getAttribute('role') === 'tab') showTab(tab.dataset.tab, tab);
+});
 
 function startOver() {
   focusSelected=[];
   if (TONE) renderChips(TONE); // re-render chips (clears active state)
-  else document.querySelectorAll('.tog').forEach(b=>b.classList.remove('on'));
+  else document.querySelectorAll('.tog').forEach(b => { b.classList.remove('on', 'nc-chip--selected'); b.setAttribute('aria-pressed', 'false'); });
   ['jobTitle','company','jobDesc','extraNotes','hiringContact'].forEach(id=>document.getElementById(id).value='');
   setStep(0);
 }
@@ -662,7 +685,7 @@ LAST STEP BEFORE YOU RETURN: re-read every sentence you just wrote. If any conta
     if (existing) existing.remove();
     const retryBtn = document.createElement('button');
     retryBtn.id = 'retryBtn';
-    retryBtn.className = 'primary';
+    retryBtn.className = 'primary nc-button nc-button--primary nc-button--lg';
     retryBtn.style.cssText = 'margin-top:1.5rem;max-width:180px';
     retryBtn.textContent = 'Start Over';
     retryBtn.onclick = startOver;
@@ -812,11 +835,7 @@ Change only what the revision request asks for.`;
     });
 
     // Restore the active tab after re-render (renderPreview always shows resume by default)
-    if (activeTab === 'cl') {
-      document.getElementById('tabResume').style.display = 'none';
-      document.getElementById('tabCL').style.display = '';
-      document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i === 1));
-    }
+    showTab(activeTab, document.getElementById(activeTab === 'cl' ? 'clTab' : 'resumeTab'));
 
     document.getElementById('reviseNote').value = '';
     statusText.textContent = 'Done.';

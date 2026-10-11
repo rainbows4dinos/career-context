@@ -1,0 +1,121 @@
+/* nextchapter Actions — Figma 92:5336. Opt-in; application layout stays local. */
+.nc-button, .nc-chip, .nc-pill-tab {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  min-width: 0;
+  font-family: var(--ds-type-ui-button-family);
+  font-weight: var(--ds-type-ui-button-weight);
+  letter-spacing: var(--ds-type-letter-spacing);
+  text-align: center;
+  white-space: normal;
+  text-transform: none;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  opacity: 1;
+}
+.nc-button { border: 1px solid transparent; }
+.nc-button--lg {
+  min-height: 40px; padding: 10px 16px; gap: 8px;
+  border-radius: var(--ds-radius-default);
+  font-size: var(--ds-type-ui-button-size); line-height: var(--ds-type-ui-button-line-height);
+}
+.nc-button--sm {
+  min-height: 28px; padding: 6px 12px; gap: 6px; border-radius: 6px;
+  font-size: var(--ds-type-ui-button-small-size); line-height: var(--ds-type-ui-button-small-line-height);
+}
+.nc-button--primary {
+  background: var(--ds-action-primary-bg); color: var(--ds-action-primary-fg); border-color: var(--ds-action-primary-border);
+}
+.nc-button--primary:hover:not(:disabled) { background: var(--ds-action-primary-hover); }
+.nc-button--primary:active:not(:disabled) { background: var(--ds-action-primary-pressed); }
+.nc-button--secondary {
+  background: var(--ds-action-secondary-bg); color: var(--ds-action-secondary-fg); border-color: var(--ds-action-secondary-border);
+}
+.nc-button--tertiary {
+  background: var(--ds-action-tertiary-bg); color: var(--ds-action-tertiary-fg); border-color: var(--ds-action-tertiary-border);
+}
+.nc-button--secondary:hover:not(:disabled), .nc-button--tertiary:hover:not(:disabled) {
+  background: var(--ds-action-secondary-hover); color: var(--ds-action-secondary-fg); border-color: var(--ds-action-secondary-border);
+}
+.nc-button--secondary:active:not(:disabled), .nc-button--tertiary:active:not(:disabled) {
+  background: var(--ds-action-secondary-pressed); color: var(--ds-action-secondary-fg); border-color: var(--ds-action-secondary-border);
+}
+.nc-button:disabled {
+  background: var(--ds-action-disabled-bg); color: var(--ds-action-disabled-fg); border-color: transparent;
+  opacity: 1; cursor: not-allowed;
+}
+.nc-button > .gravity-icon { flex-shrink: 0; }
+.nc-button--lg > .gravity-icon { width: 16px; height: 16px; }
+.nc-button--sm > .gravity-icon { width: 12px; height: 12px; }
+.nc-button:focus-visible, .nc-chip:focus-visible, .nc-pill-tab:focus-visible {
+  outline: var(--ds-focus-width) solid var(--ds-focus-ring); outline-offset: var(--ds-focus-offset);
+}
+.nc-chip {
+  border: 1px solid var(--ds-border-control); border-radius: 999px;
+  background: transparent; color: var(--ds-text-secondary);
+}
+.nc-chip--lg {
+  min-height: 40px; padding: 10px 12px; gap: 8px;
+  font-size: var(--ds-type-ui-button-size); line-height: var(--ds-type-ui-button-line-height);
+}
+.nc-chip--sm {
+  min-height: 28px; padding: 6px 12px; gap: 6px;
+  font-size: var(--ds-type-ui-button-small-size); line-height: var(--ds-type-ui-button-small-line-height);
+}
+.nc-chip:hover:not(:disabled) {
+  background: var(--ds-action-primary-bg); color: var(--ds-action-primary-fg);
+}
+.nc-chip--selected, .nc-chip[aria-pressed="true"] {
+  background: var(--ds-action-primary-bg); color: var(--ds-action-primary-fg); border-color: var(--ds-action-primary-border);
+}
+.nc-pill-tabs {
+  display: inline-flex; align-items: center; max-width: 100%; padding: 2px;
+  border: 1px solid var(--ds-input-border); border-radius: 999px; background: var(--ds-surface-default);
+}
+.nc-pill-tab {
+  min-height: 22px; padding: 4px 20px; gap: 4px; border: 0; border-radius: 999px;
+  background: transparent; color: var(--ds-text-primary);
+  font-size: var(--ds-type-ui-button-small-size); line-height: var(--ds-type-ui-button-small-line-height);
+}
+.nc-pill-tab:hover, .nc-pill-tab[aria-selected="true"] {
+  background: var(--ds-action-secondary-bg); color: var(--ds-action-secondary-fg);
+}
+/* Persistent selection cue remains visible while a different tab is hovered. */
+.nc-pill-tab[aria-selected="true"] { text-decoration: underline; text-underline-offset: 2px; }
+/* Step Progress Indicator composes the existing Step Progress Item states. */
+.nc-step-progress {
+  display: flex; align-items: center; gap: 16px; width: 100%; padding: var(--ds-space-3) 0; margin: 0; list-style: none;
+}
+.nc-step-progress__stage { display: flex; align-items: center; flex: 1; min-width: 0; }
+.nc-step-progress__stage:last-child { flex: 0 1 auto; }
+.nc-step-progress__stage:not(:last-child)::after {
+  content: ''; height: 1px; min-width: 16px; flex: 1; margin-left: 16px; background: var(--ds-border-control);
+}
+.nc-step-progress .nc-step { color: var(--ds-text-primary); }
+.nc-step-progress__stage > .nc-step { flex-shrink: 0; }
+@media (max-width: 600px) {
+  .nc-step-progress { flex-direction: column; align-items: stretch; gap: 8px; }
+  .nc-step-progress__stage { flex-direction: column; align-items: flex-start; }
+  .nc-step-progress__stage:not(:last-child)::after {
+    width: 1px; min-width: 0; height: 16px; flex: none; margin: 8px 0 0 15px;
+  }
+  .nc-step-progress__stage > .nc-step { max-width: 100%; }
+}
+.nc-step { display: flex; align-items: center; gap: 8px; color: var(--ds-text-muted); }
+.nc-step__badge {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex-shrink: 0;
+  border-radius: 50%; background: var(--ds-action-disabled-bg); color: var(--ds-action-disabled-fg);
+}
+.nc-step__badge .gravity-icon { width: 20px; height: 20px; }
+.nc-step__label {
+  font-family: var(--ds-type-ui-label-family); font-size: var(--ds-type-ui-label-size);
+  font-weight: var(--ds-type-ui-label-weight); line-height: var(--ds-type-ui-label-line-height);
+}
+.nc-step--active, .nc-step--completed { color: var(--ds-text-primary); }
+.nc-step--active .nc-step__badge, .nc-step--completed .nc-step__badge {
+  background: var(--ds-action-primary-bg); color: var(--ds-action-primary-fg);
+}
+.nc-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }

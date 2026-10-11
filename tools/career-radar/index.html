@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
   <link rel="stylesheet" href="../shared/navigation.css">
+  <link rel="stylesheet" href="../shared/components.css">
   <script type="module" src="../shared/navigation.mjs"></script>
   <script type="importmap">
     {"imports":{"@supabase/supabase-js":"./vendor/supabase.js"}}
@@ -22,7 +23,7 @@
     <header id="nextchapter-header" data-app="tracker"></header>
     <header>
       <div><h1>Prospect Tracker</h1><p>Your prospects, from first interest to a decision.</p></div>
-      <nav aria-label="Prospect Tracker"><a href="#/board">Board</a><a href="#/prospects/new" id="add-link" hidden>Add prospect</a><button id="logout" class="secondary" hidden>Sign out</button></nav>
+      <nav aria-label="Prospect Tracker"><a href="#/board">Board</a><a href="#/prospects/new" id="add-link" hidden>Add prospect</a><button id="logout" class="secondary nc-button nc-button--tertiary nc-button--lg" hidden>Sign out</button></nav>
     </header>
     <p id="notice" role="status" aria-live="polite"></p>
     <section id="login" class="panel narrow" hidden aria-labelledby="login-title">
@@ -32,7 +33,7 @@
         <label>Email<input name="email" type="email" autocomplete="username" required></label>
         <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
         <p id="login-error" role="alert"></p>
-        <button class="primary" type="submit">Sign in</button>
+        <button class="primary nc-button nc-button--primary nc-button--lg" type="submit">Sign in</button>
       </form>
     </section>
     <main id="workspace" tabindex="-1"><p>Connecting to Prospect Tracker…</p></main>

@@ -22,13 +22,13 @@ function link(text, href) { const node = el('a', text); node.href = href; return
 export function messageView(root, message, retry) {
   const panel = el('section', '', 'panel');
   panel.append(el('p', message));
-  if (retry) panel.append(button('Try again', retry));
+  if (retry) panel.append(button('Try again', retry, 'secondary nc-button nc-button--tertiary nc-button--lg'));
   root.replaceChildren(panel);
 }
 /** @param {HTMLElement} root @param {import('./data.js').ProspectCard[]} cards @param {() => void} refresh */
 export function boardView(root, cards, refresh) {
   const heading = el('div', '', 'view-heading');
-  heading.append(el('h2', `Prospects (${cards.length})`), button('Refresh', refresh));
+  heading.append(el('h2', `Prospects (${cards.length})`), button('Refresh', refresh, 'secondary nc-button nc-button--tertiary nc-button--lg'));
   const hint = el('p', cards.length ? 'Open a card to edit it or change its status. Expand Done to see completed prospects.' : 'No prospects yet. Add a company and role you want to keep track of.', 'muted');
   const board = el('div', '', 'board');
   board.tabIndex = 0;
@@ -125,7 +125,7 @@ export function editorView(root, row) {
   details.append(extra, field('notes', 'Notes', row?.notes ?? '', 'textarea'));
   fields.append(details);
   const feedback = el('p', '', 'feedback'); feedback.id = 'save-feedback'; feedback.setAttribute('role','status');
-  const save = el('button', row ? 'Save details' : 'Add prospect', 'primary'); save.type = 'submit';
+  const save = el('button', row ? 'Save details' : 'Add prospect', 'primary nc-button nc-button--primary nc-button--lg'); save.type = 'submit';
   fields.append(feedback, save);
   if (row) {
     const feedback = el('p', '', 'feedback'); feedback.setAttribute('role', 'status');
@@ -153,7 +153,7 @@ export function editorView(root, row) {
         feedback.textContent = error instanceof Error && error.message.startsWith('Allow pop-ups')
           ? error.message : 'Could not send job details. Browser storage may be unavailable or full. Your prospect is unchanged; try again or copy the fields manually.';
       }
-    });
+    }, 'secondary nc-button nc-button--tertiary nc-button--lg');
     const actions = el('div', '', 'actions'); actions.append(save, send);
     fields.append(actions, feedback);
   }
@@ -162,7 +162,7 @@ export function editorView(root, row) {
     const section = el('section', '', 'panel'); section.append(el('h3', 'Status'));
     const statusForm = el('form', '', 'status-controls'); statusForm.id = 'status-form';
     const statusFields = el('fieldset', '', 'status-controls');
-    const change = el('button', 'Change status', 'primary'); change.type = 'submit';
+    const change = el('button', 'Change status', 'primary nc-button nc-button--primary nc-button--lg'); change.type = 'submit';
     statusFields.append(selectField('status', 'Current status', STATUSES, row.status), change);
     statusForm.append(statusFields); section.append(statusForm);
     const statusFeedback = el('p', '', 'feedback'); statusFeedback.id = 'status-feedback'; statusFeedback.setAttribute('role','status'); section.append(statusFeedback);
