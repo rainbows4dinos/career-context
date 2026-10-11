@@ -83,8 +83,6 @@
 .nc-pill-tab:hover, .nc-pill-tab[aria-selected="true"] {
   background: var(--ds-action-secondary-bg); color: var(--ds-action-secondary-fg);
 }
-/* Persistent selection cue remains visible while a different tab is hovered. */
-.nc-pill-tab[aria-selected="true"] { text-decoration: underline; text-underline-offset: 2px; }
 /* Step Progress Indicator composes the existing Step Progress Item states. */
 .nc-step-progress {
   display: flex; align-items: center; gap: 16px; width: 100%; padding: var(--ds-space-3) 0; margin: 0; list-style: none;
