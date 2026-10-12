@@ -39,6 +39,7 @@ Repository agents should read `AGENTS.md` and the career files relevant to their
 - [tools/resume-tailor.html](tools/resume-tailor.html): the résumé and cover-letter builder. One static page covering tailoring, revisions, QA warnings, and downloads.
 - [tools/career-radar.html](tools/career-radar.html): Career Radar coming soon; discovery and evaluation are not implemented.
 - [tools/career-radar/index.html](tools/career-radar/index.html): Prospect Tracker, private prospect tracking with a status board, core details, status history and editable posting previews. Also linked from the résumé builder.
+- [tools/about.html](tools/about.html): a public introduction to nextchapter, its tools, and shared professional context.
 - [tools/proxy-worker.js](tools/proxy-worker.js): Cloudflare Worker that proxies Anthropic API requests using a server-side secret.
 - [tools/wrangler.toml](tools/wrangler.toml): configuration for the separately deployed Worker.
 - [.github/workflows/pages.yml](.github/workflows/pages.yml): publishes the repository root to GitHub Pages on pushes to `main` or manual dispatch.
@@ -48,7 +49,7 @@ The builder produces one download per application: a **Download Package** zip ho
 
 For architecture and the constraints that apply when changing any of this, see [AGENTS.md](AGENTS.md).
 
-The applications share [navigation and Builder’s theme switch](docs/nextchapter-navigation.md) and a [design-token stylesheet](tools/shared/tokens.css), with local component styling. See the [token implementation and validation](docs/shared-design-tokens.md). When copying the résumé HTML elsewhere, keep `tools/shared/tokens.css` at the same relative path.
+The applications share [global navigation, account controls, and the theme switch](docs/nextchapter-navigation.md) and a [design-token stylesheet](tools/shared/tokens.css), with local component styling. See the [token implementation and validation](docs/shared-design-tokens.md). When copying the résumé HTML elsewhere, keep `tools/shared/tokens.css` at the same relative path.
 
 ## Deployment and editing
 

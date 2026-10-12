@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About — nextchapter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared/tokens.css">
+  <link rel="stylesheet" href="shared/icons.css">
+  <link rel="stylesheet" href="career-radar/styles.css">
+  <link rel="stylesheet" href="shared/components.css">
+  <link rel="stylesheet" href="shared/navigation.css">
+  <script type="importmap">
+    {"imports":{"@supabase/supabase-js":"./career-radar/vendor/supabase.js"}}
+  </script>
+  <script type="module" src="shared/navigation.mjs"></script>
+  <style>
+    .about { max-width:720px; margin:0 auto; font:var(--ds-type-body-default-weight) var(--ds-type-body-default-size)/var(--ds-type-body-default-line-height) var(--ds-type-body-default-family) }
+    .about h1 { font:var(--ds-type-h1-weight) var(--ds-type-h1-size)/var(--ds-type-h1-line-height) var(--ds-type-h1-family); margin-bottom:var(--ds-space-4) }
+    .about h2 { font:var(--ds-type-h2-weight) var(--ds-type-h2-size)/var(--ds-type-h2-line-height) var(--ds-type-h2-family); margin-top:2rem }
+    .about h3 { font:var(--ds-type-h3-weight) var(--ds-type-h3-size)/var(--ds-type-h3-line-height) var(--ds-type-h3-family); margin-top:1.5rem }
+    .about p { margin:0 0 var(--ds-space-4) }
+    .about a { overflow-wrap:anywhere }
+  </style>
+</head>
+<body>
+  <header id="nextchapter-header" data-app="about"></header>
+  <main class="about panel" aria-labelledby="about-title">
+    <h1 id="about-title">About nextchapter</h1>
+    <p>nextchapter brings together Larry Reynolds’s professional context and personal career tools: résumé tailoring, portfolio positioning, interview preparation, and opportunity evaluation.</p>
+    <h2>The tools</h2>
+    <h3><a href="career-radar.html">Career Radar</a></h3>
+    <p>A future home for job discovery and opportunity evaluation. Career Radar is currently a placeholder; discovery and evaluation are not yet available.</p>
+    <h3><a href="career-radar/">Prospect Tracker</a></h3>
+    <p>Manage prospects and applications with a status board, editable details, and status history. Preview job postings from Greenhouse, Ashby, Lever, and supported Workday sites, then review and save their information.</p>
+    <h3><a href="resume-tailor.html">Résumé Builder</a></h3>
+    <p>Create tailored résumés and cover letters, review and revise them, and download an application package with PDF and Word documents and an ATS-plain résumé.</p>
+    <h2>How the tools work together</h2>
+    <p>Track an opportunity in Prospect Tracker, then use “Send to Résumé Builder” to carry its job information into tailored application materials. Career Radar will add discovery and evaluation in a future phase.</p>
+    <h2>Shared context, separate responsibilities</h2>
+    <p>The tools share canonical career facts, supporting experience, and writing guidance. Opportunity records remain separate from that context: tracking a company does not mean publishing it.</p>
+    <p>The project’s <a href="https://github.com/rainbows4dinos/career-context">README and source repository</a> explain the tools, their shared context, and how they are maintained.</p>
+  </main>
+</body>
+</html>

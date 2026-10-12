@@ -1,9 +1,8 @@
 try {
-  const configPath = './public-env.js';
-  const [{ default: env }, { createRadarClient }, { startRadar }] = await Promise.all([
-    import(configPath), import('./supabase-client.js'), import('./app.js')
+  const [{ getRadarClient }, { startRadar }] = await Promise.all([
+    import('./supabase-client.js'), import('./app.js')
   ]);
-  await startRadar(createRadarClient(env));
+  await startRadar(await getRadarClient());
 } catch {
   const workspace = document.getElementById('workspace');
   if (workspace) {

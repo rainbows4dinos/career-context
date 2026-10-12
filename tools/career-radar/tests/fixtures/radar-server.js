@@ -129,7 +129,7 @@ export async function startFixture(port = 0) {
         res.end(`export default ${JSON.stringify({ SUPABASE_URL: origin, SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_synthetic' })};`); return;
       }
       // Serve the suite entry points and shared assets for navigation/handoff acceptance.
-      if (url.pathname === '/tools/resume-tailor.html' || url.pathname === '/tools/career-radar.html' || /^\/tools\/shared\/[\w-]+\.(css|mjs)$/.test(url.pathname) || /^\/tools\/shared\/vendor\/gravity-icons\/(sprite\.svg|names\.mjs)$/.test(url.pathname)) {
+      if (url.pathname === '/tools/resume-tailor.html' || url.pathname === '/tools/career-radar.html' || url.pathname === '/tools/about.html' || /^\/tools\/shared\/[\w-]+\.(css|mjs)$/.test(url.pathname) || /^\/tools\/shared\/vendor\/gravity-icons\/(sprite\.svg|names\.mjs)$/.test(url.pathname)) {
         const bytes = await readFile(resolve(root, '../..', url.pathname.slice(1)));
         res.writeHead(200, { 'content-type': url.pathname.endsWith('.html') ? 'text/html' : url.pathname.endsWith('.css') ? 'text/css' : url.pathname.endsWith('.svg') ? 'image/svg+xml' : 'text/javascript', 'cache-control': 'no-store' });
         res.end(bytes); return;

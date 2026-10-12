@@ -11,9 +11,12 @@
 <link rel="stylesheet" href="shared/tokens.css" />
 <link rel="stylesheet" href="shared/icons.css" />
 <link rel="stylesheet" href="shared/navigation.css" />
+<script type="importmap">
+  {"imports":{"@supabase/supabase-js":"./career-radar/vendor/supabase.js"}}
+</script>
 <script type="module" src="shared/navigation.mjs"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+  *, *::before, *::after { margin: 0; padding: 0 }
   /* Legacy aliases resolve on body so body.light uses the shared light mappings. */
   :root, body {
     --bg: var(--ds-surface-page);
@@ -125,8 +128,8 @@
 <link rel="stylesheet" href="shared/components.css" />
 </head>
 <body>
-<div class="shell">
   <header id="nextchapter-header" data-app="builder"></header>
+<div class="shell">
   <section class="app-heading" aria-labelledby="builder-title" style="margin-bottom:2.5rem">
     <h1 id="builder-title">Résumé Builder <span id="buildTag" style="font-size:11px;font-weight:400;opacity:0.5;vertical-align:middle"></span></h1>
     <p style="max-width: 90%;">Custom resume and cover letter generator using my job-hunting context files, docx templates, and Claude. Learn more on my <a href="https://github.com/rainbows4dinos/career-context" target="_blank">GitHub page</a>. Check out my portfolio at <a href="https://www.larryjr.design" target="_blank">www.larryjr.design</a></p>

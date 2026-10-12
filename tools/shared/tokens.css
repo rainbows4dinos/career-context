@@ -1,4 +1,7 @@
 /* Live Figma foundations, October 11, 2026. See docs/nextchapter-shared-foundations-phase1.md. */
+/* Figma inside strokes: borders and padding never enlarge specified dimensions. */
+*, *::before, *::after { box-sizing: border-box; }
+
 :root {
   --ds-primary-200: #F8E1B6;
   --ds-primary-300: #F1CC88;

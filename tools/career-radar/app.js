@@ -1,3 +1,5 @@
+import { setAccountBusy } from '../shared/navigation.mjs';
+import { returnAfterLogin } from '../shared/navigation-return.mjs';
 import { setAlert } from '../shared/status.mjs';
 import { showToast } from '../shared/notifications.mjs';
 import { bindFieldValidation, setFieldError } from '../shared/fields.mjs';
@@ -20,7 +22,6 @@ export async function startRadar(client) {
   const login = node('login');
   const loginForm = /** @type {HTMLFormElement} */ (node('login-form'));
   bindFieldValidation(loginForm);
-  const logout = /** @type {HTMLButtonElement} */ (node('logout'));
   const addLink = node('add-link');
   let userId = '';
   let lastUserId = '';
@@ -28,7 +29,6 @@ export async function startRadar(client) {
   let pending = false;
   let epoch = 0;
   let activeHash = '';
-  let signingOut = false;
   let mounted = false;
 
   const clear = () => {
@@ -39,11 +39,11 @@ export async function startRadar(client) {
   function acceptSession(session) {
     const nextId = session?.user.id ?? '';
     if (nextId && lastUserId && nextId !== lastUserId) clear();
-    if (signingOut && !nextId) { clear(); lastUserId = ''; }
     userId = nextId;
     if (nextId) lastUserId = nextId;
     login.hidden = !!nextId; workspace.hidden = !nextId;
-    logout.hidden = !nextId; addLink.hidden = !nextId;
+    addLink.hidden = !nextId;
+    if (nextId) returnAfterLogin();
     if (nextId && (!mounted || activeHash !== (window.location.hash || '#/board'))) void renderRoute();
   }
   /** @param {unknown} error @param {HTMLElement} feedback */
@@ -67,7 +67,7 @@ export async function startRadar(client) {
     for (const cancel of workspace.querySelectorAll('button.ingestion-cancel')) {
       /** @type {HTMLButtonElement} */ (cancel).disabled = value && !cancel.hasAttribute('data-retrieving');
     }
-    logout.disabled = value;
+    setAccountBusy(value);
     workspace.setAttribute('aria-busy', String(value));
   }
   async function renderRoute() {
@@ -206,15 +206,8 @@ export async function startRadar(client) {
     } catch (error) { setAlert(node('login-error'), { message: errorMessage(error), variant: 'danger' }); }
     finally { submit.disabled = false; }
   });
-  logout.addEventListener('click', async () => {
-    if (!canLeave()) return;
-    signingOut = true; logout.disabled = true;
-    try {
-      const { error } = await client.auth.signOut({ scope: 'local' });
-      if (error) throw error;
-      clear(); lastUserId = ''; acceptSession(null); showToast({ message: 'Signed out.' });
-    } catch (error) { setAlert(node('notice'), { message: `Could not sign out. ${errorMessage(error)}`, variant: 'danger' }); }
-    finally { signingOut = false; logout.disabled = false; }
+  window.addEventListener('nextchapter:before-sign-out', event => {
+    if (!canLeave()) event.preventDefault();
   });
   // Keep auth callbacks synchronous: defer reads until outside the SDK auth lock.
   client.auth.onAuthStateChange((event, session) => {
