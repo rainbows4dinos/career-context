@@ -1,3 +1,5 @@
+import { bindFieldValidation, setFieldError } from '../shared/fields.mjs';
+import { setAlert } from '../shared/status.mjs';
 import { retrieveJob } from './ingestion-client.js';
 import { duplicateCandidates } from './duplicate-match.js';
 import { el, button } from './ui.js';
@@ -13,9 +15,11 @@ export function mountIngestion(form, options) {
   panel.append(el('h3', 'Import a job posting'), el('p', 'Paste a hosted Greenhouse, Ashby, Lever or supported Workday job link, then review before saving. Other sites can be entered manually.', 'muted'));
   const retrieveForm = el('form');
   const fields = el('fieldset');
-  const label = el('label', 'Job posting URL'); const input = el('input'); input.type = 'url'; input.required = true; input.maxLength = 2048; label.append(input);
+  const label = el('div', '', 'nc-field');
+  const caption = el('label', 'Job posting URL', 'nc-field__label'); caption.htmlFor = 'ingestion-url'; const required = el('span', '*', 'nc-field__required'); required.setAttribute('aria-hidden', 'true'); caption.append(required); label.append(caption);
+  const input = el('input', '', 'nc-input'); input.id = 'ingestion-url'; input.type = 'url'; input.required = true; input.maxLength = 2048; label.append(input);
   const retrieve = el('button', 'Retrieve posting', 'primary'); retrieve.type = 'submit';
-  fields.append(label, retrieve); retrieveForm.append(fields);
+  fields.append(label, retrieve); retrieveForm.append(fields); bindFieldValidation(retrieveForm);
   const cancel = button('Cancel', () => { controller?.abort(); options.cancel(); }, 'secondary ingestion-cancel');
   const feedback = el('div'); feedback.setAttribute('role', 'status');
   const duplicates = el('div'); duplicates.setAttribute('aria-live', 'polite');
@@ -26,7 +30,7 @@ export function mountIngestion(form, options) {
   let hasPreview = false;
   let approved = '';
   form.addEventListener('input', event => {
-    const hint = event.target instanceof Element ? event.target.closest('label')?.querySelector('.field-origin') : null;
+    const hint = event.target instanceof Element ? event.target.closest('.nc-field')?.querySelector('.field-origin') : null;
     if (hint) hint.textContent = 'Edited by you';
   });
   /** @param {import('./model.js').DetailsPatch} patch @param {ReturnType<typeof duplicateCandidates>} candidates */
@@ -55,7 +59,9 @@ export function mountIngestion(form, options) {
     cancel.setAttribute('data-retrieving', '');
     const active = controller;
     const timer = setTimeout(() => active.abort(), 20000);
-    options.busy(true); feedback.replaceChildren(el('p', 'Retrieving posting…', 'feedback')); duplicates.replaceChildren(); approved = '';
+    options.busy(true); feedback.setAttribute('role', 'status');
+    const loading = el('div', '', 'loading-message'); const spinner = el('span', '', 'nc-spinner'); spinner.setAttribute('aria-hidden', 'true'); loading.append(spinner, el('span', 'Retrieving posting…'));
+    feedback.replaceChildren(loading); duplicates.replaceChildren(); approved = '';
     try {
       const preview = await retrieveJob(options.client, input.value, active.signal);
       if (!options.current() || active.signal.aborted) return;
@@ -63,8 +69,11 @@ export function mountIngestion(form, options) {
         const control = /** @type {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|null} */ (form.elements.namedItem(name));
         if (!control) continue;
         control.value = String(preview.draft[/** @type {keyof typeof preview.draft} */ (name)] ?? '');
-        control.closest('label')?.querySelector('.field-origin')?.remove();
-        control.closest('label')?.append(el('small', preview.field_sources[name] ? (name === 'discovered_on' ? 'First captured in Prospect Tracker (UTC); editable' : `Extracted from ${PROVIDER_NAMES[preview.identity.provider]}`) : 'Not supplied; complete if known', 'field-origin'));
+        control.closest('.nc-field')?.querySelector('.field-origin')?.remove();
+        const origin = el('small', preview.field_sources[name] ? (name === 'discovered_on' ? 'First captured in Prospect Tracker (UTC); editable' : `Extracted from ${PROVIDER_NAMES[preview.identity.provider]}`) : 'Not supplied; complete if known', 'field-origin nc-field__helper');
+        origin.id = `${control.id}-origin`; control.closest('.nc-field')?.append(origin);
+        const described = new Set((control.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean)); described.add(origin.id);
+        control.setAttribute('aria-describedby', [...described].join(' ')); setFieldError(control, '');
       }
       const details = form.querySelector('details'); if (details) details.open = true;
       const save = form.querySelector('button[type="submit"]'); if (save) save.textContent = 'Save prospect';
@@ -74,8 +83,8 @@ export function mountIngestion(form, options) {
       const candidates = duplicateCandidates(preview.draft, await options.data.listProspectIdentities(), options.createId);
       if (options.current() && !active.signal.aborted) showDuplicates(candidates, preview.draft);
     } catch (error) {
-      if (options.current() && !active.signal.aborted) feedback.replaceChildren(el('p', `${errorMessage(error)} Nothing was saved. Your current draft is still here; manual entry remains available.`, 'feedback error'));
-      else if (options.current()) feedback.replaceChildren(el('p', 'Retrieval canceled or timed out. Nothing was saved. Try again or add the details manually.', 'feedback error'));
+      if (options.current() && !active.signal.aborted) { feedback.removeAttribute('role'); const errorAlert = el('p'); setAlert(errorAlert, { message: `${errorMessage(error)} Nothing was saved. Your current draft is still here; manual entry remains available.`, variant: 'danger' }); feedback.replaceChildren(errorAlert); }
+      else if (options.current()) { feedback.removeAttribute('role'); const errorAlert = el('p'); setAlert(errorAlert, { message: 'Retrieval canceled or timed out. Nothing was saved. Try again or add the details manually.', variant: 'danger' }); feedback.replaceChildren(errorAlert); }
     } finally {
       clearTimeout(timer); controller = null; cancel.removeAttribute('data-retrieving');
       if (options.current()) options.busy(false);

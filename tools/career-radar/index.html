@@ -30,8 +30,8 @@
       <h2 id="login-title">Sign in to Prospect Tracker</h2>
       <p class="muted">Use your existing account. Your prospects are private.</p>
       <form id="login-form">
-        <label>Email<input name="email" type="email" autocomplete="username" required></label>
-        <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+        <div class="nc-field"><label class="nc-field__label" for="login-email">Email<span class="nc-field__required" aria-hidden="true">*</span></label><input class="nc-input" id="login-email" name="email" type="email" autocomplete="username" required></div>
+        <div class="nc-field"><label class="nc-field__label" for="login-password">Password<span class="nc-field__required" aria-hidden="true">*</span></label><input class="nc-input" id="login-password" name="password" type="password" autocomplete="current-password" required></div>
         <p id="login-error" role="alert"></p>
         <button class="primary nc-button nc-button--primary nc-button--lg" type="submit">Sign in</button>
       </form>

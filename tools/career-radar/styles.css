@@ -39,7 +39,7 @@ button:disabled { opacity:.5; cursor:wait }
 .narrow { max-width:520px; margin:2rem auto }
 .muted,.empty-column { color:var(--muted) }
 #notice:empty,#login-error:empty,.feedback:empty { display:none }
-#notice,.feedback,#login-error { padding:.75rem 1rem; background:var(--accent-bg); border-radius:8px; overflow-wrap:anywhere }
+#notice:not(.nc-alert),.feedback:not(.nc-alert),#login-error:not(.nc-alert) { padding:.75rem 1rem; background:var(--accent-bg); border-radius:8px; overflow-wrap:anywhere }
 .error { color:var(--ds-error) }
 .view-heading { justify-content:space-between; margin-bottom:1rem }
 .board { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px; align-items:start }
@@ -67,7 +67,7 @@ fieldset { padding:0; border:0; margin:0; min-width:0 }
 details { margin:1rem 0 } summary { cursor:pointer; color:var(--muted); margin-bottom:1rem }
 .editor { max-width:860px; margin:auto }
 .status-controls { display:flex; gap:12px; align-items:end; flex-wrap:wrap }
-.status-controls label { flex:1; margin:0; min-width:170px }
+.status-controls .nc-field { flex:1; margin:0; min-width:170px }
 .history { padding-left:1.25rem } .history li { margin-bottom:.75rem }
 .ingestion button { margin:0 .5rem .75rem 0 }
 .ingestion [role="status"] { margin-top:1rem }
@@ -76,3 +76,9 @@ details { margin:1rem 0 } summary { cursor:pointer; color:var(--muted); margin-b
 time { display:block; font-size:13px; color:var(--muted) }
 @media(max-width:1000px) { .board { grid-template-columns:repeat(5,200px) } }
 @media(max-width:600px) { body { padding:1rem } .field-grid { grid-template-columns:1fr } .panel { padding:1rem } .board { grid-template-columns:repeat(5,82vw) } nav { gap:.75rem } nav #logout { margin-left:0 } }
+
+/* Application layout remains local; visual field/status contracts are shared. */
+.editor .nc-textarea { min-height:120px }
+.loading-message { display:flex; align-items:center; gap:8px }
+
+.nc-field { margin-bottom:1rem }

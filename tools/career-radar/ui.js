@@ -1,3 +1,6 @@
+import { gravityIcon } from '../shared/icons.mjs';
+import { bindFieldValidation } from '../shared/fields.mjs';
+import { setAlert } from '../shared/status.mjs';
 import { APPLIED_CARD_LIMIT, formatAppliedDate, groupCards, statusLabel, visibleCards } from './view-model.js';
 import { STATUSES, WORK_ARRANGEMENTS, validateHttpUrl } from './model.js';
 import { createHandoff, HANDOFF_TTL } from '../shared/resume-handoff.mjs';
@@ -21,7 +24,13 @@ function link(text, href) { const node = el('a', text); node.href = href; return
 /** @param {HTMLElement} root @param {string} message @param {(() => void)} [retry] */
 export function messageView(root, message, retry) {
   const panel = el('section', '', 'panel');
-  panel.append(el('p', message));
+  const feedback = el('div');
+  if (message.startsWith('Loading')) {
+    feedback.setAttribute('role', 'status');
+    const spinner = el('span', '', 'nc-spinner'); spinner.setAttribute('aria-hidden', 'true');
+    feedback.append(spinner, el('span', message)); feedback.className = 'loading-message';
+  } else setAlert(feedback, { message, variant: retry ? 'danger' : 'info' });
+  panel.append(feedback);
   if (retry) panel.append(button('Try again', retry, 'secondary nc-button nc-button--tertiary nc-button--lg'));
   root.replaceChildren(panel);
 }
@@ -78,20 +87,27 @@ export function boardView(root, cards, refresh) {
 }
 /** @param {string} name @param {string} label @param {string} value @param {string} [type] */
 function field(name, label, value, type = 'text') {
-  const wrapper = el('label', label);
+  const wrapper = el('div', '', 'nc-field');
+  const caption = el('label', label.replace(/ \*$/, ''), 'nc-field__label');
+  if (label.endsWith(' *')) { const required = el('span', '*', 'nc-field__required'); required.setAttribute('aria-hidden', 'true'); caption.append(required); }
+  wrapper.append(caption);
   const input = type === 'textarea' ? el('textarea') : el('input');
   if (input instanceof HTMLInputElement) input.type = type;
-  input.name = name; input.value = value;
+  input.name = name; input.value = value; input.id = `${name}-field`; caption.htmlFor = input.id;
+  input.className = type === 'textarea' ? 'nc-textarea' : 'nc-input';
   input.required = name === 'company' || name === 'title';
   wrapper.append(input);
   return wrapper;
 }
 /** @param {string} name @param {string} label @param {readonly string[]} options @param {string} value @param {boolean} [unknown] */
 function selectField(name, label, options, value, unknown = false) {
-  const wrapper = el('label', label); const select = el('select'); select.name = name;
+  const wrapper = el('div', '', 'nc-field'); const select = el('select', '', 'nc-select'); select.name = name;
+  select.id = `${name}-field`; const caption = el('label', label, 'nc-field__label'); caption.htmlFor = select.id;
+  wrapper.append(caption);
+  const closed = el('span', '', 'nc-select-wrap'); closed.append(select, gravityIcon('chevron-down')); wrapper.append(closed);
   if (unknown) { const option = el('option', 'Not specified'); option.value = ''; select.append(option); }
   for (const item of options) { const option = el('option', statusLabel(item)); option.value = item; select.append(option); }
-  select.value = value; wrapper.append(select); return wrapper;
+  select.value = value; return wrapper;
 }
 /** @param {HTMLElement} root @param {import('./model.js').Prospect|null} row */
 export function editorView(root, row) {
@@ -118,17 +134,18 @@ export function editorView(root, row) {
       const option = el('option'); option.value = value; options.append(option);
     }
     extra.append(options);
-    source.closest('label')?.append(el('small', 'Optional discovery channel; any text is allowed.', 'muted'));
+    const helper = el('small', 'Optional discovery channel; any text is allowed.', 'nc-field__helper');
+    helper.id = 'source-field-helper'; source.setAttribute('aria-describedby', helper.id); source.closest('.nc-field')?.append(helper);
   }
   extra.append(selectField('work_arrangement', 'Work arrangement', WORK_ARRANGEMENTS, row?.work_arrangement ?? '', true));
   for (const [name, label] of /** @type {const} */ ([['posted_on','Posted date'], ['discovered_on','Discovered date'], ['applied_on','Applied date']])) extra.append(field(name, label, row?.[name] ?? '', 'date'));
   details.append(extra, field('notes', 'Notes', row?.notes ?? '', 'textarea'));
   fields.append(details);
-  const feedback = el('p', '', 'feedback'); feedback.id = 'save-feedback'; feedback.setAttribute('role','status');
+  const feedback = el('p', '', 'feedback nc-alert'); feedback.id = 'save-feedback'; feedback.setAttribute('role','status');
   const save = el('button', row ? 'Save details' : 'Add prospect', 'primary nc-button nc-button--primary nc-button--lg'); save.type = 'submit';
   fields.append(feedback, save);
   if (row) {
-    const feedback = el('p', '', 'feedback'); feedback.setAttribute('role', 'status');
+    const feedback = el('p', '', 'feedback nc-alert'); feedback.setAttribute('role', 'status');
     const send = button('Send to Résumé Builder', () => {
       let key = '';
       let tab;
@@ -144,20 +161,21 @@ export function editorView(root, row) {
         tab.opener = null;
         tab.location.replace(handoff.url.href);
         feedback.classList.remove('error');
-        feedback.textContent = 'Opened Résumé Builder with this prospect’s saved job details.';
+        setAlert(feedback, { message: 'Opened Résumé Builder with this prospect’s saved job details.', variant: 'success' });
         setTimeout(() => { try { window.localStorage.removeItem(key); } catch { /* read enforces expiry */ } }, HANDOFF_TTL);
       } catch (error) {
         tab?.close();
         if (key) { try { window.localStorage.removeItem(key); } catch { /* expires on read */ } }
         feedback.classList.add('error');
-        feedback.textContent = error instanceof Error && error.message.startsWith('Allow pop-ups')
+        const message = error instanceof Error && error.message.startsWith('Allow pop-ups')
           ? error.message : 'Could not send job details. Browser storage may be unavailable or full. Your prospect is unchanged; try again or copy the fields manually.';
+        setAlert(feedback, { message, variant: 'danger' });
       }
     }, 'secondary nc-button nc-button--tertiary nc-button--lg');
     const actions = el('div', '', 'actions'); actions.append(save, send);
     fields.append(actions, feedback);
   }
-  form.append(fields); editor.append(form);
+  form.append(fields); bindFieldValidation(form); editor.append(form);
   if (row) {
     const section = el('section', '', 'panel'); section.append(el('h3', 'Status'));
     const statusForm = el('form', '', 'status-controls'); statusForm.id = 'status-form';
@@ -165,7 +183,7 @@ export function editorView(root, row) {
     const change = el('button', 'Change status', 'primary nc-button nc-button--primary nc-button--lg'); change.type = 'submit';
     statusFields.append(selectField('status', 'Current status', STATUSES, row.status), change);
     statusForm.append(statusFields); section.append(statusForm);
-    const statusFeedback = el('p', '', 'feedback'); statusFeedback.id = 'status-feedback'; statusFeedback.setAttribute('role','status'); section.append(statusFeedback);
+    const statusFeedback = el('p', '', 'feedback nc-alert'); statusFeedback.id = 'status-feedback'; statusFeedback.setAttribute('role','status'); section.append(statusFeedback);
     section.append(el('p', 'Status changes save separately. Applied date is editable under More job details.', 'muted'));
     const history = el('section'); history.id = 'history'; history.setAttribute('aria-live','polite'); section.append(history); editor.append(section);
   }

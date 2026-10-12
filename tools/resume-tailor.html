@@ -52,18 +52,8 @@
   /* Cards */
   .card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 1.75rem; margin-bottom: 1rem }
 
-  /* Labels */
-  label { display: block; font-size: 12px; font-weight: 500; color: var(--text); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px }
-
-  /* Inputs */
-  input[type=text], textarea {
-    width: 100%; font-family: var(--sans); font-size: 15px; font-weight: 300; color: var(--text);
-    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-    padding: 10px 13px; outline: none; transition: border-color 0.15s;
-  }
-  input[type=text]:focus, textarea:focus { border-color: var(--accent) }
-  input[type=text]::placeholder, textarea::placeholder { color: var(--muted) }
-  textarea { min-height: 140px; resize: vertical; line-height: 1.6 }
+  /* Shared fields; application-specific textarea heights remain local. */
+  #jobDesc { min-height: 140px }
   .field { margin-bottom: 1.35rem }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
 
@@ -78,8 +68,7 @@
 
   /* Loading */
   .loading-card { text-align: center; padding: 3.5rem 2rem }
-  .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 1.25rem }
-  @keyframes spin { to { transform: rotate(360deg) } }
+  .loading-card > .nc-spinner { display: block; margin: 0 auto 1.25rem }
   .loading-status { font-family: var(--serif); font-size: 22px; font-weight: 600; margin-bottom: 6px; color: var(--text) }
   .loading-sub { font-size: 15px; color: var(--muted); font-weight: 300 }
 
@@ -120,12 +109,10 @@
 
   /* Revision bar */
   .revise-bar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1rem }
-  .revise-bar textarea { width: 100%; min-height: 80px; font-family: var(--sans); font-size: 15px; font-weight: 300; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 13px; outline: none; transition: border-color 0.15s }
-  .revise-bar textarea::placeholder { color: var(--muted) }
-  .revise-bar textarea:focus { border-color: var(--accent) }
+  #reviseNote { min-height: 80px }
   .revise-status { display: none; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin-bottom: 1rem; font-weight: 300 }
   .revise-status.visible { display: flex }
-  .revise-spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; flex-shrink: 0 }
+
 
   /* Revision highlights — screen only */
   .revised-highlight { background: rgba(242, 197, 111, 0.18); border-radius: 3px; padding: 1px 2px; color: var(--yellow) }
@@ -156,32 +143,32 @@
   <div id="pane0">
     <div class="card">
       <div class="field-row">
-        <div class="field">
-          <label>Job title *</label>
-          <input type="text" id="jobTitle" placeholder="Staff Product Designer" />
+        <div class="field nc-field">
+          <label class="nc-field__label" for="jobTitle">Job title<span class="nc-field__required" aria-hidden="true">*</span></label>
+          <input class="nc-input" type="text" id="jobTitle" required placeholder="Staff Product Designer" />
         </div>
-        <div class="field">
-          <label>Company</label>
-          <input type="text" id="company" placeholder="Figma" />
+        <div class="field nc-field">
+          <label class="nc-field__label" for="company">Company</label>
+          <input class="nc-input" type="text" id="company" placeholder="Figma" />
         </div>
       </div>
-      <div class="field">
-        <label>Job description *</label>
-        <textarea id="jobDesc" placeholder="Paste the full job description here."></textarea>
+      <div class="field nc-field">
+        <label class="nc-field__label" for="jobDesc">Job description<span class="nc-field__required" aria-hidden="true">*</span></label>
+        <textarea class="nc-textarea" id="jobDesc" required placeholder="Paste the full job description here."></textarea>
       </div>
-      <div class="field">
-        <label>Hiring contact <span style="font-weight:400;text-transform:none;letter-spacing:0">— optional, for cover letter salutation</span></label>
-        <input type="text" id="hiringContact" placeholder="e.g. Sarah Chen, or leave blank for 'Hiring Team'" />
+      <div class="field nc-field">
+        <label class="nc-field__label" for="hiringContact">Hiring contact <span class="nc-field__description">— optional, for cover letter salutation</span></label>
+        <input class="nc-input" type="text" id="hiringContact" placeholder="e.g. Sarah Chen, or leave blank for 'Hiring Team'" />
       </div>
-      <div class="field">
-        <label>Emphasis focus <span style="font-weight:400;text-transform:none;letter-spacing:0">— optional, auto-detected if blank</span></label>
-        <div class="toggles" id="focusToggles">
+      <div class="field nc-field">
+        <div class="nc-field__label" id="focusLabel">Emphasis focus <span class="nc-field__description">— optional, auto-detected if blank</span></div>
+        <div class="toggles" id="focusToggles" role="group" aria-labelledby="focusLabel">
           <span style="font-size:13px;color:var(--muted);font-weight:300">Loading...</span>
         </div>
       </div>
-      <div class="field">
-        <label>Additional notes</label>
-        <textarea id="extraNotes" style="min-height:72px" placeholder="e.g. De-emphasize management, highlight Figma expertise"></textarea>
+      <div class="field nc-field">
+        <label class="nc-field__label" for="extraNotes">Additional notes</label>
+        <textarea class="nc-textarea" id="extraNotes" style="min-height:72px" placeholder="e.g. De-emphasize management, highlight Figma expertise"></textarea>
       </div>
       <button class="primary nc-button nc-button--primary nc-button--lg" onclick="goTailor()">Generate Resume + Cover Letter</button>
     </div>
@@ -190,9 +177,12 @@
   <!-- Pane 1: Loading -->
   <div id="pane1" style="display:none">
     <div class="card loading-card">
-      <div class="spinner"></div>
+      <div class="nc-spinner" aria-hidden="true"></div>
+      <div role="status" aria-live="polite" aria-atomic="true">
       <div class="loading-status" id="loadStatus">Analyzing job description...</div>
       <div class="loading-sub" id="loadSub">Identifying what they actually care about</div>
+      </div>
+      <div id="generationError" class="nc-alert" style="margin-top:1rem"></div>
     </div>
   </div>
 
@@ -208,14 +198,17 @@
         <button class="secondary nc-button nc-button--tertiary nc-button--lg" onclick="startOver()">Start New Application</button>
       </div>
     </div>
+    <div id="downloadError" class="nc-alert" style="margin-bottom:1rem"></div>
     <div id="tabResume" role="tabpanel" aria-labelledby="resumeTab" tabindex="0"><div class="card" id="resumeOut"></div></div>
     <div id="tabCL" role="tabpanel" aria-labelledby="clTab" tabindex="0" hidden style="display:none"><div class="card" id="clOut"></div></div>
-    <div class="revise-status" id="reviseStatus">
-      <div class="revise-spinner"></div>
+    <div class="revise-status" id="reviseStatus" role="status" aria-live="polite">
+      <div class="nc-spinner" aria-hidden="true"></div>
       <span id="reviseStatusText">Revising...</span>
     </div>
-    <div class="revise-bar">
-      <textarea id="reviseNote" rows="1" placeholder="Ask for a revision — e.g. Make the opening punchier, or drop the Elevate bullet" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();goRevise()}"></textarea>
+    <div id="revisionError" class="nc-alert" style="margin-bottom:1rem"></div>
+    <div class="revise-bar nc-field">
+      <label class="nc-visually-hidden" for="reviseNote">Revision request</label>
+      <textarea class="nc-textarea" id="reviseNote" rows="1" placeholder="Ask for a revision — e.g. Make the opening punchier, or drop the Elevate bullet" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();goRevise()}"></textarea>
       <button class="nc-button nc-button--primary nc-button--lg" onclick="goRevise()" id="reviseBtn">Request Revision</button>
     </div>
     <p class="dl-note">Download Package gives you a zip that unpacks into one folder named for the company and role, with all five files inside.<br>PDF for sending and attaching. Docx for job boards that parse it, and for hand edits before sending. Both keep selectable text so an ATS can read them.<br>ATS plain is for Workday autofill only: one column, one fact per line, no tabs or parentheticals. It looks plain because that is what parses.</p>
@@ -224,6 +217,7 @@
 
 <!-- docx loaded lazily on first download click -->
 <script type="module">
+import { setAlert } from './shared/status.mjs';
 import { HANDOFF_PARAM, clearExpiredHandoffs, readHandoff, consumeHandoff } from './shared/resume-handoff.mjs';
 
 function receiveRadarJob() {
@@ -241,14 +235,15 @@ function receiveRadarJob() {
         description: document.getElementById('jobDesc')
       }, () => window.confirm('Replace the company, job title and job description already entered here with the job sent from Prospect Tracker? Other content and settings will be kept.'));
       notice.hidden = false;
-      notice.textContent = applied ? 'Job details received from Prospect Tracker. Review them before generating.' : 'Transfer declined. Your existing job details were kept.';
+      setAlert(notice, { message: applied ? 'Job details received from Prospect Tracker. Review them before generating.' : 'Transfer declined. Your existing job details were kept.', variant: 'info' });
     }
     try { clearExpiredHandoffs(storage, url); } catch { /* abandoned-payload cleanup is best effort */ }
   } catch (error) {
     if (requested) {
       notice.hidden = false;
-      notice.textContent = error instanceof Error && error.message.startsWith('This job transfer')
+      const message = error instanceof Error && error.message.startsWith('This job transfer')
         ? error.message : 'Could not receive job details because browser storage is unavailable. Your existing content was kept. Try sending again or copy the fields manually.';
+      setAlert(notice, { message, variant: 'danger' });
     }
   } finally {
     if (requested) {
@@ -262,6 +257,19 @@ receiveRadarJob();
 window.addEventListener('hashchange', receiveRadarJob);
 </script>
 <script>
+// Shared UI adapters do not participate in generation or export data.
+const fieldUI = import('./shared/fields.mjs');
+const statusUI = import('./shared/status.mjs');
+const notificationUI = import('./shared/notifications.mjs');
+fieldUI.then(ui => ui.bindFieldValidation(document));
+function inlineMessage(id, message, variant = 'danger') {
+  const element = document.getElementById(id);
+  element.textContent = message;
+  statusUI.then(ui => {
+    if (element.textContent === message) ui.setAlert(element, { message, variant });
+  });
+}
+function notify(message) { notificationUI.then(ui => ui.showToast({ message, variant: 'success' })); }
 // Version tag: reads the latest commit for this file from GitHub, then compares it
 // against the deploy time of the page actually running. Catches a cached page.
 async function showVersion() {
@@ -450,6 +458,8 @@ function startOver() {
   if (TONE) renderChips(TONE); // re-render chips (clears active state)
   else document.querySelectorAll('.tog').forEach(b => { b.classList.remove('on', 'nc-chip--selected'); b.setAttribute('aria-pressed', 'false'); });
   ['jobTitle','company','jobDesc','extraNotes','hiringContact'].forEach(id=>document.getElementById(id).value='');
+  fieldUI.then(ui => document.querySelectorAll('.nc-input, .nc-textarea').forEach(control => ui.setFieldError(control, '')));
+  ['generationError', 'revisionError', 'downloadError'].forEach(id => inlineMessage(id, ''));
   setStep(0);
 }
 
@@ -480,7 +490,12 @@ function stripEmDashes(val) {
 async function goTailor() {
   const title = document.getElementById('jobTitle').value.trim();
   const jd    = document.getElementById('jobDesc').value.trim();
-  if (!title||!jd) { alert('Please add a job title and job description.'); return; }
+  const fields = await fieldUI;
+  fields.setFieldError(document.getElementById('jobTitle'), title ? '' : 'Please add a job title.');
+  fields.setFieldError(document.getElementById('jobDesc'), jd ? '' : 'Please add a job description.');
+  if (!title || !jd) { document.getElementById(!title ? 'jobTitle' : 'jobDesc').focus(); return; }
+  inlineMessage('generationError', '');
+  document.querySelector('.loading-card > .nc-spinner').hidden = false;
   const company = document.getElementById('company').value.trim();
   const notes   = document.getElementById('extraNotes').value.trim();
   const contact = document.getElementById('hiringContact').value.trim() || 'Hiring Team';
@@ -499,7 +514,9 @@ async function goTailor() {
       await loadContext();
     } catch(e) {
       statusEl.textContent = 'Could not load context files.';
-      subEl.textContent = e.message + ' — Check that the repo is public and files exist.';
+      subEl.textContent = '';
+      inlineMessage('generationError', e.message + ' — Check that the repo is public and files exist.');
+      document.querySelector('.loading-card > .nc-spinner').hidden = true;
       console.error(e);
       return;
     }
@@ -676,9 +693,12 @@ LAST STEP BEFORE YOU RETURN: re-read every sentence you just wrote. If any conta
     renderPreview(r, title, company, contact, month);
 
     setStep(2);
+    notify('Résumé and cover letter ready.');
   } catch(e) {
-    statusEl.textContent = 'Error: ' + e.message;
-    subEl.textContent = 'Check the browser console (F12) for full details, then click below to retry.';
+    statusEl.textContent = 'Generation failed.';
+    subEl.textContent = '';
+    inlineMessage('generationError', e.message + ' Check the browser console (F12) for full details, then click below to retry.');
+    document.querySelector('.loading-card > .nc-spinner').hidden = true;
     console.error('Tailor error:', e);
     // Remove any previous retry button
     const existing = document.getElementById('retryBtn');
@@ -733,13 +753,17 @@ Return ONLY the corrected JSON, no markdown, no backticks:
 async function goRevise() {
   if (!generatedData) return;
   const note = document.getElementById('reviseNote').value.trim();
+  const fields = await fieldUI;
+  fields.setFieldError(document.getElementById('reviseNote'), note ? '' : 'Please enter a revision request.', () => document.getElementById('reviseNote').value.trim() ? '' : 'Please enter a revision request.');
   if (!note) { document.getElementById('reviseNote').focus(); return; }
+  inlineMessage('revisionError', '');
 
   const btn = document.getElementById('reviseBtn');
   const statusEl = document.getElementById('reviseStatus');
   const statusText = document.getElementById('reviseStatusText');
   btn.disabled = true;
   statusEl.classList.add('visible');
+  statusEl.querySelector('.nc-spinner').hidden = false;
   statusText.textContent = activeTab === 'resume' ? 'Revising resume...' : 'Revising cover letter...';
 
   const isResume = activeTab === 'resume';
@@ -842,10 +866,12 @@ Change only what the revision request asks for.`;
     setTimeout(() => { statusEl.classList.remove('visible'); }, 1500);
   } catch(e) {
     console.error('Revision error:', e);
-    statusText.textContent = 'Revision failed: ' + e.message;
+    statusText.textContent = 'Revision failed.';
+    inlineMessage('revisionError', e.message + ' Your current documents were kept. Try the revision again.');
     setTimeout(() => { statusEl.classList.remove('visible'); }, 3000);
   } finally {
     btn.disabled = false;
+    statusEl.querySelector('.nc-spinner').hidden = true;
   }
 }
 
@@ -1192,7 +1218,8 @@ function pdfBlob(def) {
 }
 
 async function downloadBundle() {
-  if (!generatedData) { alert('No document ready — please generate first.'); return; }
+  if (!generatedData) { inlineMessage('downloadError', 'No document ready — please generate first.'); return; }
+  inlineMessage('downloadError', '');
   const btn = document.getElementById('dlAll');
   const origText = btn.textContent;
   btn.textContent = 'Building Files...';
@@ -1244,10 +1271,11 @@ async function downloadBundle() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    notify('Application package downloaded.');
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   } catch (e) {
     console.error('Bundle error:', e);
-    alert('Could not build the folder: ' + e.message);
+    inlineMessage('downloadError', 'Could not build the folder: ' + e.message + ' Your documents are still here; try downloading again.');
   } finally {
     btn.textContent = origText;
     btn.disabled = false;

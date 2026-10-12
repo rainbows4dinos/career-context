@@ -1,6 +1,9 @@
+import { setAlert } from '../shared/status.mjs';
+import { showToast } from '../shared/notifications.mjs';
+import { bindFieldValidation, setFieldError } from '../shared/fields.mjs';
 import { createRadarDataAccess, StaleProspectError } from './data.js';
 import { errorMessage, parseRoute, readDetails } from './view-model.js';
-import { validateStatus } from './model.js';
+import { validateStatus, validateHttpUrl } from './model.js';
 import { boardView, button, editorView, historyView, messageView } from './ui.js';
 import { mountIngestion } from './ingestion-ui.js';
 
@@ -16,6 +19,7 @@ export async function startRadar(client) {
   const workspace = node('workspace');
   const login = node('login');
   const loginForm = /** @type {HTMLFormElement} */ (node('login-form'));
+  bindFieldValidation(loginForm);
   const logout = /** @type {HTMLButtonElement} */ (node('logout'));
   const addLink = node('add-link');
   let userId = '';
@@ -44,16 +48,16 @@ export async function startRadar(client) {
   }
   /** @param {unknown} error @param {HTMLElement} feedback */
   function showError(error, feedback) {
-    feedback.textContent = error instanceof StaleProspectError
+    const message = error instanceof StaleProspectError
       ? 'This prospect changed elsewhere. Your draft is still here. Reload the saved prospect before editing again.'
       : errorMessage(error);
-    feedback.classList.add('error');
-    if (error instanceof StaleProspectError) feedback.append(button('Reload saved prospect', () => {
+    setAlert(feedback, { message, variant: 'danger' });
+    if (error instanceof StaleProspectError) feedback.querySelector('.nc-alert__message')?.append(button('Reload saved prospect', () => {
       if (window.confirm('Discard this draft and load the saved prospect?')) { dirty = false; void renderRoute(); }
     }));
     if (error && typeof error === 'object' && ('status' in error && error.status === 401 || 'code' in error && ['PGRST301','PGRST303'].includes(String(error.code)))) {
       acceptSession(null);
-      node('login-error').textContent = 'Your session expired. Sign in again to continue with your draft.';
+      setAlert(node('login-error'), { message: 'Your session expired. Sign in again to continue with your draft.', variant: 'danger' });
     }
   }
   /** @param {boolean} value */
@@ -99,7 +103,7 @@ export async function startRadar(client) {
             if (pending || !userId) return;
             const feedback = node('save-feedback'); feedback.classList.remove('error');
             const values = new FormData(form);
-            busy(true); feedback.textContent = row ? 'Saving details…' : 'Adding prospect…';
+            busy(true); setAlert(feedback, { message: row ? 'Saving details…' : 'Adding prospect…' });
             try {
               const patch = readDetails(values);
               if (row) row = await data.updateProspect(row.id, patch, row.updated_at);
@@ -107,7 +111,7 @@ export async function startRadar(client) {
                 // A retry first reconciles an uncertain insert using the retained ID.
                 const previous = attemptedCreate ? await data.getProspect(createId) : null;
                 if (!previous && ingestion && !await ingestion.check(patch)) {
-                  feedback.textContent = 'Review the likely duplicates above before saving.'; return;
+                  setAlert(feedback, { message: 'Review the likely duplicates above before saving.', variant: 'warning' }); return;
                 }
                 attemptedCreate = true;
                 row = previous ?? await data.createProspect({ ...patch, id: createId, company: patch.company ?? '', title: patch.title ?? '' });
@@ -115,14 +119,25 @@ export async function startRadar(client) {
               if (!current()) return;
               dirty = false;
               if (route.kind === 'new') {
-                node('notice').textContent = 'Prospect saved.';
+                showToast({ message: 'Prospect saved.', variant: 'success' });
                 window.location.hash = `#/prospects/${row.id}`;
               } else {
                 form = editorView(workspace, row); bindDetails(); bindStatus();
-                node('save-feedback').textContent = 'Details saved.';
+                showToast({ message: 'Details saved.', variant: 'success' });
                 void loadHistory();
               }
-            } catch (error) { if (current()) showError(error, feedback); }
+            } catch (error) { if (current()) {
+              for (const name of ['company', 'title']) {
+                const control = form.elements.namedItem(name);
+                if (control instanceof HTMLInputElement && !control.value.trim()) setFieldError(control, 'This field is required.');
+              }
+              const url = form.elements.namedItem('job_url');
+              if (url instanceof HTMLInputElement) {
+                const recheck = () => { try { if (url.value.trim()) validateHttpUrl(url.value.trim()); return ''; } catch (error) { return errorMessage(error); } };
+                const message = recheck(); if (message) setFieldError(url, message, recheck);
+              }
+              showError(error, feedback);
+            } }
             finally { busy(false); }
           });
         };
@@ -144,11 +159,11 @@ export async function startRadar(client) {
             if (!row || pending || !userId) return;
             const feedback = node('status-feedback'); feedback.classList.remove('error');
             const status = validateStatus(new FormData(statusForm).get('status'));
-            if (status === row.status) { feedback.textContent = 'Already at this status.'; return; }
-            busy(true); feedback.textContent = 'Saving status…';
+            if (status === row.status) { setAlert(feedback, { message: 'Already at this status.' }); return; }
+            busy(true); setAlert(feedback, { message: 'Saving status…' });
             try {
               row = await data.changeStatus(row.id, status, row.updated_at);
-              if (current()) { feedback.textContent = 'Status saved.'; void loadHistory(); }
+              if (current()) { setAlert(feedback, { message: '' }); showToast({ message: 'Status saved.', variant: 'success' }); void loadHistory(); }
             } catch (error) { if (current()) showError(error, feedback); }
             finally { busy(false); }
           });
@@ -183,12 +198,12 @@ export async function startRadar(client) {
     const values = new FormData(loginForm);
     const submit = loginForm.querySelector('button');
     if (!submit || submit.disabled) return;
-    submit.disabled = true; node('login-error').textContent = '';
+    submit.disabled = true; setAlert(node('login-error'), { message: '' });
     try {
       const { data: authData, error } = await client.auth.signInWithPassword({ email: String(values.get('email')).trim(), password: String(values.get('password')) });
       if (error) throw error;
       loginForm.reset(); acceptSession(authData.session);
-    } catch (error) { node('login-error').textContent = errorMessage(error); }
+    } catch (error) { setAlert(node('login-error'), { message: errorMessage(error), variant: 'danger' }); }
     finally { submit.disabled = false; }
   });
   logout.addEventListener('click', async () => {
@@ -197,8 +212,8 @@ export async function startRadar(client) {
     try {
       const { error } = await client.auth.signOut({ scope: 'local' });
       if (error) throw error;
-      clear(); lastUserId = ''; acceptSession(null); node('notice').textContent = 'Signed out.';
-    } catch (error) { node('notice').textContent = `Could not sign out. ${errorMessage(error)}`; }
+      clear(); lastUserId = ''; acceptSession(null); showToast({ message: 'Signed out.' });
+    } catch (error) { setAlert(node('notice'), { message: `Could not sign out. ${errorMessage(error)}`, variant: 'danger' }); }
     finally { signingOut = false; logout.disabled = false; }
   });
   // Keep auth callbacks synchronous: defer reads until outside the SDK auth lock.
