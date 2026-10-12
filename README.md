@@ -49,7 +49,15 @@ The builder produces one download per application: a **Download Package** zip ho
 
 For architecture and the constraints that apply when changing any of this, see [AGENTS.md](AGENTS.md).
 
-The applications share [global navigation, account controls, and the theme switch](docs/nextchapter-navigation.md) and a [design-token stylesheet](tools/shared/tokens.css), with local component styling. See the [token implementation and validation](docs/shared-design-tokens.md). When copying the résumé HTML elsewhere, keep `tools/shared/tokens.css` at the same relative path.
+## Shared interface
+
+The suite shares Figma-based color and typography tokens, Gravity UI icons, and opt-in native components. Application layout and behavior remain local. Implementation reports cover [foundations](docs/nextchapter-shared-foundations-phase1.md), [Actions](docs/nextchapter-actions-phase2a.md), [Inputs and Status](docs/nextchapter-inputs-status-phase2b.md), and [Navigation and About](docs/nextchapter-navigation.md).
+
+The shared header links the three tools and About. Wide layouts show utility links directly; compact desktop layouts use the More popover for About and Log In/Log Out; mobile layouts use an expandable navigation panel. Account controls reuse Prospect Tracker’s existing authentication. Builder, Career Radar’s placeholder, and About remain public. Login from another tool returns to that tool after authentication; logout stays on the current page.
+
+Dark remains the default theme, with a persistent light/dark switch. Shared sizing keeps borders and padding within specified outer dimensions. Tokens and component styles live in `tools/shared/`; document previews and export formatting remain in Builder. Copying the résumé HTML requires preserving its relative shared assets and the referenced Tracker authentication configuration/vendor files. See [token boundaries](docs/shared-design-tokens.md) and [navigation dependencies](docs/nextchapter-navigation.md).
+
+For the current implementation baseline, validation commands, and continuation boundaries, see the [Claude Code handoff](docs/claude-code-handoff.md).
 
 ## Deployment and editing
 
