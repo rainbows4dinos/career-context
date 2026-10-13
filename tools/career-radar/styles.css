@@ -47,14 +47,13 @@ button:disabled { opacity:.5; cursor:wait }
 .board-heading h2 { margin:0; font:var(--nc-type-ui-label-weight) var(--nc-type-ui-label-size)/var(--nc-type-ui-label-line-height) var(--nc-type-ui-label-family) }
 .board-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:var(--nc-space-3) }
 .board-toolbar .nc-button { text-decoration:none }
-.board-toolbar .nc-button--sm { padding-block:0 }
-.board-search { display:flex; flex-wrap:wrap; align-items:center; gap:var(--nc-space-2); flex:0 1 auto; min-width:0; margin-left:auto }
+.board-search { display:flex; flex-wrap:wrap; align-items:center; gap:var(--nc-space-4); flex:0 1 auto; min-width:0; margin-left:auto }
 .board-search-field { position:relative; flex:0 0 280px; width:280px; max-width:100%; min-width:0 }
-.board-search .nc-input { height:28px; padding-block:0; padding-right:32px; border-radius:9999px; font-size:var(--nc-type-ui-button-small-size); line-height:var(--nc-type-ui-button-small-line-height) }
+.board-search .nc-input { padding-right:40px; border-radius:9999px }
 .board-search .nc-input::-webkit-search-cancel-button { display:none; -webkit-appearance:none }
-.board-search .board-search-clear { position:absolute; right:4px; top:2px; width:24px; height:24px; padding:0; border:0; border-radius:9999px; background:transparent; color:var(--nc-text-secondary) }
+.board-search .board-search-clear { position:absolute; right:4px; top:4px; width:32px; height:32px; padding:0; border:0; border-radius:9999px; background:transparent; color:var(--nc-text-secondary) }
 .board-search .board-search-clear:hover { background:var(--nc-input-hover) }
-.board-search-results { flex:none; margin:0; white-space:nowrap; color:var(--nc-text-muted); font:var(--nc-type-body-small-weight) var(--nc-type-body-small-size)/var(--nc-type-body-small-line-height) var(--nc-type-body-small-family) }
+.board-search-results { flex:none; margin:0; white-space:nowrap; color:var(--nc-text-muted); font:var(--nc-type-body-default-weight) var(--nc-type-body-default-size)/var(--nc-type-body-default-line-height) var(--nc-type-body-default-family) }
 .column-cards:focus-visible { outline:var(--nc-focus-width) solid var(--nc-focus-ring); outline-offset:var(--nc-focus-offset) }
 .board { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px; align-items:start }
 .column { min-width:0; background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:12px }

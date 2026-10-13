@@ -59,10 +59,10 @@ export function boardView(root, cards, refresh, options = {}) {
   const toolbar = el('div', '', 'board-toolbar');
   toolbar.setAttribute('role', 'group'); toolbar.setAttribute('aria-label', 'Board actions');
   const add = link('Add Prospect', '#/prospects/new');
-  add.className = 'nc-button nc-button--primary nc-button--sm';
-  add.prepend(gravityIcon('plus', { size: 12 }));
-  const reload = button('Refresh', refresh, 'nc-button nc-button--tertiary nc-button--sm');
-  reload.prepend(gravityIcon('arrow-rotate-left', { size: 12 }));
+  add.className = 'nc-button nc-button--primary nc-button--lg';
+  add.prepend(gravityIcon('plus', { size: 16 }));
+  const reload = button('Refresh', refresh, 'nc-button nc-button--tertiary nc-button--lg');
+  reload.prepend(gravityIcon('arrow-rotate-left', { size: 16 }));
   const search = el('div', '', 'board-search'); search.setAttribute('role', 'search');
   const results = el('span', '', 'board-search-results');
   const searchField = el('div', '', 'board-search-field');
@@ -71,7 +71,7 @@ export function boardView(root, cards, refresh, options = {}) {
   input.placeholder = 'Filter prospects'; input.value = state.query;
   const clear = button('', () => { input.value = ''; state.query = ''; update(loadedCards); input.focus(); }, 'nc-button board-search-clear');
   clear.setAttribute('aria-label', 'Clear search'); clear.title = 'Clear search';
-  clear.append(gravityIcon('xmark', { size: 12 }));
+  clear.append(gravityIcon('xmark', { size: 16 }));
   searchField.append(label, input, clear); search.append(results, searchField);
   toolbar.append(add, reload, search); heading.append(toolbar);
   const hint = el('p', '', 'nc-visually-hidden');
