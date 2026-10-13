@@ -64,13 +64,16 @@ export function boardView(root, cards, refresh, options = {}) {
   const reload = button('Refresh', refresh, 'nc-button nc-button--tertiary nc-button--sm');
   reload.prepend(gravityIcon('arrow-rotate-left', { size: 12 }));
   const search = el('div', '', 'board-search'); search.setAttribute('role', 'search');
-  const label = el('label', 'Search prospects', 'nc-visually-hidden'); label.htmlFor = 'board-search';
+  const results = el('span', '', 'board-search-results');
+  const searchField = el('div', '', 'board-search-field');
+  const label = el('label', 'Filter prospects', 'nc-visually-hidden'); label.htmlFor = 'board-search';
   const input = el('input', '', 'nc-input'); input.id = 'board-search'; input.type = 'search';
-  input.placeholder = 'Search prospects'; input.value = state.query;
-  const clear = button('Clear search', () => { input.value = ''; state.query = ''; update(loadedCards); input.focus(); }, 'nc-button nc-button--tertiary nc-button--sm');
-  search.append(label, input, clear);
+  input.placeholder = 'Filter prospects'; input.value = state.query;
+  const clear = button('', () => { input.value = ''; state.query = ''; update(loadedCards); input.focus(); }, 'nc-button board-search-clear');
+  clear.setAttribute('aria-label', 'Clear search'); clear.title = 'Clear search';
+  clear.append(gravityIcon('xmark', { size: 12 }));
+  searchField.append(label, input, clear); search.append(results, searchField);
   toolbar.append(add, reload, search); heading.append(toolbar);
-  const results = el('p', '', 'board-search-results muted'); heading.append(results);
   const hint = el('p', '', 'nc-visually-hidden');
   hint.id = 'board-instructions';
   const board = el('div', '', 'board');
@@ -117,8 +120,8 @@ export function boardView(root, cards, refresh, options = {}) {
     const matches = groups.reduce((sum, group) => sum + group.cards.length, 0);
     title.textContent = `Prospects (${loadedCards.length})`;
     clear.hidden = !input.value;
-    results.hidden = !searching && !!loadedCards.length;
-    results.textContent = searching ? matches ? `${matches} of ${loadedCards.length} prospects match.` : 'No prospects match your search. Clear search to show all prospects.' : 'No prospects yet. Add a company and role you want to keep track of.';
+    results.hidden = !searching;
+    results.textContent = matches ? `${matches} of ${loadedCards.length} matches` : 'No matches';
     hint.textContent = 'Open a card to edit it. Drag cards between columns on desktop to change status. Expand Done to see completed prospects.';
     for (const group of groups) {
       const { count, list } = columns.find(column => column.id === group.id) ?? columns[0];
