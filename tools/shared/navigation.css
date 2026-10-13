@@ -26,7 +26,7 @@ body.light .nextchapter-header .toggle-icon-sun { opacity:0 }
 body.light .nextchapter-header .toggle-icon-moon { opacity:1 }
 /* Compact desktop utilities disclose About/account; theme stays visible. */
 @media (min-width:900px) and (max-width:1199px) {
-  .nextchapter-header .nextchapter-header__content { max-width:1056px; position:relative; gap:20px }
+  .nextchapter-header .nextchapter-header__content { position:relative; gap:20px }
   .nextchapter-header .nextchapter-wordmark { font-size:var(--ds-type-h3-size); line-height:var(--ds-type-h3-line-height) }
   .nextchapter-primary { gap:12px }
   .nextchapter-header .nextchapter-menu-toggle { display:flex; background:var(--ds-action-tertiary-bg); border-color:var(--ds-action-tertiary-border); color:var(--ds-action-secondary-fg) }
