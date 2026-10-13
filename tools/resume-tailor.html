@@ -65,8 +65,7 @@
   /* Step bar */
   .step-bar.nc-step-progress { margin-bottom: 1.75rem }
   button.primary { flex: 1 }
-  .tab-actions button.primary { flex: 0 0 auto }
-  .revise-bar .nc-button { align-self: flex-end; flex-shrink: 0 }
+  .preview-actions button.primary { flex: 0 0 auto }
 
   /* Loading */
   .loading-card { text-align: center; padding: 3.5rem 2rem }
@@ -74,14 +73,37 @@
   .loading-status { font-family: var(--serif); font-size: 22px; font-weight: 600; margin-bottom: 6px; color: var(--text) }
   .loading-sub { font-size: 15px; color: var(--muted); font-weight: 300 }
 
-  /* Callout blocks */
-  .tailor-note { font-size: 14px; font-weight: 300; background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-border); border-radius: 8px; padding: 11px 15px; margin-bottom: 1.25rem; line-height: 1.6 }
-  .tailor-note strong { font-weight: 500 }
-
-  /* Tabs */
-  .tab-bar { display: flex; align-items: flex-end; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1.5rem }
-  /* Actions ride at the right end of the tab bar, sitting just off the rule */
-  .tab-actions { margin-left: auto; display: flex; gap: 8px; padding-bottom: 6px }
+  /* Preview refactor — narrow until generation succeeds; shared components retain their semantics. */
+  .builder-shell.nc-content { max-width: 856px; padding: 8px 28px 2rem }
+  .builder-shell.builder-shell--preview { max-width: 1456px }
+  .builder-shell--preview .app-heading { padding-bottom: 28px; margin-bottom: 28px }
+  .builder-shell--preview .app-heading h1 { font: var(--nc-type-h1-weight) var(--nc-type-h1-size)/var(--nc-type-h1-line-height) var(--nc-type-h1-family) }
+  .builder-shell--preview .app-heading p { display: none }
+  .app-heading { margin-bottom: 2.5rem }
+  .preview-layout { display: grid; grid-template-columns: minmax(0,1fr); gap: 28px; align-items: start }
+  .preview-primary, .preview-sidebar, .preview-document { min-width: 0; overflow-wrap: anywhere }
+  .tab-bar { display: flex; padding-bottom: 12px }
+  .preview-document.card { margin: 0; border-radius: 24px }
+  .preview-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 16px; padding-top: 28px }
+  .preview-actions .nc-button { flex-shrink: 0 }
+  .download-label--mobile { display: none }
+  .preview-sidebar.card { display: flex; flex-direction: column; gap: 28px; margin: 0; border-radius: 24px }
+  .preview-sidebar section { min-width: 0 }
+  .preview-sidebar h2 { font: var(--nc-type-ui-label-weight) var(--nc-type-ui-label-size)/var(--nc-type-ui-label-line-height) var(--nc-type-ui-label-family); margin: 0 0 8px; padding-left: 2px }
+  .preview-feedback { display: flex; flex-direction: column; gap: 8px }
+  .preview-sidebar .nc-alert { margin: 0 }
+  .generation-status .nc-alert--info > .gravity-icon { display: none }
+  .preview-empty { font: var(--nc-type-body-small-weight) var(--nc-type-body-small-size)/var(--nc-type-body-small-line-height) var(--nc-type-body-small-family); color: var(--nc-text-muted) }
+  .preview-sidebar .request-changes { padding-top: 16px; display: flex; flex-direction: column; gap: 20px }
+  .preview-sidebar .revise-bar { gap: 4px; margin: 0 }
+  .preview-sidebar .revise-status { margin: 0 }
+  .preview-sidebar #reviseNote { min-height: 124px }
+  .preview-sidebar #reviseBtn { width: 100% }
+  @media (min-width: 1200px) {
+    .preview-layout { grid-template-columns: minmax(0,1fr) 380px }
+    .preview-sidebar.card { margin-top: 40px }
+  }
+  @media (min-width: 601px) and (max-width: 1199px) { .preview-sidebar #reviseBtn { width: auto; align-self: flex-end } }
 
   /* Resume preview */
   .resume-name { font-family: var(--serif); font-size: 26px; font-weight: 600; letter-spacing: -0.01em; color: var(--text) }
@@ -91,7 +113,7 @@
   .skills-group { margin-bottom: 6px; font-size: 14px; line-height: 1.6; font-weight: 300 }
   .skills-group strong { font-weight: 500; color: var(--muted-light) }
   .job { margin-bottom: 1.2rem }
-  .job-header { display: flex; justify-content: space-between; align-items: baseline }
+  .job-header { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: space-between; align-items: baseline }
   .job-title { font-size: 15px; font-weight: 500; color: var(--text) }
   .job-dates { font-size: 13px; color: var(--muted); font-weight: 300 }
   .job-company { font-size: 14px; font-weight: 400; color: var(--muted-light); margin-bottom: 4px }
@@ -118,10 +140,16 @@
 
   /* Revision highlights — screen only */
   .revised-highlight { background: rgba(242, 197, 111, 0.18); border-radius: 3px; padding: 1px 2px; color: var(--yellow) }
-  .revised-note { font-size: 14px; font-weight: 300; background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); border-radius: 8px; padding: 11px 15px; margin-bottom: 1.25rem; line-height: 1.6 }
-  .revised-note strong { font-weight: 500 }
-  @media print { .revised-highlight { background: none; color: inherit } .revised-note { display: none } }
-  @media (max-width: 600px) { .field-row { grid-template-columns: 1fr } .revise-bar button { width: 100% } .tab-bar { flex-wrap: wrap } .tab-actions { width: 100%; margin-left: 0; padding: 8px 0 } .tab-actions button { flex: 1 } }
+  @media print { .revised-highlight { background: none; color: inherit } .preview-sidebar, .preview-actions { display: none } }
+  @media (max-width: 600px) {
+    .field-row { grid-template-columns: 1fr }
+    .builder-shell--preview .app-heading { padding-bottom: 12px }
+    .builder-shell--preview .app-heading h1 { font: var(--nc-type-h2-weight) var(--nc-type-h2-size)/var(--nc-type-h2-line-height) var(--nc-type-h2-family) }
+    .preview-actions { flex-direction: column }
+    .preview-actions .nc-button { width: 100% }
+    .download-label--desktop { display: none }
+    .download-label--mobile { display: inline }
+  }
 
 </style>
 <link rel="stylesheet" href="shared/components.css?v=20261013-transitions" />
@@ -129,8 +157,8 @@
 </head>
 <body>
   <header id="nextchapter-header" data-app="builder"></header>
-<div class="shell nc-content">
-  <section class="app-heading" aria-labelledby="builder-title" style="margin-bottom:2.5rem">
+<div class="shell nc-content builder-shell">
+  <section class="app-heading" aria-labelledby="builder-title">
     <h1 id="builder-title">Résumé Builder</h1>
     <p style="max-width: 90%;">Custom resume and cover letter generator using my job-hunting context files, docx templates, and Claude. Learn more on my <a href="https://github.com/rainbows4dinos/nextchapter" target="_blank">GitHub page</a>. Check out my portfolio at <a href="https://www.larryjr.design" target="_blank">www.larryjr.design</a></p>
   </section>
@@ -190,31 +218,47 @@
   </div>
 
   <!-- Pane 2: Preview -->
-  <div id="pane2" style="display:none">
+  <div id="pane2" class="preview-layout" style="display:none">
+    <div class="preview-primary">
     <div class="tab-bar">
       <div class="nc-pill-tabs" role="tablist" aria-label="Application documents" id="documentTabs">
-        <button type="button" class="tab nc-pill-tab" id="resumeTab" role="tab" data-tab="resume" aria-selected="true" aria-controls="tabResume" tabindex="0" onclick="showTab('resume',this)">Resume</button>
+        <button type="button" class="tab nc-pill-tab" id="resumeTab" role="tab" data-tab="resume" aria-selected="true" aria-controls="tabResume" tabindex="0" onclick="showTab('resume',this)">Résumé</button>
         <button type="button" class="tab nc-pill-tab" id="clTab" role="tab" data-tab="cl" aria-selected="false" aria-controls="tabCL" tabindex="-1" onclick="showTab('cl',this)">Cover Letter</button>
       </div>
-      <div class="tab-actions">
-        <button class="primary nc-button nc-button--primary nc-button--lg" id="dlAll" onclick="downloadBundle()">Download Package</button>
-        <button class="secondary nc-button nc-button--tertiary nc-button--lg" onclick="startOver()">Start New Application</button>
+    </div>
+    <div class="card preview-document">
+      <div id="tabResume" role="tabpanel" aria-labelledby="resumeTab" tabindex="0"><div id="resumeOut"></div></div>
+      <div id="tabCL" role="tabpanel" aria-labelledby="clTab" tabindex="0" hidden style="display:none"><div id="clOut"></div></div>
+      <div id="downloadError" class="nc-alert"></div>
+      <div class="preview-actions">
+        <button class="primary nc-button nc-button--primary nc-button--lg" id="dlAll" aria-describedby="downloadContents" onclick="downloadBundle()"><span class="download-label--desktop">Download Application Package</span><span class="download-label--mobile">Download Résumé Package</span><svg class="gravity-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><use href="shared/vendor/gravity-icons/sprite.svg#arrow-down-to-line"></use></svg></button>
+        <button class="secondary nc-button nc-button--secondary nc-button--lg" onclick="startOver()"><svg class="gravity-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><use href="shared/vendor/gravity-icons/sprite.svg#arrow-rotate-left"></use></svg>Start New Application</button>
       </div>
     </div>
-    <div id="downloadError" class="nc-alert"></div>
-    <div id="tabResume" role="tabpanel" aria-labelledby="resumeTab" tabindex="0"><div class="card" id="resumeOut"></div></div>
-    <div id="tabCL" role="tabpanel" aria-labelledby="clTab" tabindex="0" hidden style="display:none"><div class="card" id="clOut"></div></div>
+    <p class="dl-note nc-visually-hidden" id="downloadContents">Download Package gives you a zip that unpacks into one folder named for the company and role, with all five files inside.<br>PDF for sending and attaching. Docx for job boards that parse it, and for hand edits before sending. Both keep selectable text so an ATS can read them.<br>ATS plain is for Workday autofill only: one column, one fact per line, no tabs or parentheticals. It looks plain because that is what parses.</p>
+    </div>
+    <aside class="card preview-sidebar" aria-label="Generation feedback and revision controls">
+      <section class="generation-status" aria-labelledby="generationStatusTitle">
+        <h2 id="generationStatusTitle">Generation Status</h2>
+        <div id="generationFeedback" class="preview-feedback"></div>
+      </section>
+      <section aria-labelledby="qualityChecksTitle">
+        <h2 id="qualityChecksTitle">Quality Checks</h2>
+        <div id="qualityChecks" class="preview-feedback"></div>
+      </section>
+      <section class="request-changes" aria-labelledby="requestChangesTitle">
+    <div class="revise-bar nc-field">
+      <label class="nc-field__label" id="requestChangesTitle" for="reviseNote">Request Changes</label>
+      <textarea class="nc-textarea" id="reviseNote" rows="1" placeholder="Ask for a revision — e.g. Make the opening punchier, or drop the Elevate bullet" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();goRevise()}"></textarea>
+    </div>
     <div class="revise-status" id="reviseStatus" role="status" aria-live="polite">
       <div class="nc-spinner" aria-hidden="true"></div>
       <span id="reviseStatusText">Revising...</span>
     </div>
     <div id="revisionError" class="nc-alert"></div>
-    <div class="revise-bar nc-field">
-      <label class="nc-visually-hidden" for="reviseNote">Revision request</label>
-      <textarea class="nc-textarea" id="reviseNote" rows="1" placeholder="Ask for a revision — e.g. Make the opening punchier, or drop the Elevate bullet" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();goRevise()}"></textarea>
-      <button class="nc-button nc-button--primary nc-button--lg" onclick="goRevise()" id="reviseBtn">Request Revision</button>
-    </div>
-    <p class="dl-note">Download Package gives you a zip that unpacks into one folder named for the company and role, with all five files inside.<br>PDF for sending and attaching. Docx for job boards that parse it, and for hand edits before sending. Both keep selectable text so an ATS can read them.<br>ATS plain is for Workday autofill only: one column, one fact per line, no tabs or parentheticals. It looks plain because that is what parses.</p>
+      <button class="nc-button nc-button--secondary nc-button--lg" onclick="goRevise()" id="reviseBtn">Apply Changes</button>
+      </section>
+    </aside>
   </div>
 </div>
 
@@ -374,6 +418,7 @@ function toggleFocus(el) {
 }
 
 function setStep(n) {
+  document.querySelector('.builder-shell').classList.toggle('builder-shell--preview', n === 2);
   ['step0','step1','step2'].forEach((id,i)=>{
     const step = document.getElementById(id);
     step.className = 'step nc-step nc-step--' + (i<n ? 'completed' : i===n ? 'active' : 'upcoming');
@@ -468,6 +513,7 @@ async function goTailor() {
   const focus   = focusSelected.length ? focusSelected.join(', ') : 'auto-detect from JD';
   const month   = new Date().toLocaleString('default',{month:'long',year:'numeric'});
 
+  document.getElementById('handoffNotice').hidden = true;
   setStep(1);
   const statusEl=document.getElementById('loadStatus');
   const subEl=document.getElementById('loadSub');
@@ -875,7 +921,28 @@ function qaWarnings(r) {
   return w;
 }
 
+function renderPreviewFeedback(r, diff) {
+  const alert = (message, variant) => {
+    const element = document.createElement('div');
+    element.className = 'nc-alert'; element.textContent = message;
+    statusUI.then(ui => ui.setAlert(element, { message, variant, announcement: 'off' }));
+    return element;
+  };
+  const generation = document.getElementById('generationFeedback');
+  generation.replaceChildren();
+  if (r.tailoring_notes) generation.append(alert(r.tailoring_notes, 'info'));
+  if (diff?.summary) generation.append(alert(`Revised: ${diff.summary}`, 'success'));
+  const warnings = qaWarnings(r);
+  const quality = document.getElementById('qualityChecks');
+  quality.replaceChildren(...warnings.map(message => alert(message, 'warning')));
+  if (!warnings.length) {
+    const empty = document.createElement('p'); empty.className = 'preview-empty'; empty.textContent = 'No quality warnings.';
+    quality.append(empty);
+  }
+}
+
 function renderPreview(r, title, company, contact, month, diff) {
+  renderPreviewFeedback(r, diff);
   const res = r.resume||{};
   const sk  = res.skills||{};
 
@@ -941,17 +1008,9 @@ function renderPreview(r, title, company, contact, month, diff) {
     </div>`;
   }).join('');
 
-  // Revised callout (only shown after a revision, sits below the Tailored note)
-  const revisedCallout = (diff && diff.summary)
-    ? `<div class="revised-note"><strong>Revised:</strong> ${diff.summary}</div>`
-    : '';
-
   document.getElementById('resumeOut').innerHTML=`
     <div class="resume-name">Larry Reynolds</div>
     <div class="resume-title-line">Principal Product Designer · Portland, OR · larryjr.design · larry.jr.design@gmail.com · 503-475-7438</div>
-    ${r.tailoring_notes?`<div class="tailor-note"><strong>Tailored:</strong> ${r.tailoring_notes}</div>`:''}
-    ${(()=>{ const qa = qaWarnings(r); return qa.length ? `<div class="tailor-note" style="border-left:3px solid #c98a2b"><strong>Check before sending:</strong> ${qa.join('; ')}</div>` : ''; })()}
-    ${diff && diff.type === 'resume' ? revisedCallout : ''}
     <div class="section-label">Summary</div>
     <div class="summary-text">${hl(res.summary, oldRes?.summary)}</div>
     <div class="section-label">Core Skills</div>${skillsHtml}
@@ -975,7 +1034,6 @@ function renderPreview(r, title, company, contact, month, diff) {
     <div style="font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:300">${month}</div>
     <div style="font-size:13px;color:var(--muted-light);margin-bottom:3px;font-weight:300">${addressee}</div>
     <div style="font-size:14px;font-weight:500;margin-bottom:1.5rem;color:var(--text)">Re: ${title}</div>
-    ${diff && diff.type === 'cl' ? revisedCallout : ''}
     <div class="cl-body">${allParas.map((p,i)=>{
       const changed = oldCL && p !== (oldAllParas[i]||'');
       return `<p>${changed ? `<span class="revised-highlight">${p}</span>` : p}</p>`;
@@ -1187,7 +1245,7 @@ async function downloadBundle() {
   if (!generatedData) { inlineMessage('downloadError', 'No document ready — please generate first.'); return; }
   inlineMessage('downloadError', '');
   const btn = document.getElementById('dlAll');
-  const origText = btn.textContent;
+  const originalContent = [...btn.childNodes];
   btn.textContent = 'Building Files...';
   btn.disabled = true;
 
@@ -1243,7 +1301,7 @@ async function downloadBundle() {
     console.error('Bundle error:', e);
     inlineMessage('downloadError', 'Could not build the folder: ' + e.message + ' Your documents are still here; try downloading again.');
   } finally {
-    btn.textContent = origText;
+    btn.replaceChildren(...originalContent);
     btn.disabled = false;
   }
 }
