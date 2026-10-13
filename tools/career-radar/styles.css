@@ -25,7 +25,7 @@ h1 { font-size:32px } h2 { font-size:26px } h3 { font-size:22px }
 p { margin:.5rem 0 1rem } header p { margin:0 }
 nav,.actions,.view-heading { display:flex; flex-wrap:wrap; align-items:center; gap:1rem }
 nav { width:100% }
-a { color:var(--accent); text-decoration:none; text-underline-offset:3px } a:hover { text-decoration:underline; background:var(--accent-bg) }
+a { color:var(--accent); text-decoration:none } a:hover { background:var(--accent-bg) }
 button,input,select,textarea { font:inherit; border-radius:8px }
 button { cursor:pointer; padding:10px 16px; border:1px solid var(--border); background:transparent; color:var(--text) }
 button:hover { border-color:var(--accent) }
@@ -40,6 +40,14 @@ button:disabled { opacity:.5; cursor:wait }
 #notice:not(.nc-alert),.feedback:not(.nc-alert),#login-error:not(.nc-alert) { padding:.75rem 1rem; background:var(--accent-bg); border-radius:8px; overflow-wrap:anywhere }
 .error { color:var(--nc-danger-fg) }
 .view-heading { justify-content:space-between; margin-bottom:1rem }
+.shell:has(.board) #tracker-heading { border:0; margin-top:calc(2 * var(--nc-space-4)); margin-bottom:var(--nc-space-4); padding-bottom:var(--nc-space-4) }
+.shell:has(.board) #tracker-heading h1 { margin-bottom:var(--nc-space-2) }
+.shell:has(.board) #tracker-heading p { font-weight:400 }
+.board-heading { display:flex; flex-direction:column; gap:var(--nc-space-4); margin-bottom:var(--nc-space-4) }
+.board-heading h2 { margin:0; font:var(--nc-type-ui-label-weight) var(--nc-type-ui-label-size)/var(--nc-type-ui-label-line-height) var(--nc-type-ui-label-family) }
+.board-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:var(--nc-space-3) }
+.board-toolbar .nc-button { text-decoration:none }
+.board-toolbar .nc-button--sm { padding-block:0 }
 .board { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px; align-items:start }
 .column { min-width:0; background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:12px }
 .column h3 { font:500 14px var(--sans); display:flex; justify-content:space-between; margin-bottom:1rem }
@@ -58,11 +66,11 @@ button:disabled { opacity:.5; cursor:wait }
 .column-done summary h3 { display:inline; color:var(--muted) }
 .column-done summary .count { margin-left:.5rem }
 .column-done[open] summary { margin-bottom:1rem }
-.column-done .prospect-card:hover { text-decoration:none }
 .prospect-card strong { color:var(--muted) }
 .count { color:var(--muted) }
 .column-toggle { width:100%; padding:8px 12px; font-size:13px }
 .prospect-card { display:block; padding:12px; margin-bottom:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); text-decoration:none; overflow-wrap:anywhere }
+.prospect-card:hover { text-decoration:none }
 .prospect-card strong { display:block; font-weight:500; color:var(--accent) }
 .prospect-card span { display:block; margin-top:4px }
 .prospect-card .nc-status-badge { display:inline-flex; margin-top:8px }

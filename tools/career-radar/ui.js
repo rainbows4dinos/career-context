@@ -49,12 +49,22 @@ export function messageView(root, message, retry) {
 /** @param {HTMLElement} root @param {import('./data.js').ProspectCard[]} cards @param {() => void} refresh
  * @param {Partial<import('./kanban.js').MoveOptions> & {appliedExpanded?:boolean, doneOpen?:boolean}} [options] */
 export function boardView(root, cards, refresh, options = {}) {
-  const heading = el('div', '', 'view-heading');
-  heading.append(el('h2', `Prospects (${cards.length})`), button('Refresh', refresh, 'secondary nc-button nc-button--tertiary nc-button--lg'));
-  const hint = el('p', cards.length ? 'Open a card to edit it. Drag cards between columns on desktop to change status. Expand Done to see completed prospects.' : 'No prospects yet. Add a company and role you want to keep track of.', 'muted');
+  const heading = el('div', '', 'board-heading');
+  heading.append(el('h2', `Prospects (${cards.length})`));
+  const toolbar = el('div', '', 'board-toolbar');
+  toolbar.setAttribute('role', 'group'); toolbar.setAttribute('aria-label', 'Board actions');
+  const add = link('Add Prospect', '#/prospects/new');
+  add.className = 'nc-button nc-button--primary nc-button--sm';
+  add.prepend(gravityIcon('plus', { size: 12 }));
+  const reload = button('Refresh', refresh, 'nc-button nc-button--tertiary nc-button--sm');
+  reload.prepend(gravityIcon('arrow-rotate-left', { size: 12 }));
+  toolbar.append(add, reload); heading.append(toolbar);
+  const hint = el('p', cards.length ? 'Open a card to edit it. Drag cards between columns on desktop to change status. Expand Done to see completed prospects.' : 'No prospects yet. Add a company and role you want to keep track of.', cards.length ? 'nc-visually-hidden' : 'muted');
+  hint.id = 'board-instructions';
   const board = el('div', '', 'board');
   board.tabIndex = 0;
   board.setAttribute('role', 'region'); board.setAttribute('aria-label', 'Prospects by lifecycle');
+  board.setAttribute('aria-describedby', hint.id);
   for (const group of groupCards(cards)) {
     const done = group.id === 'done';
     const column = done ? el('details', '', 'column column-done') : el('section', '', 'column');
@@ -98,7 +108,6 @@ export function boardView(root, cards, refresh, options = {}) {
     board.append(column);
   }
   root.replaceChildren(heading, hint);
-  if (!cards.length) root.append(link('Add your first prospect', '#/prospects/new'));
   root.append(board);
   return options.move ? mountBoardDrag(board, cards, { move: options.move, canMove: options.canMove ?? (() => true) }) : () => {};
 }

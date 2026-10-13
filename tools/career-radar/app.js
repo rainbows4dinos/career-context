@@ -9,7 +9,7 @@ import { errorMessage, parseRoute, readDetails } from './view-model.js';
 import { validateStatus, validateHttpUrl } from './model.js';
 import { createStatusSaver } from './status-save.js';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
-import { boardView, button, editorView, historyView, messageView, setProspectStatusBadge } from './ui.js?v=20261013-kanban';
+import { boardView, button, editorView, historyView, messageView, setProspectStatusBadge } from './ui.js?v=20261013-board-toolbar';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
 import { mountIngestion } from './ingestion-ui.js?v=20261013-statuses';
 
@@ -26,7 +26,6 @@ export async function startRadar(client) {
   const login = node('login');
   const loginForm = /** @type {HTMLFormElement} */ (node('login-form'));
   bindFieldValidation(loginForm);
-  const addLink = node('add-link');
   let userId = '';
   let lastUserId = '';
   let dirty = false;
@@ -51,7 +50,6 @@ export async function startRadar(client) {
     login.hidden = !!nextId; workspace.hidden = !nextId;
     if (!nextId) node('tracker-heading').hidden = false;
     if (!nextId) { boardCleanup?.(); boardCleanup = null; }
-    addLink.hidden = !nextId;
     if (nextId) returnAfterLogin();
     if (nextId && (!mounted || activeHash !== (window.location.hash || '#/board') || !boardCleanup && !!workspace.querySelector('.board'))) void renderRoute();
   }

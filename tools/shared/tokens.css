@@ -84,27 +84,27 @@
   --nc-type-body-large-family: var(--nc-font-sans);
   --nc-type-body-large-size: 21px;
   --nc-type-body-large-line-height: 32px;
-  --nc-type-body-large-weight: 400;
+  --nc-type-body-large-weight: 300;
 
   --nc-type-body-default-family: var(--nc-font-sans);
   --nc-type-body-default-size: 16px;
   --nc-type-body-default-line-height: 24px;
-  --nc-type-body-default-weight: 400;
+  --nc-type-body-default-weight: 300;
 
   --nc-type-body-small-family: var(--nc-font-sans);
   --nc-type-body-small-size: 12px;
   --nc-type-body-small-line-height: 20px;
-  --nc-type-body-small-weight: 400;
+  --nc-type-body-small-weight: 300;
 
   --nc-type-caption-family: var(--nc-font-sans);
   --nc-type-caption-size: 12px;
   --nc-type-caption-line-height: 16px;
-  --nc-type-caption-weight: 400;
+  --nc-type-caption-weight: 300;
 
   --nc-type-ui-title-family: var(--nc-font-sans);
   --nc-type-ui-title-size: 21px;
   --nc-type-ui-title-line-height: 28px;
-  --nc-type-ui-title-weight: 600;
+  --nc-type-ui-title-weight: 500;
 
   --nc-type-ui-label-family: var(--nc-font-sans);
   --nc-type-ui-label-size: 16px;
@@ -129,7 +129,7 @@
   --nc-type-meta-family: var(--nc-font-mono);
   --nc-type-meta-size: 12px;
   --nc-type-meta-line-height: 16px;
-  --nc-type-meta-weight: 400;
+  --nc-type-meta-weight: 300;
 
   /* Minimal spacing, current default radius and retained panel geometry. */
   --nc-space-1: 4px;
