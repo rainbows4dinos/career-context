@@ -6,6 +6,21 @@ Historical extraction snapshot. The October 11 [Phase 1 shared foundations](next
 
 Shared CSS token names now use `--nc-` (nextchapter). Definitions, application/component consumers, browser-test color probes and documentation references were renamed together. Token values, aliases, theme selectors and export logic are unchanged. Four-page comparisons in both themes confirmed identical resolved styles; all current namespace references are defined. Historical tables below use the current prefix for consistency.
 
+## Standard UI transitions — October 13, 2026
+
+| Token | Value | Use |
+| --- | --- | --- |
+| `--nc-transition-general-sm` | `150ms ease-in-out` | Hover/press states, compact dropdowns, switches, toasts and similar small state changes. |
+| `--nc-transition-general-md` | `300ms ease-in-out` | Mobile navigation disclosure and future modal/lightbox surfaces. |
+
+Use these duration/easing pairs with explicit properties, for example `transition: background-color var(--nc-transition-general-sm)`. Controls, native fields, navigation items, dismiss buttons, theme-switch parts and Builder links consume the small token. The compact account/About dropdown fades and moves 4px with the small token; mobile navigation fades and moves 8px with the medium token. Closed navigation surfaces become inert immediately during their exit transition. Modals and lightboxes remain future work.
+
+Both tokens resolve to `0ms ease-in-out` under `prefers-reduced-motion: reduce`; existing spinner/switch reduced-motion rules remain. Disclosure entry/exit uses CSS `@starting-style` and discrete `display` transitions, with immediate show/hide fallback in browsers without support. See [MDN’s discrete transition guidance](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/transition-behavior).
+
+Shared stylesheet and navigation-module URLs carry the matching `20261013-transitions` revision across all four entry pages. Tracker’s bootstrap/app imports use the same revision so the header module runs once. This prevents older cached assets from hiding the new transition rules. Live Tracker checks confirmed the tokens and 150/300ms consumers after reload, including a closing mobile menu at intermediate opacity with its links already inert.
+
+Local Chrome checks confirmed 150/300ms computed durations and easing, mobile and compact dropdown opening/closing, immediate inert state, Escape focus restoration and desktop breakpoint recovery. Scoped typecheck/lint and `git diff --check` pass. Reduced-motion token overrides were checked in source; OS preference emulation was not performed.
+
 ## Current token cleanup — October 12, 2026
 
 Removed 29 obsolete shared declarations: 17 unused legacy color/alpha primitives, nine compatibility semantic aliases, and three unused/indirect radius aliases. Builder and Tracker now reference current semantic roles directly (`background/page`, `surface/sunken`, `text/muted`, link/selection roles and severity foregrounds). Their local application aliases remain on the theme element. The existing `radius/panel` resolves directly to 10px; current spacing, typography, semantic colors and theme behavior are unchanged.

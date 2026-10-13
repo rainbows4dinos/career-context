@@ -1,6 +1,8 @@
 try {
   const [{ getRadarClient }, { startRadar }] = await Promise.all([
-    import('./supabase-client.js'), import('./app.js')
+    import('./supabase-client.js'),
+    // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
+    import('./app.js?v=20261013-transitions')
   ]);
   await startRadar(await getRadarClient());
 } catch {

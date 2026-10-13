@@ -15,6 +15,7 @@
   overflow-wrap: anywhere;
   cursor: pointer;
   opacity: 1;
+  transition: background-color var(--nc-transition-general-sm), color var(--nc-transition-general-sm), border-color var(--nc-transition-general-sm);
 }
 .nc-button { border: 1px solid transparent; }
 .nc-button--lg {
@@ -129,6 +130,7 @@
 .nc-field__required { color: var(--nc-text-secondary); margin-left: 2px; }
 .nc-field__description { font-weight: 400; color: var(--nc-text-secondary); }
 .nc-input, .nc-textarea, .nc-select {
+  transition: background-color var(--nc-transition-general-sm), color var(--nc-transition-general-sm), border-color var(--nc-transition-general-sm);
   display: block; box-sizing: border-box; width: 100%; min-width: 0; margin: 0;
   border: 1px solid var(--nc-border-control); border-radius: var(--nc-radius-default);
   background: var(--nc-input-bg); color: var(--nc-text-primary); padding: 7px 12px;
@@ -178,7 +180,7 @@
 .nc-toast {
   background: var(--nc-surface-raised); color: var(--nc-text-primary); border-color: var(--nc-border-control);
   box-shadow: 1px 1px 0 var(--nc-border-control); pointer-events: auto;
-  opacity: 0; transform: translateY(4px); transition: opacity 180ms ease, transform 180ms ease;
+  opacity: 0; transform: translateY(4px); transition: opacity var(--nc-transition-general-sm), transform var(--nc-transition-general-sm);
 }
 .nc-toast.is-visible { opacity: 1; transform: translateY(0); }
 .nc-toast--success > .gravity-icon { color: var(--nc-success-fg); }
@@ -186,6 +188,7 @@
 .nc-toast--warning > .gravity-icon { color: var(--nc-warning-fg); }
 .nc-toast--info > .gravity-icon { color: var(--nc-info-fg); }
 .nc-toast__dismiss, .nc-alert__dismiss {
+  transition: background-color var(--nc-transition-general-sm), color var(--nc-transition-general-sm);
   display: inline-flex; align-items: center; justify-content: center; flex: 0 0 24px;
   width: 24px; height: 24px; padding: 0; margin: -2px 0; border: 0; border-radius: 4px;
   background: transparent; color: var(--nc-text-placeholder); cursor: pointer; opacity: 1;
@@ -208,7 +211,7 @@
 @keyframes nc-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
   .nc-spinner { animation: none; }
-  .nc-toast, .nc-toast.is-visible { transition: opacity 150ms ease; transform: none; }
+  .nc-toast, .nc-toast.is-visible { transition: none; transform: none; }
 }
 
 .nc-spinner[hidden] { display:none }

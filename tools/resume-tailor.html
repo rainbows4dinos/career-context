@@ -8,13 +8,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
-<link rel="stylesheet" href="shared/tokens.css" />
+<link rel="stylesheet" href="shared/tokens.css?v=20261013-transitions" />
 <link rel="stylesheet" href="shared/icons.css" />
-<link rel="stylesheet" href="shared/navigation.css" />
+<link rel="stylesheet" href="shared/navigation.css?v=20261013-transitions" />
 <script type="importmap">
   {"imports":{"@supabase/supabase-js":"./career-radar/vendor/supabase.js"}}
 </script>
-<script type="module" src="shared/navigation.mjs"></script>
+<script type="module" src="shared/navigation.mjs?v=20261013-transitions"></script>
 <style>
   *, *::before, *::after { margin: 0; padding: 0 }
   /* Application aliases resolve on body so body.light uses the shared light mappings. */
@@ -42,7 +42,7 @@
   body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 0; font-weight: 300; font-size: 16px; line-height: 1.6; }
 
   /* Links */
-  a { color: var(--accent); text-decoration: none; transition: color 0.15s, background 0.15s }
+  a { color: var(--accent); text-decoration: none; transition: color var(--nc-transition-general-sm), background-color var(--nc-transition-general-sm) }
   a:hover { text-decoration: underline; text-decoration-color: var(--accent); background: var(--accent-bg) }
   a:focus-visible { outline: var(--nc-focus-width) solid var(--nc-focus-ring); outline-offset: var(--nc-focus-offset); border-radius: 2px }
 
@@ -124,7 +124,7 @@
   @media (max-width: 600px) { .field-row { grid-template-columns: 1fr } .revise-bar button { width: 100% } .tab-bar { flex-wrap: wrap } .tab-actions { width: 100%; margin-left: 0; padding: 8px 0 } .tab-actions button { flex: 1 } }
 
 </style>
-<link rel="stylesheet" href="shared/components.css?v=20261013-dismiss" />
+<link rel="stylesheet" href="shared/components.css?v=20261013-transitions" />
 <link rel="stylesheet" href="shared/layout.css">
 </head>
 <body>

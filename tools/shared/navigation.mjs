@@ -89,6 +89,9 @@ if (header) {
   const setOpen = (value, restoreFocus = false) => {
     open = value && !large.matches;
     header.classList.toggle('nextchapter-header--open', open);
+    // Closed surfaces stop accepting focus while their exit transition runs.
+    nav.inert = small.matches && !open;
+    accountLinks.inert = !small.matches && !large.matches && !open;
     menu.setAttribute('aria-expanded', String(open));
     menu.setAttribute('aria-controls', small.matches ? nav.id : accountLinks.id);
     menu.setAttribute('aria-label', `${open ? 'Close' : 'Open'} ${small.matches ? 'main navigation' : 'account and About links'}`);

@@ -3,6 +3,9 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
+  /* Standard UI transitions: controls/disclosures and larger surfaces. */
+  --nc-transition-general-sm: 150ms ease-in-out;
+  --nc-transition-general-md: 300ms ease-in-out;
   --nc-primary-200: #F8E1B6;
   --nc-primary-300: #F1CC88;
   --nc-primary-400: #E5AE54;
@@ -123,6 +126,13 @@
   --nc-radius-panel: 10px;
   --nc-focus-width: 2px;
   --nc-focus-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --nc-transition-general-sm: 0ms ease-in-out;
+    --nc-transition-general-md: 0ms ease-in-out;
+  }
 }
 
 /* Repeat semantics on the theme element so references resolve in that mode. */
