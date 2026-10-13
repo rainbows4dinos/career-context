@@ -9,7 +9,7 @@ import { errorMessage, parseRoute, readDetails } from './view-model.js';
 import { validateStatus, validateHttpUrl } from './model.js';
 import { createStatusSaver } from './status-save.js';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
-import { boardView, button, editorView, historyView, messageView, setProspectStatusBadge } from './ui.js?v=20261013-board-toolbar';
+import { boardView, button, editorView, historyView, messageView, setProspectStatusBadge } from './ui.js?v=20261013-board-search';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
 import { mountIngestion } from './ingestion-ui.js?v=20261013-statuses';
 
@@ -35,11 +35,14 @@ export async function startRadar(client) {
   let mounted = false;
   /** @type {(()=>void)|null} */
   let boardCleanup = null;
+  /** @type {import('./ui.js').BoardState} */
+  let boardState = { query: '', doneOpen: false, scrollLeft: 0, scrollTop: {} };
 
   const clear = () => {
     boardCleanup?.(); boardCleanup = null;
     epoch++; dirty = false; mounted = false; activeHash = '';
     workspace.replaceChildren();
+    boardState = { query: '', doneOpen: false, scrollLeft: 0, scrollTop: {} };
   };
   /** @param {import('@supabase/supabase-js').Session|null} session */
   function acceptSession(session) {
@@ -93,23 +96,14 @@ export async function startRadar(client) {
       if (route.kind === 'board') {
         let cards = await data.listProspects();
         const canMove = () => current() && !!userId && !pending;
-        let appliedExpanded = false, doneOpen = false;
+        /** @type {ReturnType<typeof import('./ui.js').boardView>|undefined} */
+        let boardViewController;
         const renderBoard = () => {
           if (!current()) return;
-          const appliedToggle = workspace.querySelector('.column-toggle');
-          if (appliedToggle) appliedExpanded = appliedToggle.getAttribute('aria-expanded') === 'true';
-          const done = workspace.querySelector('.column-done');
-          if (done instanceof window.HTMLDetailsElement) doneOpen = done.open;
-          const previousBoard = workspace.querySelector('.board');
-          const scrollLeft = previousBoard?.scrollLeft ?? 0;
-          const focused = document.activeElement instanceof Element ? document.activeElement.closest('[data-prospect-id]')?.getAttribute('data-prospect-id') : null;
-          boardCleanup?.();
-          boardCleanup = boardView(workspace, cards, () => { if (canMove()) void renderRoute(); }, { canMove, move, appliedExpanded, doneOpen });
-          const board = workspace.querySelector('.board');
-          if (board) board.scrollLeft = scrollLeft;
-          if (focused) {
-            const card = /** @type {HTMLElement|null} */ (workspace.querySelector(`[data-prospect-id="${focused}"]`));
-            (card ?? workspace.querySelector('.board'))?.focus();
+          if (boardViewController) boardViewController.update(cards);
+          else {
+            boardViewController = boardView(workspace, cards, () => { if (canMove()) void renderRoute(); }, { canMove, move, state: boardState });
+            boardCleanup = () => boardViewController?.dispose();
           }
         };
         /** @param {import('./data.js').ProspectCard} card @param {import('./model.js').ProspectStatus} status */
@@ -123,7 +117,7 @@ export async function startRadar(client) {
             const saved = await saving;
             if (current()) {
               cards = cards.map(item => item.id === saved.id ? { ...item, ...saved } : item);
-              renderBoard(); showToast({ message: 'Status saved.', variant: 'success' });
+              renderBoard(); boardViewController?.revealCard(saved.id); showToast({ message: 'Status saved.', variant: 'success' });
             }
           } catch (error) {
             if (!current()) return;

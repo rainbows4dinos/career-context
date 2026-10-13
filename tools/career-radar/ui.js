@@ -1,11 +1,12 @@
 import { gravityIcon } from '../shared/icons.mjs';
 import { bindFieldValidation } from '../shared/fields.mjs';
 import { setAlert } from '../shared/status.mjs';
-import { APPLIED_CARD_LIMIT, formatAppliedDate, groupCards, statusLabel, visibleCards } from './view-model.js';
+import { BOARD_COLUMNS, formatAppliedDate, searchBoardGroups, statusLabel } from './view-model.js';
 import { SELECTABLE_STATUSES, WORK_ARRANGEMENTS, validateHttpUrl } from './model.js';
 import { createHandoff, HANDOFF_TTL } from '../shared/resume-handoff.mjs';
 import { STATUS_BADGE_TONES } from './prospect-status.js';
-import { mountBoardDrag } from './kanban.js';
+// @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
+import { mountBoardDrag } from './kanban.js?v=20261013-board-search';
 
 /** @param {HTMLElement} element @param {import('./model.js').ProspectStatus} status */
 export function setProspectStatusBadge(element, status) {
@@ -46,11 +47,15 @@ export function messageView(root, message, retry) {
   if (retry) panel.append(button('Try again', retry, 'secondary nc-button nc-button--tertiary nc-button--lg'));
   root.replaceChildren(panel);
 }
+/** @typedef {{query:string, doneOpen:boolean, scrollLeft:number, scrollTop:Record<string,number>}} BoardState */
 /** @param {HTMLElement} root @param {import('./data.js').ProspectCard[]} cards @param {() => void} refresh
- * @param {Partial<import('./kanban.js').MoveOptions> & {appliedExpanded?:boolean, doneOpen?:boolean}} [options] */
+ * @param {Partial<import('./kanban.js').MoveOptions> & {state?:BoardState}} [options] */
 export function boardView(root, cards, refresh, options = {}) {
+  const state = options.state ?? { query: '', doneOpen: false, scrollLeft: 0, scrollTop: {} };
+  const controller = new AbortController();
+  const listenerOptions = { signal: controller.signal };
   const heading = el('div', '', 'board-heading');
-  heading.append(el('h2', `Prospects (${cards.length})`));
+  const title = el('h2'); heading.append(title);
   const toolbar = el('div', '', 'board-toolbar');
   toolbar.setAttribute('role', 'group'); toolbar.setAttribute('aria-label', 'Board actions');
   const add = link('Add Prospect', '#/prospects/new');
@@ -58,30 +63,67 @@ export function boardView(root, cards, refresh, options = {}) {
   add.prepend(gravityIcon('plus', { size: 12 }));
   const reload = button('Refresh', refresh, 'nc-button nc-button--tertiary nc-button--sm');
   reload.prepend(gravityIcon('arrow-rotate-left', { size: 12 }));
-  toolbar.append(add, reload); heading.append(toolbar);
-  const hint = el('p', cards.length ? 'Open a card to edit it. Drag cards between columns on desktop to change status. Expand Done to see completed prospects.' : 'No prospects yet. Add a company and role you want to keep track of.', cards.length ? 'nc-visually-hidden' : 'muted');
+  const search = el('div', '', 'board-search'); search.setAttribute('role', 'search');
+  const label = el('label', 'Search prospects', 'nc-visually-hidden'); label.htmlFor = 'board-search';
+  const input = el('input', '', 'nc-input'); input.id = 'board-search'; input.type = 'search';
+  input.placeholder = 'Search prospects'; input.value = state.query;
+  const clear = button('Clear search', () => { input.value = ''; state.query = ''; update(loadedCards); input.focus(); }, 'nc-button nc-button--tertiary nc-button--sm');
+  search.append(label, input, clear);
+  toolbar.append(add, reload, search); heading.append(toolbar);
+  const results = el('p', '', 'board-search-results muted'); heading.append(results);
+  const hint = el('p', '', 'nc-visually-hidden');
   hint.id = 'board-instructions';
   const board = el('div', '', 'board');
   board.tabIndex = 0;
   board.setAttribute('role', 'region'); board.setAttribute('aria-label', 'Prospects by lifecycle');
   board.setAttribute('aria-describedby', hint.id);
-  for (const group of groupCards(cards)) {
+  const columns = BOARD_COLUMNS.map(group => {
     const done = group.id === 'done';
     const column = done ? el('details', '', 'column column-done') : el('section', '', 'column');
     column.dataset.columnId = group.id;
-    if (column instanceof window.HTMLDetailsElement) column.open = options.doneOpen ?? false;
+    if (column instanceof window.HTMLDetailsElement) column.open = state.doneOpen;
     const title = el('h3', `${group.label} `);
-    title.append(el('span', String(group.cards.length), 'count'));
+    const count = el('span', '', 'count'); title.append(count);
     if (done) {
       const summary = el('summary'); summary.append(title); column.append(summary);
     } else {
       column.append(title);
     }
-    if (!group.cards.length) column.append(el('p', 'No prospects', 'empty-column'));
-    const list = el('div'); list.id = `${group.id}-cards`;
-    let expanded = options.appliedExpanded ?? false;
-    function renderCards() {
-      list.replaceChildren(...visibleCards(group, expanded).map(card => {
+    const list = el('div', '', 'column-cards'); list.id = `${group.id}-cards`;
+    list.tabIndex = 0; list.setAttribute('role', 'region'); list.setAttribute('aria-label', `${group.label} prospects`);
+    column.append(list); board.append(column);
+    return { id: group.id, column, count, list };
+  });
+  root.replaceChildren(heading, hint, board);
+  let loadedCards = cards;
+  let rendered = false;
+  let disposeDrag = () => {};
+  function saveState() {
+    state.scrollLeft = board.scrollLeft;
+    for (const { id, column, list } of columns) {
+      state.scrollTop[id] = list.scrollTop;
+      if (column instanceof window.HTMLDetailsElement) state.doneOpen = column.open;
+    }
+  }
+  /** Update results only: toolbar/input, column headers and scroll containers stay mounted.
+   * @param {import('./data.js').ProspectCard[]} nextCards */
+  function update(nextCards) {
+    if (rendered) saveState();
+    loadedCards = nextCards;
+    const focused = document.activeElement instanceof Element ? document.activeElement.closest('[data-prospect-id]')?.getAttribute('data-prospect-id') : null;
+    disposeDrag();
+    const groups = searchBoardGroups(loadedCards, state.query);
+    const searching = !!state.query.trim();
+    const matches = groups.reduce((sum, group) => sum + group.cards.length, 0);
+    title.textContent = `Prospects (${loadedCards.length})`;
+    clear.hidden = !input.value;
+    results.hidden = !searching && !!loadedCards.length;
+    results.textContent = searching ? matches ? `${matches} of ${loadedCards.length} prospects match.` : 'No prospects match your search. Clear search to show all prospects.' : 'No prospects yet. Add a company and role you want to keep track of.';
+    hint.textContent = 'Open a card to edit it. Drag cards between columns on desktop to change status. Expand Done to see completed prospects.';
+    for (const group of groups) {
+      const { count, list } = columns.find(column => column.id === group.id) ?? columns[0];
+      count.textContent = searching ? `${group.cards.length} of ${group.total}` : String(group.total);
+      list.replaceChildren(...group.cards.map(card => {
         const node = link('', `#/prospects/${card.id}`); node.className = 'prospect-card';
         node.dataset.prospectId = card.id;
         node.append(el('strong', card.company), el('span', card.title));
@@ -93,23 +135,29 @@ export function boardView(root, cards, refresh, options = {}) {
         }
         return node;
       }));
+      if (!group.cards.length) list.append(el('p', searching ? 'No matching prospects' : 'No prospects', 'empty-column'));
+      list.scrollTop = state.scrollTop[group.id] ?? 0;
     }
-    renderCards(); column.append(list);
-    if (group.id === 'applied' && group.cards.length > APPLIED_CARD_LIMIT) {
-      const toggle = button(expanded ? 'Show fewer' : `Show all ${group.cards.length}`, () => {
-        expanded = !expanded;
-        renderCards();
-        toggle.textContent = expanded ? 'Show fewer' : `Show all ${group.cards.length}`;
-        toggle.setAttribute('aria-expanded', String(expanded));
-      }, 'secondary column-toggle');
-      toggle.setAttribute('aria-expanded', String(expanded)); toggle.setAttribute('aria-controls', list.id);
-      column.append(toggle);
-    }
-    board.append(column);
+    board.scrollLeft = state.scrollLeft;
+    if (options.move) disposeDrag = mountBoardDrag(board, loadedCards, { move: options.move, canMove: options.canMove ?? (() => true) });
+    if (focused) (/** @type {HTMLElement|null} */ (board.querySelector(`[data-prospect-id="${focused}"]`)) ?? board).focus({ preventScroll: true });
+    rendered = true;
   }
-  root.replaceChildren(heading, hint);
-  root.append(board);
-  return options.move ? mountBoardDrag(board, cards, { move: options.move, canMove: options.canMove ?? (() => true) }) : () => {};
+  input.addEventListener('input', () => { state.query = input.value; update(loadedCards); }, listenerOptions);
+  update(cards);
+  return {
+    update,
+    /** Reveal a saved move only when it still matches the current search.
+     * @param {string} id */
+    revealCard(id) {
+      const card = board.querySelector(`[data-prospect-id="${id}"]`);
+      if (!card) return;
+      const column = card.closest('.column');
+      if (column instanceof window.HTMLDetailsElement) column.open = true;
+      card.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    },
+    dispose: () => { saveState(); controller.abort(); disposeDrag(); }
+  };
 }
 /** @param {string} name @param {string} label @param {string} value @param {string} [type] */
 function field(name, label, value, type = 'text') {

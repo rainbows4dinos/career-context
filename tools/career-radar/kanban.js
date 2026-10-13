@@ -40,9 +40,6 @@ export function mountBoardDrag(board, cards, options) {
     if (!desktop.matches) { clearDrag(); closeChooser(); }
   }
   configure(); desktop.addEventListener('change', configure, listenerOptions);
-  // Applied's Show all/Show fewer replaces its links without remounting the board.
-  const observer = new window.MutationObserver(configure);
-  observer.observe(board, { childList: true, subtree: true });
 
   /** @param {Card} card @param {HTMLElement} source @param {HTMLElement} destination
    * @param {readonly import('./model.js').ProspectStatus[]} statuses */
@@ -119,6 +116,9 @@ export function mountBoardDrag(board, cards, options) {
     event.preventDefault(); if (event.dataTransfer) event.dataTransfer.dropEffect = valid ? 'move' : 'none';
     for (const other of board.querySelectorAll('.column')) other.classList.toggle('column--drop-over', other === column && !!valid);
   }, listenerOptions);
+  board.addEventListener('dragenter', event => {
+    if (dragging && options.canMove() && event.target instanceof Element && event.target.closest('.column')) event.preventDefault();
+  }, listenerOptions);
   board.addEventListener('dragleave', event => {
     if (event.target instanceof Element) {
       const column = event.target.closest('.column');
@@ -142,5 +142,5 @@ export function mountBoardDrag(board, cards, options) {
   board.addEventListener('click', event => {
     if (suppressClick) { event.preventDefault(); event.stopPropagation(); suppressClick = false; }
   }, { ...listenerOptions, capture: true });
-  return () => { observer.disconnect(); controller.abort(); closeChooser(false); clearDrag(); window.clearTimeout(clickTimer); };
+  return () => { controller.abort(); closeChooser(false); clearDrag(); window.clearTimeout(clickTimer); };
 }

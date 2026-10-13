@@ -48,6 +48,11 @@ button:disabled { opacity:.5; cursor:wait }
 .board-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:var(--nc-space-3) }
 .board-toolbar .nc-button { text-decoration:none }
 .board-toolbar .nc-button--sm { padding-block:0 }
+.board-search { display:flex; align-items:center; gap:var(--nc-space-2); flex:1 1 240px; min-width:0; max-width:420px; margin-left:auto }
+.board-search .nc-input { height:28px; padding-block:0; border-radius:9999px; font-size:var(--nc-type-ui-button-small-size); line-height:var(--nc-type-ui-button-small-line-height) }
+.board-search .nc-button { flex-shrink:0 }
+.board-search-results { margin:0 }
+.column-cards:focus-visible { outline:var(--nc-focus-width) solid var(--nc-focus-ring); outline-offset:var(--nc-focus-offset) }
 .board { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px; align-items:start }
 .column { min-width:0; background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:12px }
 .column h3 { font:500 14px var(--sans); display:flex; justify-content:space-between; margin-bottom:1rem }
@@ -68,7 +73,6 @@ button:disabled { opacity:.5; cursor:wait }
 .column-done[open] summary { margin-bottom:1rem }
 .prospect-card strong { color:var(--muted) }
 .count { color:var(--muted) }
-.column-toggle { width:100%; padding:8px 12px; font-size:13px }
 .prospect-card { display:block; padding:12px; margin-bottom:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); text-decoration:none; overflow-wrap:anywhere }
 .prospect-card:hover { text-decoration:none }
 .prospect-card strong { display:block; font-weight:500; color:var(--accent) }
@@ -106,6 +110,23 @@ details { margin:1rem 0 } summary { cursor:pointer; color:var(--muted); margin-b
 time { display:block; font-size:13px; color:var(--muted) }
 @media(max-width:1000px) { .board { grid-template-columns:repeat(4,200px) } }
 @media(max-width:600px) { .field-grid { grid-template-columns:1fr } .panel { padding:1rem } .board { grid-template-columns:repeat(4,82vw) } nav { gap:.75rem } }
+@media(max-width:899px) { .board-search { flex-basis:100%; max-width:none; margin-left:0 } }
+/* Desktop board occupies remaining page space; short/mobile viewports retain document scrolling. */
+@media(min-width:900px) and (min-height:600px) {
+  body:has(#workspace:not([hidden]) .board) { height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden }
+  body:has(#workspace:not([hidden]) .board) > .nextchapter-header { flex-shrink:0; margin-bottom:0 }
+  .shell:has(#workspace:not([hidden]) .board) { flex:1; min-height:0; display:flex; flex-direction:column; padding-bottom:var(--nc-space-4) }
+  .shell:has(.board) #tracker-heading { flex-shrink:0 }
+  .shell:has(.board) #notice { flex-shrink:0 }
+  #workspace:has(.board) { display:flex; flex-direction:column; flex:1; min-height:0; min-width:0 }
+  .board-heading { flex-shrink:0 }
+  .board { flex:1; min-height:0; align-items:stretch; overflow-y:hidden }
+  .column { display:flex; flex-direction:column; min-height:0 }
+  .column > h3, .column > summary { flex-shrink:0 }
+  .column-cards { flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; scrollbar-gutter:stable; overscroll-behavior-y:contain }
+  .column-done::details-content { display:flex; flex-direction:column; flex:1; min-height:0 }
+  .column-done:not([open])::details-content { display:none }
+}
 
 /* Application layout remains local; visual field/status contracts are shared. */
 .editor .nc-textarea { min-height:120px }

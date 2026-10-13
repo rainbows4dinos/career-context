@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRoute, groupCards, visibleCards, formatAppliedDate, readDetails, errorMessage } from '../view-model.js';
+import { parseRoute, groupCards, searchBoardGroups, formatAppliedDate, readDetails, errorMessage } from '../view-model.js';
 import { STATUSES } from '../model.js';
 
 const id = '11111111-1111-4111-8111-111111111111';
@@ -90,31 +90,42 @@ test('Applied prioritizes real application dates, uses discovery/creation for un
   assert.equal(records[2].applied_on, null);
   assert.ok(records.every(card => card.updated_at === created && card.status === 'applied'));
 });
-test('Applied defaults to ten recent cards, expands to all 31, and collapses without losing records', () => {
+test('all Applied records remain available beyond the former ten-card limit', () => {
   const records = Array.from({ length: 31 }, (_, index) => Object.freeze({
-    id: String(index), status: 'applied', applied_on: `2026-08-${String(index + 1).padStart(2, '0')}`,
+    id: String(index), company: 'Example', title: 'Designer', status: 'applied', applied_on: `2026-08-${String(index + 1).padStart(2, '0')}`,
     created_at: '2026-10-06T12:00:00Z', updated_at: '2026-10-06T12:00:00.123456+00:00'
   }));
-  const applied = groupCards(records).find(group => group.id === 'applied');
-  const preview = visibleCards(applied);
-  assert.equal(preview.length, 10);
-  assert.deepEqual(preview.map(card => card.id), ['30', '29', '28', '27', '26', '25', '24', '23', '22', '21']);
-  assert.equal(visibleCards(applied, true), applied.cards);
-  assert.equal(visibleCards(applied, true).length, 31);
-  assert.deepEqual(visibleCards(applied, false), preview);
+  const applied = searchBoardGroups(records, '').find(group => group.id === 'applied');
+  assert.equal(applied.total, 31);
   assert.equal(applied.cards.length, 31);
-  assert.equal(new Set(applied.cards.map(card => card.id)).size, 31);
+  assert.deepEqual(applied.cards.map(card => card.id), records.toReversed().map(card => card.id));
 });
-test('Applied preview handles the ten-card boundary and does not limit other lifecycle groups', () => {
-  for (const count of [0, 9, 10, 11]) {
-    const cards = Array.from({ length: count }, (_, index) => ({ id: String(index) }));
-    assert.equal(visibleCards({ id: 'applied', cards }).length, Math.min(count, 10));
-    assert.equal(visibleCards({ id: 'applied', cards }, true).length, count);
-  }
-  const cards = Array.from({ length: 31 }, (_, index) => ({ id: String(index) }));
-  for (const id of ['prospects', 'in-process', 'done']) {
-    assert.equal(visibleCards({ id, cards }), cards);
-  }
+test('search matches only company/title, trims whitespace and ignores case without changing column order', () => {
+  const records = Object.freeze([
+    Object.freeze({ id: 'a', status: 'interested', company: 'Example Labs', title: 'Engineer', notes: 'design' }),
+    Object.freeze({ id: 'b', status: 'prospect', company: 'Other', title: 'Product Designer' }),
+    Object.freeze({ id: 'c', status: 'prospect', company: 'Design Studio', title: 'Director' }),
+    Object.freeze({ id: 'd', status: 'rejected', company: 'Other', title: 'Engineer', job_description: 'design' })
+  ]);
+  const groups = searchBoardGroups(records, '  DeSiGn  ');
+  assert.equal(groups.length, 4);
+  assert.deepEqual(groups.map(group => [group.cards.length, group.total]), [[2, 3], [0, 0], [0, 0], [0, 1]]);
+  assert.deepEqual(groups[0].cards.map(card => card.id), ['b', 'c']);
+  assert.equal(groups[0].cards[0], records[1]);
+  assert.equal(searchBoardGroups(records, 'labs')[0].cards[0], records[0]);
+  for (const query of ['', '   ']) assert.deepEqual(searchBoardGroups(records, query).flatMap(group => group.cards), [...records]);
+  assert.ok(searchBoardGroups(records, 'no match').every(group => group.cards.length === 0));
+});
+test('filtered Applied results retain the central date sort and full column totals', () => {
+  const records = [
+    { id: 'old', company: 'Sample', title: 'Designer', applied_on: '2026-10-01' },
+    { id: 'other', company: 'Other', title: 'Engineer', applied_on: '2026-10-13' },
+    { id: 'new', company: 'Sample', title: 'Designer', applied_on: '2026-10-12' }
+  ].map(card => Object.freeze({ ...card, status: 'applied', created_at: '2026-10-01T00:00:00Z' }));
+  const group = searchBoardGroups(records, 'sample')[1];
+  assert.equal(group.total, 3);
+  assert.deepEqual(group.cards.map(card => card.id), ['new', 'old']);
+  assert.deepEqual(records.map(card => card.id), ['old', 'other', 'new']);
 });
 test('details form clears optional core fields without touching status, assessments or connections', () => {
   const form = new FormData();

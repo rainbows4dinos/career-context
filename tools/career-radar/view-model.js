@@ -19,8 +19,6 @@ export function resolveBoardDrop(status, destination) {
   return column.dropStatus ? { kind: 'default', status: column.dropStatus } : { kind: 'choose', statuses: column.statuses };
 }
 
-export const APPLIED_CARD_LIMIT = 10;
-
 /** Known application dates first; undated imports use discovery/creation recency.
  * Dates are ordering hints only, never inferred or written back.
  * @param {import('./data.js').ProspectCard} a @param {import('./data.js').ProspectCard} b
@@ -65,11 +63,14 @@ export function groupCards(cards) {
     return { ...column, cards: grouped };
   });
 }
-/** Limit presentation only; the group retains every prospect and its total count.
- * @param {{id: string, cards: import('./data.js').ProspectCard[]}} group @param {boolean} [expanded]
- */
-export function visibleCards(group, expanded = false) {
-  return group.id === 'applied' && !expanded ? group.cards.slice(0, APPLIED_CARD_LIMIT) : group.cards;
+/** Filter after central column ordering; never mutate or reorder the source data.
+ * @param {import('./data.js').ProspectCard[]} cards @param {string} query */
+export function searchBoardGroups(cards, query) {
+  const search = query.trim().toLowerCase();
+  return groupCards(cards).map(group => ({
+    ...group, total: group.cards.length,
+    cards: search ? group.cards.filter(card => card.company.toLowerCase().includes(search) || card.title.toLowerCase().includes(search)) : group.cards
+  }));
 }
 /** Only core fields belong in this form; never clear assessments/connections.
  * @param {FormData} form @returns {import('./model.js').DetailsPatch}
