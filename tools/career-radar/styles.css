@@ -25,7 +25,7 @@ h1 { font-size:32px } h2 { font-size:26px } h3 { font-size:22px }
 p { margin:.5rem 0 1rem } header p { margin:0 }
 nav,.actions,.view-heading { display:flex; flex-wrap:wrap; align-items:center; gap:1rem }
 nav { width:100% }
-a { color:var(--accent); text-underline-offset:3px } a:hover { background:var(--accent-bg) }
+a { color:var(--accent); text-decoration:none; text-underline-offset:3px } a:hover { text-decoration:underline; background:var(--accent-bg) }
 button,input,select,textarea { font:inherit; border-radius:8px }
 button { cursor:pointer; padding:10px 16px; border:1px solid var(--border); background:transparent; color:var(--text) }
 button:hover { border-color:var(--accent) }
@@ -48,7 +48,8 @@ button:disabled { opacity:.5; cursor:wait }
 .column-done summary h3 { display:inline; color:var(--muted) }
 .column-done summary .count { margin-left:.5rem }
 .column-done[open] summary { margin-bottom:1rem }
-.column-done .prospect-card strong { color:var(--muted) }
+.column-done .prospect-card:hover { text-decoration:none }
+.prospect-card strong { color:var(--muted) }
 .count { color:var(--muted) }
 .column-toggle { width:100%; padding:8px 12px; font-size:13px }
 .prospect-card { display:block; padding:12px; margin-bottom:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); text-decoration:none; overflow-wrap:anywhere }
