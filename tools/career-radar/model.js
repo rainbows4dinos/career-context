@@ -12,6 +12,8 @@ export const STATUSES = Object.freeze([
   'prospect', 'interested', 'applying', 'applied', 'recruiter', 'interviewing',
   'final', 'offer', 'passed', 'rejected', 'withdrawn', 'closed'
 ]);
+// Retain retired values for reading saved records and status history.
+export const SELECTABLE_STATUSES = Object.freeze(STATUSES.filter(status => status !== 'applying'));
 /** @type {readonly WorkArrangement[]} */
 export const WORK_ARRANGEMENTS = Object.freeze(['remote', 'hybrid', 'onsite', 'flexible']);
 

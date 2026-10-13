@@ -2,7 +2,7 @@ import { gravityIcon } from '../shared/icons.mjs';
 import { bindFieldValidation } from '../shared/fields.mjs';
 import { setAlert } from '../shared/status.mjs';
 import { APPLIED_CARD_LIMIT, formatAppliedDate, groupCards, statusLabel, visibleCards } from './view-model.js';
-import { STATUSES, WORK_ARRANGEMENTS, validateHttpUrl } from './model.js';
+import { SELECTABLE_STATUSES, WORK_ARRANGEMENTS, validateHttpUrl } from './model.js';
 import { createHandoff, HANDOFF_TTL } from '../shared/resume-handoff.mjs';
 
 /** @template {keyof HTMLElementTagNameMap} T @param {T} tag @param {string} [text] @param {string} [className] */
@@ -106,6 +106,9 @@ function selectField(name, label, options, value, unknown = false) {
   wrapper.append(caption);
   const closed = el('span', '', 'nc-select-wrap'); closed.append(select, gravityIcon('chevron-down')); wrapper.append(closed);
   if (unknown) { const option = el('option', 'Not specified'); option.value = ''; select.append(option); }
+  if (name === 'status' && value === 'applying') {
+    const current = el('option', 'Applying (retired)'); current.value = value; current.disabled = true; select.append(current);
+  }
   for (const item of options) { const option = el('option', statusLabel(item)); option.value = item; select.append(option); }
   select.value = value; return wrapper;
 }
@@ -192,7 +195,7 @@ export function editorView(root, row) {
     const section = el('section', '', 'panel editor__status'); section.append(el('h2', 'Status'));
     const statusForm = el('form', '', 'status-controls'); statusForm.id = 'status-form';
     const statusFields = el('fieldset', '', 'status-controls');
-    statusFields.append(selectField('status', 'Current status', STATUSES, row.status));
+    statusFields.append(selectField('status', 'Current status', SELECTABLE_STATUSES, row.status));
     statusForm.append(statusFields); section.append(statusForm);
     const statusFeedback = el('p', '', 'feedback nc-alert'); statusFeedback.id = 'status-feedback'; statusFeedback.setAttribute('role','status'); section.append(statusFeedback);
     section.append(el('p', 'Status saves automatically when selected. Applied date is editable under More job details.', 'muted'));

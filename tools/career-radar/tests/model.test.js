@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizePatch, validateConnections, validateStatus } from '../model.js';
+import { normalizePatch, validateConnections, validateStatus, SELECTABLE_STATUSES } from '../model.js';
 
 const connection = { id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', name: 'Alex' };
 
@@ -39,4 +39,10 @@ test('unsafe links rejected; descriptions and notes remain text', () => {
   assert.deepEqual(normalizePatch({ job_url: 'https://example.com/job', notes: '<script>plain text</script>' }), {
     job_url: 'https://example.com/job', notes: '<script>plain text</script>'
   });
+});
+
+test('Applying remains readable for legacy records but cannot be selected', () => {
+  assert.equal(validateStatus('applying'), 'applying');
+  assert.equal(SELECTABLE_STATUSES.includes('applying'), false);
+  assert.ok(SELECTABLE_STATUSES.includes('applied'));
 });

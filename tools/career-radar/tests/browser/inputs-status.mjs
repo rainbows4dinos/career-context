@@ -178,7 +178,7 @@ try {
   await evaluate(tracker, "document.querySelector('#status-form select').focus()");
   await send('Input.dispatchKeyEvent', {type:'keyDown',key:'a',code:'KeyA',text:'a',windowsVirtualKeyCode:65}, tracker.sessionId);
   await send('Input.dispatchKeyEvent', {type:'keyUp',key:'a',code:'KeyA',windowsVirtualKeyCode:65}, tracker.sessionId);
-  assert.equal(await evaluate(tracker, "document.querySelector('#status-form select').value"), 'applying');
+  assert.equal(await evaluate(tracker, "document.querySelector('#status-form select').value"), 'applied');
   await wait(tracker, "!document.querySelector('#status-form select').disabled && document.getElementById('status-feedback').textContent===''");
   await evaluate(tracker, "document.querySelector('#status-form select').value='applied';document.querySelector('#status-form select').dispatchEvent(new Event('change',{bubbles:true}))");
   await wait(tracker, "[...document.querySelectorAll('.nc-toast__message')].some(node=>node.textContent==='Status saved.')");

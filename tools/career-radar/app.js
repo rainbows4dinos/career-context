@@ -8,9 +8,9 @@ import { createRadarDataAccess, StaleProspectError } from './data.js';
 import { errorMessage, parseRoute, readDetails } from './view-model.js';
 import { validateStatus, validateHttpUrl } from './model.js';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
-import { boardView, button, editorView, historyView, messageView } from './ui.js?v=20261013-details';
+import { boardView, button, editorView, historyView, messageView } from './ui.js?v=20261013-statuses';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
-import { mountIngestion } from './ingestion-ui.js?v=20261013-details';
+import { mountIngestion } from './ingestion-ui.js?v=20261013-statuses';
 
 /** @param {import('@supabase/supabase-js').SupabaseClient<import('./database.types.js').Database>} client */
 export async function startRadar(client) {

@@ -31,11 +31,10 @@ test('hash routes work under a Pages subdirectory and reject malformed prospect 
     assert.deepEqual(parseRoute(route), { kind: 'missing' });
   }
 });
-test('board groups every canonical status exactly once into five ordered lifecycle columns', () => {
+test('board groups every canonical status exactly once into four ordered lifecycle columns', () => {
   const groups = groupCards([]);
   assert.deepEqual(groups.map(({ id, label, statuses }) => ({ id, label, statuses })), [
-    { id: 'prospects', label: 'Prospects', statuses: ['prospect', 'interested'] },
-    { id: 'applying', label: 'Applying', statuses: ['applying'] },
+    { id: 'prospects', label: 'Prospects', statuses: ['prospect', 'interested', 'applying'] },
     { id: 'applied', label: 'Applied', statuses: ['applied'] },
     { id: 'in-process', label: 'In Process', statuses: ['recruiter', 'interviewing', 'final', 'offer'] },
     { id: 'done', label: 'Done', statuses: ['passed', 'rejected', 'withdrawn', 'closed'] }
@@ -49,7 +48,7 @@ test('board groups cards without changing records or revisions and retains other
   }));
   Object.freeze(cards);
   const groups = groupCards(cards);
-  assert.deepEqual(groups.map(group => group.cards.length), [2, 1, 1, 4, 4]);
+  assert.deepEqual(groups.map(group => group.cards.length), [3, 1, 4, 4]);
   assert.equal(groups.reduce((sum, group) => sum + group.cards.length, 0), cards.length);
   for (const group of groups) {
     const expected = cards.filter(card => group.statuses.includes(card.status));
@@ -62,8 +61,8 @@ test('board groups cards without changing records or revisions and retains other
 test('board keeps empty lifecycle columns when all prospects are done', () => {
   const card = { id, status: 'rejected' };
   const groups = groupCards([card]);
-  assert.deepEqual(groups.map(group => group.cards.length), [0, 0, 0, 0, 1]);
-  assert.equal(groups[4].cards[0], card);
+  assert.deepEqual(groups.map(group => group.cards.length), [0, 0, 0, 1]);
+  assert.equal(groups[3].cards[0], card);
 });
 test('Applied prioritizes real application dates, uses discovery/creation for undated records, and breaks ties deterministically', () => {
   const created = '2026-10-06T12:00:00.123456+00:00';
@@ -113,7 +112,7 @@ test('Applied preview handles the ten-card boundary and does not limit other lif
     assert.equal(visibleCards({ id: 'applied', cards }, true).length, count);
   }
   const cards = Array.from({ length: 31 }, (_, index) => ({ id: String(index) }));
-  for (const id of ['prospects', 'applying', 'in-process', 'done']) {
+  for (const id of ['prospects', 'in-process', 'done']) {
     assert.equal(visibleCards({ id, cards }), cards);
   }
 });

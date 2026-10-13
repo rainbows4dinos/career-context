@@ -4,8 +4,7 @@ import { normalizePatch, validateId } from './model.js';
  * @type {readonly {id: string, label: string, statuses: readonly import('./model.js').ProspectStatus[]}[]}
  */
 export const BOARD_COLUMNS = [
-  { id: 'prospects', label: 'Prospects', statuses: ['prospect', 'interested'] },
-  { id: 'applying', label: 'Applying', statuses: ['applying'] },
+  { id: 'prospects', label: 'Prospects', statuses: ['prospect', 'interested', 'applying'] },
   { id: 'applied', label: 'Applied', statuses: ['applied'] },
   { id: 'in-process', label: 'In Process', statuses: ['recruiter', 'interviewing', 'final', 'offer'] },
   { id: 'done', label: 'Done', statuses: ['passed', 'rejected', 'withdrawn', 'closed'] }
