@@ -36,7 +36,7 @@ test('board groups every canonical status exactly once into four ordered lifecyc
   assert.deepEqual(groups.map(({ id, label, statuses }) => ({ id, label, statuses })), [
     { id: 'prospects', label: 'Prospects', statuses: ['prospect', 'interested', 'applying'] },
     { id: 'applied', label: 'Applied', statuses: ['applied'] },
-    { id: 'in-process', label: 'In Process', statuses: ['recruiter', 'interviewing', 'final', 'offer'] },
+    { id: 'in-process', label: 'In-Process', statuses: ['recruiter', 'interviewing', 'final', 'offer'] },
     { id: 'done', label: 'Done', statuses: ['passed', 'rejected', 'withdrawn', 'closed'] }
   ]);
   assert.deepEqual(groups.flatMap(group => group.statuses), STATUSES);
