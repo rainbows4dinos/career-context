@@ -4,6 +4,17 @@ import { setAlert } from '../shared/status.mjs';
 import { APPLIED_CARD_LIMIT, formatAppliedDate, groupCards, statusLabel, visibleCards } from './view-model.js';
 import { SELECTABLE_STATUSES, WORK_ARRANGEMENTS, validateHttpUrl } from './model.js';
 import { createHandoff, HANDOFF_TTL } from '../shared/resume-handoff.mjs';
+import { STATUS_BADGE_TONES } from './prospect-status.js';
+
+/** @param {HTMLElement} element @param {import('./model.js').ProspectStatus} status */
+export function setProspectStatusBadge(element, status) {
+  element.className = `nc-status-badge nc-status-badge--${STATUS_BADGE_TONES[status]}`;
+  element.textContent = statusLabel(status);
+}
+/** @param {import('./model.js').ProspectStatus} status */
+function statusBadge(status) {
+  const badge = el('span'); setProspectStatusBadge(badge, status); return badge;
+}
 
 /** @template {keyof HTMLElementTagNameMap} T @param {T} tag @param {string} [text] @param {string} [className] */
 export function el(tag, text = '', className = '') {
@@ -59,7 +70,7 @@ export function boardView(root, cards, refresh) {
       list.replaceChildren(...visibleCards(group, expanded).map(card => {
         const node = link('', `#/prospects/${card.id}`); node.className = 'prospect-card';
         node.append(el('strong', card.company), el('span', card.title));
-        if (group.statuses.length > 1) node.append(el('span', statusLabel(card.status), 'card-status'));
+        node.append(statusBadge(card.status));
         const appliedDate = formatAppliedDate(card.applied_on);
         if (appliedDate) {
           const time = el('time', `Applied ${appliedDate}`); time.dateTime = card.applied_on ?? '';
@@ -193,6 +204,7 @@ export function editorView(root, row) {
   form.append(fields); bindFieldValidation(form); panels.append(form);
   if (row) {
     const section = el('section', '', 'panel editor__status'); section.append(el('h2', 'Status'));
+    const currentBadge = statusBadge(row.status); currentBadge.id = 'current-status-badge'; section.append(currentBadge);
     const statusForm = el('form', '', 'status-controls'); statusForm.id = 'status-form';
     const statusFields = el('fieldset', '', 'status-controls');
     statusFields.append(selectField('status', 'Current status', SELECTABLE_STATUSES, row.status));
@@ -208,7 +220,10 @@ export function editorView(root, row) {
 export function historyView(root, events) {
   const list = el('ol', '', 'history');
   for (const event of events) {
-    const item = el('li', event.from_status ? `${statusLabel(event.from_status)} → ${statusLabel(event.to_status)}` : `Added as ${statusLabel(event.to_status)}`);
+    const item = el('li');
+    if (event.from_status) item.append(statusBadge(/** @type {import('./model.js').ProspectStatus} */ (event.from_status)), document.createTextNode(' → '));
+    else item.append(document.createTextNode('Added as '));
+    item.append(statusBadge(/** @type {import('./model.js').ProspectStatus} */ (event.to_status)));
     const time = el('time', new Date(event.recorded_at).toLocaleString()); time.dateTime = event.recorded_at; item.append(time); list.append(item);
   }
   root.replaceChildren(el('h3', 'Status history'), events.length ? list : el('p', 'No status events recorded yet.', 'muted'));

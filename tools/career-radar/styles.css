@@ -55,7 +55,8 @@ button:disabled { opacity:.5; cursor:wait }
 .prospect-card { display:block; padding:12px; margin-bottom:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); text-decoration:none; overflow-wrap:anywhere }
 .prospect-card strong { display:block; font-weight:500; color:var(--accent) }
 .prospect-card span { display:block; margin-top:4px }
-.prospect-card .card-status { display:inline-block; padding:1px 6px; margin-top:8px; border-radius:4px; background:var(--surface2); color:var(--muted); font-size:12px; font-weight:400 }
+.prospect-card .nc-status-badge { display:inline-flex; margin-top:8px }
+.editor__status > .nc-status-badge { margin-bottom:12px }
 .prospect-card small { display:block; color:var(--muted); margin-top:8px }
 .prospect-card time { margin-top:6px }
 label { display:block; font-size:13px; font-weight:400; margin-bottom:1rem }

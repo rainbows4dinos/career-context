@@ -8,7 +8,7 @@ import { createRadarDataAccess, StaleProspectError } from './data.js';
 import { errorMessage, parseRoute, readDetails } from './view-model.js';
 import { validateStatus, validateHttpUrl } from './model.js';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
-import { boardView, button, editorView, historyView, messageView } from './ui.js?v=20261013-statuses';
+import { boardView, button, editorView, historyView, messageView, setProspectStatusBadge } from './ui.js?v=20261013-badges';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
 import { mountIngestion } from './ingestion-ui.js?v=20261013-statuses';
 
@@ -172,7 +172,7 @@ export async function startRadar(client) {
             busy(true); setAlert(feedback, { message: 'Saving status…' });
             try {
               row = await data.changeStatus(row.id, status, row.updated_at);
-              if (current()) { setAlert(feedback, { message: '' }); showToast({ message: 'Status saved.', variant: 'success' }); void loadHistory(); }
+              if (current()) { setProspectStatusBadge(node('current-status-badge'), row.status); setAlert(feedback, { message: '' }); showToast({ message: 'Status saved.', variant: 'success' }); void loadHistory(); }
             } catch (error) { if (current()) { statusSelect.value = row.status; showError(error, feedback); } }
             finally {
               busy(false);

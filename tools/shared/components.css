@@ -120,6 +120,18 @@
 .nc-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 
 /* Inputs — native controls; entered text stays primary in every enabled state. */
+.nc-status-badge {
+  display:inline-flex; align-items:center; justify-content:center; height:20px;
+  padding:4px 6px; border:0; border-radius:2px; white-space:nowrap;
+  font:400 12px/12px var(--nc-font-sans); letter-spacing:var(--nc-type-letter-spacing);
+}
+.nc-status-badge--neutral { background:var(--ds-badge-neutral-bg); color:var(--ds-badge-neutral-fg) }
+.nc-status-badge--accent { background:var(--ds-badge-accent-bg); color:var(--ds-badge-accent-fg) }
+.nc-status-badge--active { background:var(--ds-badge-active-bg); color:var(--ds-badge-active-fg) }
+.nc-status-badge--positive { background:var(--ds-badge-positive-bg); color:var(--ds-badge-positive-fg) }
+.nc-status-badge--negative { background:var(--ds-badge-negative-bg); color:var(--ds-badge-negative-fg) }
+.nc-status-badge--highlight { background:var(--ds-badge-highlight-bg); color:var(--ds-badge-highlight-fg) }
+
 .nc-field { display: block; min-width: 0; }
 .nc-field__label {
   display: block; margin: 0 0 4px; padding-left: 2px; color: var(--nc-text-primary);

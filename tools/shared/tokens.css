@@ -6,6 +6,20 @@
   /* Standard UI transitions: controls/disclosures and larger surfaces. */
   --nc-transition-general-sm: 150ms ease-in-out;
   --nc-transition-general-md: 300ms ease-in-out;
+  /* Status-Badge: Figma uses the same primitive bindings in both themes.
+     The ds namespace is the requested public contract for this component. */
+  --ds-badge-neutral-bg: var(--nc-neutral-200);
+  --ds-badge-neutral-fg: var(--nc-neutral-900);
+  --ds-badge-accent-bg: var(--nc-secondary-100);
+  --ds-badge-accent-fg: var(--nc-neutral-900);
+  --ds-badge-active-bg: var(--nc-primary-200);
+  --ds-badge-active-fg: var(--nc-neutral-900);
+  --ds-badge-positive-bg: var(--nc-success-50);
+  --ds-badge-positive-fg: var(--nc-neutral-900);
+  --ds-badge-negative-bg: var(--nc-danger-50);
+  --ds-badge-negative-fg: var(--nc-neutral-900);
+  --ds-badge-highlight-bg: var(--nc-warning-50);
+  --ds-badge-highlight-fg: var(--nc-neutral-900);
   --nc-primary-200: #F8E1B6;
   --nc-primary-300: #F1CC88;
   --nc-primary-400: #E5AE54;
