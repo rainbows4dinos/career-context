@@ -6,7 +6,7 @@ Prepared October 12, 2026. Implementation baseline: `f43e811` on `main`, pushed 
 
 Read [AGENTS.md](../AGENTS.md) before editing, then inspect the current working tree. [CLAUDE.md](../CLAUDE.md) imports those instructions; it does not own a separate policy. This document records implementation state, not authorization for additional features. Continue only with the user's next requested task.
 
-nextchapter remains the product name; the repository remains `career-context`. Preserve the existing URLs and static GitHub Pages deployment. Career Radar is a coming-soon page, while Prospect Tracker is the existing authenticated tracking application at `tools/career-radar/`.
+nextchapter is the product and repository name (renamed from `career-context`; Pages is served under `/nextchapter/`). Preserve the existing URLs and static GitHub Pages deployment. Career Radar is a coming-soon page, while Prospect Tracker is the existing authenticated tracking application at `tools/career-radar/`.
 
 ## Completed implementation
 

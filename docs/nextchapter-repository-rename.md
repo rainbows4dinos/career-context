@@ -1,5 +1,7 @@
 # Repository rename readiness
 
+**Status (2026-10-12):** The repository has been renamed to `rainbows4dinos/nextchapter` and Pages serves `/nextchapter/`; the old `/career-context/` Pages path no longer resolves. The Builder's three GitHub references, AGENTS runtime URL, About link and current setup docs now use the new name. Hosted settings in steps 4–6 below still need manual verification. The assessment below is preserved as written before the rename.
+
 The product is now nextchapter; the repository remains `rainbows4dinos/career-context`. No remote, hosted project, database, or credential was changed for this task. Assessment is based on checked-in source, not hosted dashboard settings.
 
 ## Dependencies and risks

@@ -67,4 +67,4 @@ The builder fetches the five shared files above from `main` at runtime, so editi
 
 For Prospect Tracker deployment, configure GitHub repository **Variables** named `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` under **Settings → Secrets and variables → Actions**. Pages generates the public configuration during deployment. Sign in with your provisioned Supabase Auth user; the Supabase dashboard account is separate.
 
-The repository remains named `career-context`. See the [repository rename readiness assessment](docs/nextchapter-repository-rename.md) before renaming it.
+The repository was renamed from `career-context` to `nextchapter`; Pages now serves from `/nextchapter/`. See the [repository rename record](docs/nextchapter-repository-rename.md) for the cutover inventory and remaining hosted checks.
