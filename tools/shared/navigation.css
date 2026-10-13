@@ -43,7 +43,7 @@ body.light .nextchapter-header .toggle-icon-moon { opacity:1 }
   @starting-style {
     .nextchapter-header--open .nextchapter-account-links { opacity:0; transform:translateY(-4px) }
   }
-  .nextchapter-header .nextchapter-account-links .nextchapter-nav-item { padding:7px 3px; margin:0 }
+  .nextchapter-header .nextchapter-account-links .nextchapter-nav-item { padding:7px 3px; margin:0; border-radius:6px; }
   .nextchapter-header .nextchapter-account-links .nextchapter-nav-item:hover, .nextchapter-header .nextchapter-account-links .nextchapter-nav-item[aria-current="page"] { border-radius:6px; padding-left:3px; padding-right:3px; margin:0; color:var(--nc-action-secondary-fg) }
   .nextchapter-header .nextchapter-account-links .nextchapter-nav-item[aria-current="page"] { padding-left:5px; padding-right:5px }
 }

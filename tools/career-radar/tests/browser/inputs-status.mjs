@@ -179,10 +179,16 @@ try {
   await send('Input.dispatchKeyEvent', {type:'keyDown',key:'a',code:'KeyA',text:'a',windowsVirtualKeyCode:65}, tracker.sessionId);
   await send('Input.dispatchKeyEvent', {type:'keyUp',key:'a',code:'KeyA',windowsVirtualKeyCode:65}, tracker.sessionId);
   assert.equal(await evaluate(tracker, "document.querySelector('#status-form select').value"), 'applying');
-  await evaluate(tracker, "document.querySelector('#status-form select').value='applied'");
-  await evaluate(tracker, "document.getElementById('status-form').requestSubmit()");
+  await wait(tracker, "!document.querySelector('#status-form select').disabled && document.getElementById('status-feedback').textContent===''");
+  await evaluate(tracker, "document.querySelector('#status-form select').value='applied';document.querySelector('#status-form select').dispatchEvent(new Event('change',{bubbles:true}))");
   await wait(tracker, "[...document.querySelectorAll('.nc-toast__message')].some(node=>node.textContent==='Status saved.')");
+  await wait(tracker, "!document.querySelector('#status-form select').disabled");
   assert.equal(await evaluate(tracker, "document.getElementById('status-feedback').textContent"), '');
+  await fetch('http://127.0.0.1:8777/__fixture/fail-next-save', {method:'POST'});
+  await evaluate(tracker, "document.querySelector('[name=title]').value='Draft survives status failure';document.querySelector('[name=title]').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('#status-form select').value='offer';document.querySelector('#status-form select').dispatchEvent(new Event('change',{bubbles:true}))");
+  await wait(tracker, "document.getElementById('status-feedback').classList.contains('nc-alert--danger') && !document.querySelector('#status-form select').disabled");
+  assert.equal(await evaluate(tracker, "document.querySelector('#status-form select').value"), 'applied');
+  assert.equal(await evaluate(tracker, "document.querySelector('[name=title]').value"), 'Draft survives status failure');
   assert.equal(await evaluate(tracker, "getComputedStyle(document.querySelector('.nc-select-wrap > svg')).pointerEvents"), 'none');
   console.log('PASS Tracker auth/create/edit/save/error draft recovery/native select/Applied/status Toasts; invalid submissions do not write');
 } finally {

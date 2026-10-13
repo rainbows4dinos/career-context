@@ -7,8 +7,10 @@ import { bindFieldValidation, setFieldError } from '../shared/fields.mjs';
 import { createRadarDataAccess, StaleProspectError } from './data.js';
 import { errorMessage, parseRoute, readDetails } from './view-model.js';
 import { validateStatus, validateHttpUrl } from './model.js';
-import { boardView, button, editorView, historyView, messageView } from './ui.js';
-import { mountIngestion } from './ingestion-ui.js';
+// @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
+import { boardView, button, editorView, historyView, messageView } from './ui.js?v=20261013-details';
+// @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
+import { mountIngestion } from './ingestion-ui.js?v=20261013-details';
 
 /** @param {import('@supabase/supabase-js').SupabaseClient<import('./database.types.js').Database>} client */
 export async function startRadar(client) {
@@ -43,6 +45,7 @@ export async function startRadar(client) {
     userId = nextId;
     if (nextId) lastUserId = nextId;
     login.hidden = !!nextId; workspace.hidden = !nextId;
+    if (!nextId) node('tracker-heading').hidden = false;
     addLink.hidden = !nextId;
     if (nextId) returnAfterLogin();
     if (nextId && (!mounted || activeHash !== (window.location.hash || '#/board'))) void renderRoute();
@@ -77,6 +80,7 @@ export async function startRadar(client) {
     const owner = userId;
     activeHash = window.location.hash || '#/board';
     const route = parseRoute(activeHash);
+    node('tracker-heading').hidden = route.kind === 'detail';
     dirty = false; mounted = true;
     messageView(workspace, route.kind === 'board' ? 'Loading prospects…' : 'Loading prospect…');
     const current = () => epoch === thisEpoch && lastUserId === owner;
@@ -90,6 +94,7 @@ export async function startRadar(client) {
         if (route.kind === 'detail' && !row) { messageView(workspace, 'Prospect unavailable. It may no longer be accessible to this account.'); return; }
         const createId = crypto.randomUUID();
         let attemptedCreate = false;
+        /** @type {HTMLFormElement} */
         let form = editorView(workspace, row);
         const ingestion = route.kind === 'new' ? mountIngestion(form, {
           client, data, createId, current, busy,
@@ -155,18 +160,24 @@ export async function startRadar(client) {
         const bindStatus = () => {
           if (!row) return;
           const statusForm = /** @type {HTMLFormElement} */ (node('status-form'));
+          const statusSelect = /** @type {HTMLSelectElement} */ (statusForm.elements.namedItem('status'));
+          statusSelect.addEventListener('change', () => statusForm.requestSubmit());
           statusForm.addEventListener('submit', async event => {
             event.preventDefault();
             if (!row || pending || !userId) return;
             const feedback = node('status-feedback'); feedback.classList.remove('error');
             const status = validateStatus(new FormData(statusForm).get('status'));
             if (status === row.status) { setAlert(feedback, { message: 'Already at this status.' }); return; }
+            const restoreFocus = document.activeElement === statusSelect;
             busy(true); setAlert(feedback, { message: 'Saving status…' });
             try {
               row = await data.changeStatus(row.id, status, row.updated_at);
               if (current()) { setAlert(feedback, { message: '' }); showToast({ message: 'Status saved.', variant: 'success' }); void loadHistory(); }
-            } catch (error) { if (current()) showError(error, feedback); }
-            finally { busy(false); }
+            } catch (error) { if (current()) { statusSelect.value = row.status; showError(error, feedback); } }
+            finally {
+              busy(false);
+              if (current() && restoreFocus && statusSelect.isConnected && document.activeElement === document.body) statusSelect.focus();
+            }
           });
         };
         bindDetails(); bindStatus();

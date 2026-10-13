@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../shared/tokens.css?v=20261013-transitions">
   <link rel="stylesheet" href="../shared/icons.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20261013-details">
   <link rel="stylesheet" href="../shared/navigation.css?v=20261013-transitions">
   <link rel="stylesheet" href="../shared/components.css?v=20261013-transitions">
   <script type="importmap">
@@ -21,7 +21,7 @@
 <body>
   <header id="nextchapter-header" data-app="tracker"></header>
   <div class="shell nc-content">
-    <header>
+    <header id="tracker-heading">
       <div><h1>Prospect Tracker</h1><p>Your prospects, from first interest to a decision.</p></div>
       <nav aria-label="Prospect Tracker"><a href="#/board">Board</a><a href="#/prospects/new" id="add-link" hidden>Add prospect</a></nav>
     </header>
@@ -39,6 +39,6 @@
     <main id="workspace" tabindex="-1"><p>Connecting to Prospect Tracker…</p></main>
     <noscript><p>Prospect Tracker needs JavaScript to sign in and save prospects.</p></noscript>
   </div>
-  <script type="module" src="bootstrap.js?v=20261013-transitions"></script>
+  <script type="module" src="bootstrap.js?v=20261013-details"></script>
 </body>
 </html>

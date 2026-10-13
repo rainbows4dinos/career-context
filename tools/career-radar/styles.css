@@ -65,6 +65,18 @@ fieldset { padding:0; border:0; margin:0; min-width:0 }
 .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 16px }
 details { margin:1rem 0 } summary { cursor:pointer; color:var(--muted); margin-bottom:1rem }
 .editor { max-width:860px; margin:auto }
+.editor__back { display:inline-block; margin-block:var(--nc-space-4) }
+.editor--detail .editor__heading { font:var(--nc-type-h1-weight) var(--nc-type-h1-size)/var(--nc-type-h1-line-height) var(--nc-type-h1-family); margin-bottom:var(--nc-space-4); overflow-wrap:anywhere }
+.editor__panels > * { min-width:0 }
+.editor__status { align-self:start }
+.editor__status > h2 { font-size:22px }
+.job-url-control { position:relative }
+.job-url-control--linked .nc-input { padding-right:76px }
+.job-url-control__open { position:absolute; right:12px; top:8px; line-height:24px; font-weight:500 }
+@media(min-width:1200px) {
+  .editor--detail { max-width:none }
+  .editor--detail .editor__panels { display:grid; grid-template-columns:minmax(0,2fr) minmax(280px,1fr); gap:24px }
+}
 .status-controls { display:flex; gap:12px; align-items:end; flex-wrap:wrap }
 .status-controls .nc-field { flex:1; margin:0; min-width:170px }
 .history { padding-left:1.25rem } .history li { margin-bottom:.75rem }

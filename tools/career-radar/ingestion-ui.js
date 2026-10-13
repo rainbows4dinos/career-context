@@ -69,6 +69,7 @@ export function mountIngestion(form, options) {
         const control = /** @type {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|null} */ (form.elements.namedItem(name));
         if (!control) continue;
         control.value = String(preview.draft[/** @type {keyof typeof preview.draft} */ (name)] ?? '');
+        if (name === 'job_url') control.dispatchEvent(new window.Event('input', { bubbles: true }));
         control.closest('.nc-field')?.querySelector('.field-origin')?.remove();
         const origin = el('small', preview.field_sources[name] ? (name === 'discovered_on' ? 'First captured in Prospect Tracker (UTC); editable' : `Extracted from ${PROVIDER_NAMES[preview.identity.provider]}`) : 'Not supplied; complete if known', 'field-origin nc-field__helper');
         origin.id = `${control.id}-origin`; control.closest('.nc-field')?.append(origin);

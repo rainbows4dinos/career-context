@@ -111,16 +111,28 @@ function selectField(name, label, options, value, unknown = false) {
 }
 /** @param {HTMLElement} root @param {import('./model.js').Prospect|null} row */
 export function editorView(root, row) {
-  const editor = el('div', '', 'editor');
-  editor.append(link('← Back to board', '#/board'), el('h2', row ? row.company : 'Add prospect'));
-  if (row?.job_url) {
-    try { validateHttpUrl(row.job_url); const jobLink = link('Open job posting ↗', row.job_url); jobLink.target = '_blank'; jobLink.rel = 'noopener noreferrer'; editor.append(jobLink); } catch { /* unsafe stored link stays editable as text */ }
-  }
+  const editor = el('div', '', row ? 'editor editor--detail' : 'editor');
+  const back = link('← Back to board', '#/board'); back.className = 'editor__back';
+  const heading = el(row ? 'h1' : 'h2', row ? row.company : 'Add prospect', 'editor__heading');
+  editor.append(back, heading);
+  const panels = el('div', '', 'editor__panels'); editor.append(panels);
   const form = el('form', '', 'panel'); form.id = 'prospect-form';
   const fields = el('fieldset');
   const grid = el('div', '', 'field-grid');
   grid.append(field('company', 'Company *', row?.company ?? ''), field('title', 'Role / title *', row?.title ?? ''));
-  fields.append(grid, field('job_url', 'Job URL', row?.job_url ?? '', 'url'), field('job_description', 'Job description', row?.job_description ?? '', 'textarea'));
+  const jobUrl = field('job_url', 'Job URL', row?.job_url ?? '', 'url');
+  const urlInput = /** @type {HTMLInputElement} */ (jobUrl.querySelector('input'));
+  const urlControl = el('div', '', 'job-url-control');
+  const open = link('Open', ''); open.className = 'job-url-control__open'; open.target = '_blank'; open.rel = 'noopener noreferrer'; open.setAttribute('aria-label', 'Open job posting');
+  const updateOpen = () => {
+    const value = urlInput.value.trim();
+    try { if (!value) throw new Error('Empty URL'); validateHttpUrl(value); open.href = value; open.hidden = false; }
+    catch { open.hidden = true; open.removeAttribute('href'); }
+    urlControl.classList.toggle('job-url-control--linked', !open.hidden);
+  };
+  urlControl.append(urlInput, open); jobUrl.append(urlControl);
+  urlInput.addEventListener('input', updateOpen); urlInput.addEventListener('change', updateOpen); updateOpen();
+  fields.append(grid, jobUrl, field('job_description', 'Job description', row?.job_description ?? '', 'textarea'));
   const details = el('details'); details.append(el('summary', 'More job details'));
   const extra = el('div', '', 'field-grid');
   for (const [name, label] of /** @type {const} */ ([['source','Source'], ['location','Location'], ['employment_type','Employment type'], ['compensation_text','Compensation range / type']])) {
@@ -175,17 +187,16 @@ export function editorView(root, row) {
     const actions = el('div', '', 'actions'); actions.append(save, send);
     fields.append(actions, feedback);
   }
-  form.append(fields); bindFieldValidation(form); editor.append(form);
+  form.append(fields); bindFieldValidation(form); panels.append(form);
   if (row) {
-    const section = el('section', '', 'panel'); section.append(el('h3', 'Status'));
+    const section = el('section', '', 'panel editor__status'); section.append(el('h2', 'Status'));
     const statusForm = el('form', '', 'status-controls'); statusForm.id = 'status-form';
     const statusFields = el('fieldset', '', 'status-controls');
-    const change = el('button', 'Change status', 'primary nc-button nc-button--primary nc-button--lg'); change.type = 'submit';
-    statusFields.append(selectField('status', 'Current status', STATUSES, row.status), change);
+    statusFields.append(selectField('status', 'Current status', STATUSES, row.status));
     statusForm.append(statusFields); section.append(statusForm);
     const statusFeedback = el('p', '', 'feedback nc-alert'); statusFeedback.id = 'status-feedback'; statusFeedback.setAttribute('role','status'); section.append(statusFeedback);
-    section.append(el('p', 'Status changes save separately. Applied date is editable under More job details.', 'muted'));
-    const history = el('section'); history.id = 'history'; history.setAttribute('aria-live','polite'); section.append(history); editor.append(section);
+    section.append(el('p', 'Status saves automatically when selected. Applied date is editable under More job details.', 'muted'));
+    const history = el('section'); history.id = 'history'; history.setAttribute('aria-live','polite'); section.append(history); panels.append(section);
   }
   root.replaceChildren(editor);
   return form;
