@@ -27,7 +27,6 @@ body.light .nextchapter-header .toggle-icon-moon { opacity:1 }
 /* Compact desktop utilities disclose About/account; theme stays visible. */
 @media (min-width:900px) and (max-width:1199px) {
   .nextchapter-header .nextchapter-header__content { position:relative; gap:20px }
-  .nextchapter-header .nextchapter-wordmark { font-size:var(--ds-type-h3-size); line-height:var(--ds-type-h3-line-height) }
   .nextchapter-primary { gap:12px }
   .nextchapter-header .nextchapter-menu-toggle { display:flex; background:var(--ds-action-tertiary-bg); border-color:var(--ds-action-tertiary-border); color:var(--ds-action-secondary-fg) }
   .nextchapter-header .nextchapter-menu-toggle:hover, .nextchapter-header .nextchapter-menu-toggle[aria-expanded="true"] { background:var(--ds-action-secondary-hover); border-color:var(--ds-action-secondary-border) }
@@ -40,12 +39,11 @@ body.light .nextchapter-header .toggle-icon-moon { opacity:1 }
 }
 /* In-flow mobile disclosure; the page follows rather than sitting behind it. */
 @media (max-width:899px) {
-  .nextchapter-header .nextchapter-header__content { display:grid; grid-template-columns:1fr auto; gap:0; min-height:44px; padding:6px 20px }
-  .nextchapter-header .nextchapter-wordmark { font-size:var(--ds-type-h3-size); line-height:var(--ds-type-h3-line-height) }
+  .nextchapter-header .nextchapter-header__content { display:grid; grid-template-columns:1fr auto; grid-template-rows:51px auto; gap:0; min-height:63px; padding:6px 20px }
   .nextchapter-header .nextchapter-menu-toggle { display:flex; grid-column:2; grid-row:1 }
   .nextchapter-header .nextchapter-menu-toggle:hover { background:var(--ds-action-primary-hover) }
   .nextchapter-header .nextchapter-menu-toggle:active { background:var(--ds-action-primary-pressed) }
-  .nextchapter-header nav { display:none; grid-column:1 / -1; margin:6px -20px -6px; padding:28px 20px; border-top:1px solid var(--ds-border-control); min-height:calc(100svh - 45px); flex-direction:column; align-items:stretch; justify-content:flex-start; gap:24px }
+  .nextchapter-header nav { display:none; grid-column:1 / -1; margin:6px -20px -6px; padding:28px 20px; border-top:1px solid var(--ds-border-control); min-height:calc(100svh - 64px); flex-direction:column; align-items:stretch; justify-content:flex-start; gap:24px }
   .nextchapter-header--open nav { display:flex }
   .nextchapter-primary, .nextchapter-utilities, .nextchapter-account-links { display:flex; width:100%; margin:0; flex-direction:column; align-items:flex-end; gap:24px }
   .nextchapter-utilities { border-top:1px solid var(--ds-border-control); padding-top:20px }

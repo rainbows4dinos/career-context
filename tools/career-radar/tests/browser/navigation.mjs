@@ -115,7 +115,7 @@ try {
         await width(p, size);
         const geometry = await evaluate(p, `({overflow:document.documentElement.scrollWidth>innerWidth,top:document.getElementById('nextchapter-header').getBoundingClientRect().top,height:document.getElementById('nextchapter-header').getBoundingClientRect().height,fill:getComputedStyle(document.getElementById('nextchapter-header')).backgroundColor,current:getComputedStyle(document.querySelector('[aria-current=page]')).backgroundColor,weight:getComputedStyle(document.querySelector('[aria-current=page]')).fontWeight,switchWidth:document.querySelector('.toggle-track').getBoundingClientRect().width})`);
         assert.equal(geometry.overflow, false, `${app} ${theme} ${size}`); assert.equal(geometry.top, 0);
-        assert.equal(geometry.height, size < 900 ? 45 : 80); assert.equal(geometry.fill, 'rgb(215, 205, 251)');
+        assert.equal(geometry.height, size < 900 ? 64 : 80); assert.equal(geometry.fill, 'rgb(215, 205, 251)');
         assert.equal(geometry.current, 'rgb(248, 225, 182)'); assert.equal(geometry.weight, '500');
         if (size >= 900) assert.equal(geometry.switchWidth, 48);
       }
