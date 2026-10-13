@@ -7,8 +7,9 @@ import { bindFieldValidation, setFieldError } from '../shared/fields.mjs';
 import { createRadarDataAccess, StaleProspectError } from './data.js';
 import { errorMessage, parseRoute, readDetails } from './view-model.js';
 import { validateStatus, validateHttpUrl } from './model.js';
+import { createStatusSaver } from './status-save.js';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
-import { boardView, button, editorView, historyView, messageView, setProspectStatusBadge } from './ui.js?v=20261013-badges';
+import { boardView, button, editorView, historyView, messageView, setProspectStatusBadge } from './ui.js?v=20261013-kanban';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
 import { mountIngestion } from './ingestion-ui.js?v=20261013-statuses';
 
@@ -33,8 +34,11 @@ export async function startRadar(client) {
   let epoch = 0;
   let activeHash = '';
   let mounted = false;
+  /** @type {(()=>void)|null} */
+  let boardCleanup = null;
 
   const clear = () => {
+    boardCleanup?.(); boardCleanup = null;
     epoch++; dirty = false; mounted = false; activeHash = '';
     workspace.replaceChildren();
   };
@@ -46,9 +50,10 @@ export async function startRadar(client) {
     if (nextId) lastUserId = nextId;
     login.hidden = !!nextId; workspace.hidden = !nextId;
     if (!nextId) node('tracker-heading').hidden = false;
+    if (!nextId) { boardCleanup?.(); boardCleanup = null; }
     addLink.hidden = !nextId;
     if (nextId) returnAfterLogin();
-    if (nextId && (!mounted || activeHash !== (window.location.hash || '#/board'))) void renderRoute();
+    if (nextId && (!mounted || activeHash !== (window.location.hash || '#/board') || !boardCleanup && !!workspace.querySelector('.board'))) void renderRoute();
   }
   /** @param {unknown} error @param {HTMLElement} feedback */
   function showError(error, feedback) {
@@ -74,20 +79,65 @@ export async function startRadar(client) {
     setAccountBusy(value);
     workspace.setAttribute('aria-busy', String(value));
   }
+  const saveProspectStatus = createStatusSaver(data, { canSave: () => !!userId && !pending, busy });
   async function renderRoute() {
     if (!userId) return;
     const thisEpoch = ++epoch;
     const owner = userId;
     activeHash = window.location.hash || '#/board';
     const route = parseRoute(activeHash);
+    boardCleanup?.(); boardCleanup = null;
     node('tracker-heading').hidden = route.kind === 'detail';
     dirty = false; mounted = true;
     messageView(workspace, route.kind === 'board' ? 'Loading prospects…' : 'Loading prospect…');
     const current = () => epoch === thisEpoch && lastUserId === owner;
     try {
       if (route.kind === 'board') {
-        const cards = await data.listProspects();
-        if (current()) boardView(workspace, cards, () => { void renderRoute(); });
+        let cards = await data.listProspects();
+        const canMove = () => current() && !!userId && !pending;
+        let appliedExpanded = false, doneOpen = false;
+        const renderBoard = () => {
+          if (!current()) return;
+          const appliedToggle = workspace.querySelector('.column-toggle');
+          if (appliedToggle) appliedExpanded = appliedToggle.getAttribute('aria-expanded') === 'true';
+          const done = workspace.querySelector('.column-done');
+          if (done instanceof window.HTMLDetailsElement) doneOpen = done.open;
+          const previousBoard = workspace.querySelector('.board');
+          const scrollLeft = previousBoard?.scrollLeft ?? 0;
+          const focused = document.activeElement instanceof Element ? document.activeElement.closest('[data-prospect-id]')?.getAttribute('data-prospect-id') : null;
+          boardCleanup?.();
+          boardCleanup = boardView(workspace, cards, () => { if (canMove()) void renderRoute(); }, { canMove, move, appliedExpanded, doneOpen });
+          const board = workspace.querySelector('.board');
+          if (board) board.scrollLeft = scrollLeft;
+          if (focused) {
+            const card = /** @type {HTMLElement|null} */ (workspace.querySelector(`[data-prospect-id="${focused}"]`));
+            (card ?? workspace.querySelector('.board'))?.focus();
+          }
+        };
+        /** @param {import('./data.js').ProspectCard} card @param {import('./model.js').ProspectStatus} status */
+        const move = async (card, status) => {
+          if (!canMove() || status === card.status) return;
+          const before = cards;
+          const saving = saveProspectStatus(card, status);
+          cards = cards.map(item => item.id === card.id ? { ...item, status } : item);
+          renderBoard();
+          try {
+            const saved = await saving;
+            if (current()) {
+              cards = cards.map(item => item.id === saved.id ? { ...item, ...saved } : item);
+              renderBoard(); showToast({ message: 'Status saved.', variant: 'success' });
+            }
+          } catch (error) {
+            if (!current()) return;
+            cards = before; renderBoard();
+            const message = error instanceof StaleProspectError
+              ? 'This prospect changed elsewhere. The move was undone. Refresh the board before trying again.'
+              : `Could not save status. The move was undone. ${errorMessage(error)}`;
+            showToast({ message, variant: 'danger' });
+            if (error && typeof error === 'object' && ('status' in error && error.status === 401 || 'code' in error && ['PGRST301','PGRST303'].includes(String(error.code)))) acceptSession(null);
+          }
+        };
+        renderBoard();
       } else if (route.kind === 'new' || route.kind === 'detail') {
         let row = route.id ? await data.getProspect(route.id) : null;
         if (!current()) return;
@@ -169,13 +219,12 @@ export async function startRadar(client) {
             const status = validateStatus(new FormData(statusForm).get('status'));
             if (status === row.status) { setAlert(feedback, { message: 'Already at this status.' }); return; }
             const restoreFocus = document.activeElement === statusSelect;
-            busy(true); setAlert(feedback, { message: 'Saving status…' });
+            setAlert(feedback, { message: 'Saving status…' });
             try {
-              row = await data.changeStatus(row.id, status, row.updated_at);
+              row = await saveProspectStatus(row, status);
               if (current()) { setProspectStatusBadge(node('current-status-badge'), row.status); setAlert(feedback, { message: '' }); showToast({ message: 'Status saved.', variant: 'success' }); void loadHistory(); }
             } catch (error) { if (current()) { statusSelect.value = row.status; showError(error, feedback); } }
             finally {
-              busy(false);
               if (current() && restoreFocus && statusSelect.isConnected && document.activeElement === document.body) statusSelect.focus();
             }
           });

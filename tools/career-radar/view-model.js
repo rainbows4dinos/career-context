@@ -1,14 +1,23 @@
 import { normalizePatch, validateId } from './model.js';
 
 /** Presentation only: persisted statuses and the status editor stay canonical.
- * @type {readonly {id: string, label: string, statuses: readonly import('./model.js').ProspectStatus[]}[]}
+ * @type {readonly {id: string, label: string, statuses: readonly import('./model.js').ProspectStatus[], dropStatus: import('./model.js').ProspectStatus|null}[]}
  */
 export const BOARD_COLUMNS = [
-  { id: 'prospects', label: 'Prospects', statuses: ['prospect', 'interested', 'applying'] },
-  { id: 'applied', label: 'Applied', statuses: ['applied'] },
-  { id: 'in-process', label: 'In-Process', statuses: ['recruiter', 'interviewing', 'final', 'offer'] },
-  { id: 'done', label: 'Done', statuses: ['passed', 'rejected', 'withdrawn', 'closed'] }
+  { id: 'prospects', label: 'Prospects', statuses: ['prospect', 'interested', 'applying'], dropStatus: 'prospect' },
+  { id: 'applied', label: 'Applied', statuses: ['applied'], dropStatus: 'applied' },
+  { id: 'in-process', label: 'In-Process', statuses: ['recruiter', 'interviewing', 'final', 'offer'], dropStatus: 'recruiter' },
+  { id: 'done', label: 'Done', statuses: ['passed', 'rejected', 'withdrawn', 'closed'], dropStatus: null }
 ];
+
+/** Same-column drops never change a status, including grouped/legacy statuses.
+ * @param {import('./model.js').ProspectStatus} status @param {string} destination
+ * @returns {null|{kind:'default', status:import('./model.js').ProspectStatus}|{kind:'choose', statuses:readonly import('./model.js').ProspectStatus[]}} */
+export function resolveBoardDrop(status, destination) {
+  const column = BOARD_COLUMNS.find(column => column.id === destination);
+  if (!column || column.statuses.includes(status)) return null;
+  return column.dropStatus ? { kind: 'default', status: column.dropStatus } : { kind: 'choose', statuses: column.statuses };
+}
 
 export const APPLIED_CARD_LIMIT = 10;
 

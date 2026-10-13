@@ -43,6 +43,16 @@ button:disabled { opacity:.5; cursor:wait }
 .board { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px; align-items:start }
 .column { min-width:0; background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:12px }
 .column h3 { font:500 14px var(--sans); display:flex; justify-content:space-between; margin-bottom:1rem }
+.column { transition:border-color var(--nc-transition-general-sm),background-color var(--nc-transition-general-sm) }
+.column--drop-valid { border-color:var(--nc-focus-ring) }
+.column--drop-over { background:var(--nc-selection-bg); outline:2px solid var(--nc-focus-ring); outline-offset:-2px }
+.prospect-card[draggable="true"] { cursor:grab }
+.board--dragging, .board--dragging .prospect-card { cursor:grabbing }
+.prospect-card--dragging { opacity:.45 }
+.kanban-outcome { position:fixed; z-index:1001; width:240px; max-width:calc(100vw - 24px); max-height:calc(100vh - 24px); overflow:auto; padding:12px; border:1px solid var(--nc-border-control); border-radius:var(--nc-radius-default); background:var(--nc-surface-raised); color:var(--nc-text-primary); box-shadow:0 4px 16px rgb(0 0 0 / .2); display:flex; flex-direction:column; gap:4px }
+.kanban-outcome p { margin:0 0 8px; overflow-wrap:anywhere }
+.kanban-outcome > button { justify-content:flex-start; width:100% }
+.kanban-outcome > button:last-child { margin-top:8px; border-top-color:var(--nc-border-control) }
 .column-done { margin:0; background:var(--bg) }
 .column-done summary { margin:0 }
 .column-done summary h3 { display:inline; color:var(--muted) }

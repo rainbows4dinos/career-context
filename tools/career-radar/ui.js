@@ -5,6 +5,7 @@ import { APPLIED_CARD_LIMIT, formatAppliedDate, groupCards, statusLabel, visible
 import { SELECTABLE_STATUSES, WORK_ARRANGEMENTS, validateHttpUrl } from './model.js';
 import { createHandoff, HANDOFF_TTL } from '../shared/resume-handoff.mjs';
 import { STATUS_BADGE_TONES } from './prospect-status.js';
+import { mountBoardDrag } from './kanban.js';
 
 /** @param {HTMLElement} element @param {import('./model.js').ProspectStatus} status */
 export function setProspectStatusBadge(element, status) {
@@ -45,17 +46,20 @@ export function messageView(root, message, retry) {
   if (retry) panel.append(button('Try again', retry, 'secondary nc-button nc-button--tertiary nc-button--lg'));
   root.replaceChildren(panel);
 }
-/** @param {HTMLElement} root @param {import('./data.js').ProspectCard[]} cards @param {() => void} refresh */
-export function boardView(root, cards, refresh) {
+/** @param {HTMLElement} root @param {import('./data.js').ProspectCard[]} cards @param {() => void} refresh
+ * @param {Partial<import('./kanban.js').MoveOptions> & {appliedExpanded?:boolean, doneOpen?:boolean}} [options] */
+export function boardView(root, cards, refresh, options = {}) {
   const heading = el('div', '', 'view-heading');
   heading.append(el('h2', `Prospects (${cards.length})`), button('Refresh', refresh, 'secondary nc-button nc-button--tertiary nc-button--lg'));
-  const hint = el('p', cards.length ? 'Open a card to edit it or change its status. Expand Done to see completed prospects.' : 'No prospects yet. Add a company and role you want to keep track of.', 'muted');
+  const hint = el('p', cards.length ? 'Open a card to edit it. Drag cards between columns on desktop to change status. Expand Done to see completed prospects.' : 'No prospects yet. Add a company and role you want to keep track of.', 'muted');
   const board = el('div', '', 'board');
   board.tabIndex = 0;
   board.setAttribute('role', 'region'); board.setAttribute('aria-label', 'Prospects by lifecycle');
   for (const group of groupCards(cards)) {
     const done = group.id === 'done';
     const column = done ? el('details', '', 'column column-done') : el('section', '', 'column');
+    column.dataset.columnId = group.id;
+    if (column instanceof window.HTMLDetailsElement) column.open = options.doneOpen ?? false;
     const title = el('h3', `${group.label} `);
     title.append(el('span', String(group.cards.length), 'count'));
     if (done) {
@@ -65,10 +69,11 @@ export function boardView(root, cards, refresh) {
     }
     if (!group.cards.length) column.append(el('p', 'No prospects', 'empty-column'));
     const list = el('div'); list.id = `${group.id}-cards`;
-    let expanded = false;
+    let expanded = options.appliedExpanded ?? false;
     function renderCards() {
       list.replaceChildren(...visibleCards(group, expanded).map(card => {
         const node = link('', `#/prospects/${card.id}`); node.className = 'prospect-card';
+        node.dataset.prospectId = card.id;
         node.append(el('strong', card.company), el('span', card.title));
         node.append(statusBadge(card.status));
         const appliedDate = formatAppliedDate(card.applied_on);
@@ -81,13 +86,13 @@ export function boardView(root, cards, refresh) {
     }
     renderCards(); column.append(list);
     if (group.id === 'applied' && group.cards.length > APPLIED_CARD_LIMIT) {
-      const toggle = button(`Show all ${group.cards.length}`, () => {
+      const toggle = button(expanded ? 'Show fewer' : `Show all ${group.cards.length}`, () => {
         expanded = !expanded;
         renderCards();
         toggle.textContent = expanded ? 'Show fewer' : `Show all ${group.cards.length}`;
         toggle.setAttribute('aria-expanded', String(expanded));
       }, 'secondary column-toggle');
-      toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-controls', list.id);
+      toggle.setAttribute('aria-expanded', String(expanded)); toggle.setAttribute('aria-controls', list.id);
       column.append(toggle);
     }
     board.append(column);
@@ -95,6 +100,7 @@ export function boardView(root, cards, refresh) {
   root.replaceChildren(heading, hint);
   if (!cards.length) root.append(link('Add your first prospect', '#/prospects/new'));
   root.append(board);
+  return options.move ? mountBoardDrag(board, cards, { move: options.move, canMove: options.canMove ?? (() => true) }) : () => {};
 }
 /** @param {string} name @param {string} label @param {string} value @param {string} [type] */
 function field(name, label, value, type = 'text') {
