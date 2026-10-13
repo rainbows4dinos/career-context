@@ -39,8 +39,7 @@
     --sans: var(--ds-font-sans);
     --radius: var(--ds-radius-panel);
   }
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; font-weight: 300; font-size: 16px; line-height: 1.6; }
-  .shell { max-width: 860px; margin: 0 auto }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 0; font-weight: 300; font-size: 16px; line-height: 1.6; }
 
   /* Links */
   a { color: var(--accent); text-decoration: none; transition: color 0.15s, background 0.15s }
@@ -126,10 +125,11 @@
 
 </style>
 <link rel="stylesheet" href="shared/components.css" />
+<link rel="stylesheet" href="shared/layout.css">
 </head>
 <body>
   <header id="nextchapter-header" data-app="builder"></header>
-<div class="shell">
+<div class="shell nc-content">
   <section class="app-heading" aria-labelledby="builder-title" style="margin-bottom:2.5rem">
     <h1 id="builder-title">Résumé Builder <span id="buildTag" style="font-size:11px;font-weight:400;opacity:0.5;vertical-align:middle"></span></h1>
     <p style="max-width: 90%;">Custom resume and cover letter generator using my job-hunting context files, docx templates, and Claude. Learn more on my <a href="https://github.com/rainbows4dinos/career-context" target="_blank">GitHub page</a>. Check out my portfolio at <a href="https://www.larryjr.design" target="_blank">www.larryjr.design</a></p>

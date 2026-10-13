@@ -9,7 +9,7 @@ Phase 2C extends `tools/shared/navigation.mjs` and `navigation.css` across the s
 | Résumé Builder | `tools/resume-tailor.html` | Public generation, revision, previews and downloads |
 | About | `tools/about.html` | Public README-based introduction to the tools and their shared context |
 
-Existing Tracker hashes and Builder URLs remain unchanged. The header sits before each unchanged application shell so its background spans the viewport.
+Existing Tracker hashes and Builder URLs remain unchanged. The header sits before each application shell so its background spans the viewport. Shared `layout.css` applies a centered 1400px maximum outer content width, 28px side padding on desktop/tablet and 20px below 900px, matching the header’s mobile category. Inner reading/form panels retain their local width constraints.
 
 ## Shared navigation visual migration
 
@@ -55,6 +55,8 @@ npm --prefix tools/career-radar run typecheck
 npm --prefix tools/career-radar run lint
 npm --prefix tools/career-radar test
 ```
+
+Content-container verification also passed on all four pages in both themes at 1920/1512/1400/1200/1080/900/899/600/390/320px: 1400px maximum outer width, centered positioning, 28px/20px side padding, full-width header placement and no page-level horizontal overflow.
 
 All 88 scoped Node tests, Tracker type-check/lint, shared navigation lint, token-reference/link checks and `git diff --check` passed.
 

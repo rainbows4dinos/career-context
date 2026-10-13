@@ -1,5 +1,5 @@
 /* Figma MainNavItem / Main Navigation Header; app shells remain local. */
-.nextchapter-header { width:calc(100% + 2rem); margin:-2rem -1rem 2rem; padding:0; border:0; border-bottom:1px solid var(--ds-border-control); background:var(--ds-action-secondary-bg); color:var(--ds-action-secondary-fg); font-family:var(--ds-font-sans); position:relative; z-index:2 }
+.nextchapter-header { width:100%; margin:0 0 2rem; padding:0; border:0; border-bottom:1px solid var(--ds-border-control); background:var(--ds-action-secondary-bg); color:var(--ds-action-secondary-fg); font-family:var(--ds-font-sans); position:relative; z-index:2 }
 .nextchapter-header .nextchapter-header__content { display:flex; align-items:center; justify-content:space-between; gap:28px; width:100%; max-width:1400px; min-height:79px; margin:auto; padding:0 28px }
 .nextchapter-header .nextchapter-wordmark { flex:none; font-family:var(--ds-type-h2-family); font-size:var(--ds-type-h2-size); line-height:var(--ds-type-h2-line-height); font-weight:var(--ds-type-h2-weight); color:var(--ds-action-secondary-fg); text-decoration:none; white-space:nowrap; background:transparent }
 .nextchapter-header nav { display:flex; align-items:center; justify-content:space-between; flex:1; width:auto; gap:28px; margin:0; order:1 }
@@ -54,6 +54,3 @@ body.light .nextchapter-header .toggle-icon-moon { opacity:1 }
 @media (prefers-reduced-motion:reduce) {
   .nextchapter-header .toggle-track, .nextchapter-header .toggle-thumb, .nextchapter-header .toggle-icon-sun, .nextchapter-header .toggle-icon-moon { transition:none }
 }
-
-/* Tracker-derived pages retain their existing compact body padding. */
-@media (max-width:600px) { .nextchapter-header:not([data-app="builder"]) { margin-top:-1rem } }
