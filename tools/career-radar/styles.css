@@ -1,19 +1,19 @@
 /* Shared semantics with Radar-specific legacy aliases; component rules remain local. */
 :root { color-scheme:dark }
 :root, body {
-  --bg:var(--ds-surface-page);
-  --surface:var(--ds-surface-raised);
-  --surface2:var(--ds-surface-inset);
-  --border:var(--ds-border-control);
-  --border-subtle:var(--ds-border-subtle);
-  --text:var(--ds-text-primary);
-  --muted:var(--ds-text-secondary);
-  --accent:var(--ds-accent);
-  --accent-bg:var(--ds-accent-bg);
-  --success:var(--ds-success);
-  --serif:var(--ds-font-serif);
-  --sans:var(--ds-font-sans);
-  --radius:var(--ds-radius-panel);
+  --bg:var(--nc-background-page);
+  --surface:var(--nc-surface-raised);
+  --surface2:var(--nc-surface-sunken);
+  --border:var(--nc-border-control);
+  --border-subtle:var(--nc-border-subtle);
+  --text:var(--nc-text-primary);
+  --muted:var(--nc-text-secondary);
+  --accent:var(--nc-link-default);
+  --accent-bg:var(--nc-selection-bg);
+  --success:var(--nc-success-fg);
+  --serif:var(--nc-font-serif);
+  --sans:var(--nc-font-sans);
+  --radius:var(--nc-radius-panel);
 }
 body.light { color-scheme:light }
 [hidden] { display:none !important }
@@ -29,16 +29,16 @@ a { color:var(--accent); text-decoration:none; text-underline-offset:3px } a:hov
 button,input,select,textarea { font:inherit; border-radius:8px }
 button { cursor:pointer; padding:10px 16px; border:1px solid var(--border); background:transparent; color:var(--text) }
 button:hover { border-color:var(--accent) }
-.primary { background:var(--ds-action-primary-bg); color:var(--ds-action-primary-fg); border-color:var(--ds-action-primary-border); font-weight:500 }
+.primary { background:var(--nc-action-primary-bg); color:var(--nc-action-primary-fg); border-color:var(--nc-action-primary-border); font-weight:500 }
 .secondary { color:var(--muted) }
 button:disabled { opacity:.5; cursor:wait }
-:is(a[href],button,input,select,textarea,summary,[role="button"],[role="link"],[role="tab"],[role="switch"],[role="checkbox"],[role="radio"]):focus-visible { outline:var(--ds-focus-width) solid var(--ds-focus-ring); outline-offset:var(--ds-focus-offset) }
+:is(a[href],button,input,select,textarea,summary,[role="button"],[role="link"],[role="tab"],[role="switch"],[role="checkbox"],[role="radio"]):focus-visible { outline:var(--nc-focus-width) solid var(--nc-focus-ring); outline-offset:var(--nc-focus-offset) }
 .panel { background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:1.5rem; margin-bottom:1rem }
 .narrow { max-width:520px; margin:2rem auto }
 .muted,.empty-column { color:var(--muted) }
 #notice:empty,#login-error:empty,.feedback:empty { display:none }
 #notice:not(.nc-alert),.feedback:not(.nc-alert),#login-error:not(.nc-alert) { padding:.75rem 1rem; background:var(--accent-bg); border-radius:8px; overflow-wrap:anywhere }
-.error { color:var(--ds-error) }
+.error { color:var(--nc-danger-fg) }
 .view-heading { justify-content:space-between; margin-bottom:1rem }
 .board { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px; align-items:start }
 .column { min-width:0; background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:12px }

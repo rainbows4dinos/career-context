@@ -17,34 +17,34 @@
 <script type="module" src="shared/navigation.mjs"></script>
 <style>
   *, *::before, *::after { margin: 0; padding: 0 }
-  /* Legacy aliases resolve on body so body.light uses the shared light mappings. */
+  /* Application aliases resolve on body so body.light uses the shared light mappings. */
   :root, body {
-    --bg: var(--ds-surface-page);
-    --surface: var(--ds-surface-raised);
-    --surface2: var(--ds-surface-inset);
-    --border: var(--ds-border-control);
-    --border-subtle: var(--ds-border-subtle);
-    --text: var(--ds-text-primary);
-    --muted: var(--ds-text-tertiary);
-    --muted-light: var(--ds-text-secondary);
-    --accent: var(--ds-accent);
-    --accent-bg: var(--ds-accent-bg);
-    --accent-border: var(--ds-accent-border);
-    --success: var(--ds-success);
-    --success-bg: var(--ds-success-bg);
-    --yellow: var(--ds-warning);
-    --yellow-bg: var(--ds-warning-bg);
-    --yellow-border: var(--ds-warning-border);
-    --serif: var(--ds-font-serif);
-    --sans: var(--ds-font-sans);
-    --radius: var(--ds-radius-panel);
+    --bg: var(--nc-background-page);
+    --surface: var(--nc-surface-raised);
+    --surface2: var(--nc-surface-sunken);
+    --border: var(--nc-border-control);
+    --border-subtle: var(--nc-border-subtle);
+    --text: var(--nc-text-primary);
+    --muted: var(--nc-text-muted);
+    --muted-light: var(--nc-text-secondary);
+    --accent: var(--nc-link-default);
+    --accent-bg: var(--nc-selection-bg);
+    --accent-border: var(--nc-selection-border);
+    --success: var(--nc-success-fg);
+    --success-bg: var(--nc-success-bg);
+    --yellow: var(--nc-warning-fg);
+    --yellow-bg: var(--nc-warning-bg);
+    --yellow-border: var(--nc-warning-border);
+    --serif: var(--nc-font-serif);
+    --sans: var(--nc-font-sans);
+    --radius: var(--nc-radius-panel);
   }
   body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 0; font-weight: 300; font-size: 16px; line-height: 1.6; }
 
   /* Links */
   a { color: var(--accent); text-decoration: none; transition: color 0.15s, background 0.15s }
   a:hover { text-decoration: underline; text-decoration-color: var(--accent); background: var(--accent-bg) }
-  a:focus-visible { outline: var(--ds-focus-width) solid var(--ds-focus-ring); outline-offset: var(--ds-focus-offset); border-radius: 2px }
+  a:focus-visible { outline: var(--nc-focus-width) solid var(--nc-focus-ring); outline-offset: var(--nc-focus-offset); border-radius: 2px }
 
   /* Header */
   header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle) }

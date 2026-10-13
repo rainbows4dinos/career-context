@@ -2,6 +2,16 @@
 
 Historical extraction snapshot. The October 11 [Phase 1 shared foundations](nextchapter-shared-foundations-phase1.md) supersede the palette, font families, semantic values and native-control behavior described below; the ownership and export boundaries still apply.
 
+## Current namespace — October 12, 2026
+
+Shared CSS token names now use `--nc-` (nextchapter). Definitions, application/component consumers, browser-test color probes and documentation references were renamed together. Token values, aliases, theme selectors and export logic are unchanged. Four-page comparisons in both themes confirmed identical resolved styles; all current namespace references are defined. Historical tables below use the current prefix for consistency.
+
+## Current token cleanup — October 12, 2026
+
+Removed 29 obsolete shared declarations: 17 unused legacy color/alpha primitives, nine compatibility semantic aliases, and three unused/indirect radius aliases. Builder and Tracker now reference current semantic roles directly (`background/page`, `surface/sunken`, `text/muted`, link/selection roles and severity foregrounds). Their local application aliases remain on the theme element. The existing `radius/panel` resolves directly to 10px; current spacing, typography, semantic colors and theme behavior are unchanged.
+
+Browser comparisons on Builder, Tracker, Career Radar and About in both themes found identical resolved application aliases and rendered component colors, font values and radii before/after cleanup. All runtime `--nc-*` references are defined; `git diff --check` passed. No generation, preview/export rules, authentication, persistence or handoff logic changed. The sections below remain the historical October 7 extraction record.
+
 Implemented October 7, 2026 against baseline `1e1533a`, following the approved [foundation audit](shared-design-foundation-audit.md). Only token extraction is implemented; component consolidation and theme redesign remain deferred.
 
 ## Ownership and loading

@@ -27,7 +27,7 @@ try {
     const ui=await fieldUI;const form=document.createElement('form');form.id='specimens';
     form.innerHTML='<div class="nc-field"><label class="nc-field__label" for="spec-input">Input</label><input class="nc-input" id="spec-input" required placeholder="Example" aria-describedby="spec-help"><span id="spec-help" class="nc-field__helper">Persistent helper</span></div><div class="nc-field"><label class="nc-field__label" for="spec-area">Textarea</label><textarea class="nc-textarea" id="spec-area" required placeholder="Example"></textarea></div><div class="nc-field"><label class="nc-field__label" for="spec-select">Select</label><span class="nc-select-wrap"><select class="nc-select" id="spec-select" required><option value="">Not specified</option><option value="one">One</option><option value="two">Two</option></select></span></div>';
     form.addEventListener('submit',event=>event.preventDefault());document.querySelector('.shell').append(form);ui.bindFieldValidation(form);
-    window.resolveColor=name=>{const probe=document.createElement('span');probe.style.color='var(--ds-'+name+')';document.body.append(probe);const color=getComputedStyle(probe).color;probe.remove();return color;};
+    window.resolveColor=name=>{const probe=document.createElement('span');probe.style.color='var(--nc-'+name+')';document.body.append(probe);const color=getComputedStyle(probe).color;probe.remove();return color;};
   })()`);
   await send('DOM.enable', {}, builder.sessionId); await send('CSS.enable', {}, builder.sessionId);
   for (const light of [false, true]) {

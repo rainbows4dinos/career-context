@@ -1,56 +1,56 @@
 /* Figma MainNavItem / Main Navigation Header; app shells remain local. */
-.nextchapter-header { width:100%; margin:0 0 2rem; padding:0; border:0; border-bottom:1px solid var(--ds-border-control); background:var(--ds-action-secondary-bg); color:var(--ds-action-secondary-fg); font-family:var(--ds-font-sans); position:relative; z-index:2 }
+.nextchapter-header { width:100%; margin:0 0 2rem; padding:0; border:0; border-bottom:1px solid var(--nc-border-control); background:var(--nc-action-secondary-bg); color:var(--nc-action-secondary-fg); font-family:var(--nc-font-sans); position:relative; z-index:2 }
 .nextchapter-header .nextchapter-header__content { display:flex; align-items:center; justify-content:space-between; gap:28px; width:100%; max-width:1400px; min-height:79px; margin:auto; padding:0 28px }
-.nextchapter-header .nextchapter-wordmark { flex:none; font-family:var(--ds-type-h2-family); font-size:var(--ds-type-h2-size); line-height:var(--ds-type-h2-line-height); font-weight:var(--ds-type-h2-weight); color:var(--ds-action-secondary-fg); text-decoration:none; white-space:nowrap; background:transparent }
+.nextchapter-header .nextchapter-wordmark { flex:none; font-family:var(--nc-type-h2-family); font-size:var(--nc-type-h2-size); line-height:var(--nc-type-h2-line-height); font-weight:var(--nc-type-h2-weight); color:var(--nc-action-secondary-fg); text-decoration:none; white-space:nowrap; background:transparent }
 .nextchapter-header nav { display:flex; align-items:center; justify-content:space-between; flex:1; width:auto; gap:28px; margin:0; order:1 }
 .nextchapter-primary { display:flex; align-items:center; gap:40px; margin:auto }
 .nextchapter-utilities, .nextchapter-account-links { display:flex; align-items:center; gap:20px }
-.nextchapter-header .nextchapter-nav-item { display:inline-flex; align-items:center; justify-content:center; flex:none; box-sizing:border-box; border:1px solid transparent; border-radius:9999px; padding:7px 11px; margin:0; background:transparent; color:var(--ds-action-secondary-fg); font-family:var(--ds-type-ui-button-family); font-size:var(--ds-type-ui-button-size); line-height:var(--ds-type-ui-button-line-height); font-weight:var(--ds-type-ui-button-weight); text-decoration:none; white-space:nowrap; cursor:pointer; opacity:1 }
+.nextchapter-header .nextchapter-nav-item { display:inline-flex; align-items:center; justify-content:center; flex:none; box-sizing:border-box; border:1px solid transparent; border-radius:9999px; padding:7px 11px; margin:0; background:transparent; color:var(--nc-action-secondary-fg); font-family:var(--nc-type-ui-button-family); font-size:var(--nc-type-ui-button-size); line-height:var(--nc-type-ui-button-line-height); font-weight:var(--nc-type-ui-button-weight); text-decoration:none; white-space:nowrap; cursor:pointer; opacity:1 }
 .nextchapter-account-links .nextchapter-nav-item { padding:7px 0 }
-.nextchapter-header .nextchapter-nav-item:hover { border-color:var(--ds-action-primary-border); background:transparent }
-.nextchapter-header .nextchapter-nav-item[aria-current="page"] { border-color:var(--ds-action-primary-border); background:var(--ds-action-primary-bg); color:var(--ds-action-primary-fg) }
+.nextchapter-header .nextchapter-nav-item:hover { border-color:var(--nc-action-primary-border); background:transparent }
+.nextchapter-header .nextchapter-nav-item[aria-current="page"] { border-color:var(--nc-action-primary-border); background:var(--nc-action-primary-bg); color:var(--nc-action-primary-fg) }
 .nextchapter-account-links .nextchapter-nav-item[aria-current="page"], .nextchapter-account-links .nextchapter-nav-item:hover { padding-left:11px; padding-right:11px; margin-left:-11px; margin-right:-11px }
 .nextchapter-header .nextchapter-nav-item:disabled { cursor:wait; opacity:1 }
-.nextchapter-header a:focus-visible, .nextchapter-header button:focus-visible { outline:var(--ds-focus-width) solid var(--ds-focus-ring); outline-offset:var(--ds-focus-offset) }
-.nextchapter-header .nextchapter-menu-toggle { display:none; flex:none; align-items:center; justify-content:center; width:28px; height:28px; min-height:0; margin:0; padding:0; border:1px solid var(--ds-action-primary-border); border-radius:6px; background:var(--ds-action-primary-bg); color:var(--ds-action-primary-fg); cursor:pointer; order:2 }
+.nextchapter-header a:focus-visible, .nextchapter-header button:focus-visible { outline:var(--nc-focus-width) solid var(--nc-focus-ring); outline-offset:var(--nc-focus-offset) }
+.nextchapter-header .nextchapter-menu-toggle { display:none; flex:none; align-items:center; justify-content:center; width:28px; height:28px; min-height:0; margin:0; padding:0; border:1px solid var(--nc-action-primary-border); border-radius:6px; background:var(--nc-action-primary-bg); color:var(--nc-action-primary-fg); cursor:pointer; order:2 }
 /* Switch-Mode: Figma 48×28, 20px thumb and 12px Gravity icons. */
 .nextchapter-header .theme-toggle { display:flex; align-items:center; flex:none; width:48px; height:28px; min-height:0; margin:0; padding:0; border:0; border-radius:999px; background:transparent; cursor:pointer }
-.nextchapter-header .toggle-track { display:block; box-sizing:border-box; position:relative; width:48px; height:28px; border-radius:999px; background:var(--ds-action-secondary-bg); border:1px solid var(--ds-action-secondary-border); transition:background .2s,border-color .2s }
-.nextchapter-header .toggle-thumb { position:absolute; top:50%; left:3px; width:20px; height:20px; border-radius:50%; background:var(--ds-action-secondary-fg); transform:translate(20px,-50%); transition:transform .2s,background .2s }
+.nextchapter-header .toggle-track { display:block; box-sizing:border-box; position:relative; width:48px; height:28px; border-radius:999px; background:var(--nc-action-secondary-bg); border:1px solid var(--nc-action-secondary-border); transition:background .2s,border-color .2s }
+.nextchapter-header .toggle-thumb { position:absolute; top:50%; left:3px; width:20px; height:20px; border-radius:50%; background:var(--nc-action-secondary-fg); transform:translate(20px,-50%); transition:transform .2s,background .2s }
 .nextchapter-header .toggle-icon-sun, .nextchapter-header .toggle-icon-moon { position:absolute; top:50%; width:12px; height:12px; transform:translateY(-50%); transition:opacity .15s }
-.nextchapter-header .toggle-icon-sun { left:5px; color:var(--ds-action-primary-fg) }
-.nextchapter-header .toggle-icon-moon { right:5px; color:var(--ds-action-secondary-fg); opacity:0 }
-body.light .nextchapter-header .toggle-track { background:var(--ds-action-primary-bg); border-color:var(--ds-action-primary-border) }
-body.light .nextchapter-header .toggle-thumb { transform:translate(0,-50%); background:var(--ds-action-primary-fg) }
+.nextchapter-header .toggle-icon-sun { left:5px; color:var(--nc-action-primary-fg) }
+.nextchapter-header .toggle-icon-moon { right:5px; color:var(--nc-action-secondary-fg); opacity:0 }
+body.light .nextchapter-header .toggle-track { background:var(--nc-action-primary-bg); border-color:var(--nc-action-primary-border) }
+body.light .nextchapter-header .toggle-thumb { transform:translate(0,-50%); background:var(--nc-action-primary-fg) }
 body.light .nextchapter-header .toggle-icon-sun { opacity:0 }
 body.light .nextchapter-header .toggle-icon-moon { opacity:1 }
 /* Compact desktop utilities disclose About/account; theme stays visible. */
 @media (min-width:900px) and (max-width:1199px) {
   .nextchapter-header .nextchapter-header__content { position:relative; gap:20px }
   .nextchapter-primary { gap:12px }
-  .nextchapter-header .nextchapter-menu-toggle { display:flex; background:var(--ds-action-tertiary-bg); border-color:var(--ds-action-tertiary-border); color:var(--ds-action-secondary-fg) }
-  .nextchapter-header .nextchapter-menu-toggle:hover, .nextchapter-header .nextchapter-menu-toggle[aria-expanded="true"] { background:var(--ds-action-secondary-hover); border-color:var(--ds-action-secondary-border) }
-  .nextchapter-header .nextchapter-menu-toggle:active { background:var(--ds-action-secondary-pressed); border-color:var(--ds-action-secondary-border) }
-  .nextchapter-account-links { display:none; position:absolute; top:calc(50% + 21px); right:calc(28px - 12px - 1px); width:180px; flex-direction:column; align-items:flex-end; gap:12px; padding:12px; border:1px solid var(--ds-border-control); border-radius:16px; background:var(--ds-action-secondary-bg); box-shadow:1px 1px 0 var(--ds-border-control) }
+  .nextchapter-header .nextchapter-menu-toggle { display:flex; background:var(--nc-action-tertiary-bg); border-color:var(--nc-action-tertiary-border); color:var(--nc-action-secondary-fg) }
+  .nextchapter-header .nextchapter-menu-toggle:hover, .nextchapter-header .nextchapter-menu-toggle[aria-expanded="true"] { background:var(--nc-action-secondary-hover); border-color:var(--nc-action-secondary-border) }
+  .nextchapter-header .nextchapter-menu-toggle:active { background:var(--nc-action-secondary-pressed); border-color:var(--nc-action-secondary-border) }
+  .nextchapter-account-links { display:none; position:absolute; top:calc(50% + 21px); right:calc(28px - 12px - 1px); width:180px; flex-direction:column; align-items:flex-end; gap:12px; padding:12px; border:1px solid var(--nc-border-control); border-radius:16px; background:var(--nc-action-secondary-bg); box-shadow:1px 1px 0 var(--nc-border-control) }
   .nextchapter-header--open .nextchapter-account-links { display:flex }
   .nextchapter-header .nextchapter-account-links .nextchapter-nav-item { padding:7px 3px; margin:0 }
-  .nextchapter-header .nextchapter-account-links .nextchapter-nav-item:hover, .nextchapter-header .nextchapter-account-links .nextchapter-nav-item[aria-current="page"] { border-radius:6px; padding-left:3px; padding-right:3px; margin:0; color:var(--ds-action-secondary-fg) }
+  .nextchapter-header .nextchapter-account-links .nextchapter-nav-item:hover, .nextchapter-header .nextchapter-account-links .nextchapter-nav-item[aria-current="page"] { border-radius:6px; padding-left:3px; padding-right:3px; margin:0; color:var(--nc-action-secondary-fg) }
   .nextchapter-header .nextchapter-account-links .nextchapter-nav-item[aria-current="page"] { padding-left:5px; padding-right:5px }
 }
 /* In-flow mobile disclosure; the page follows rather than sitting behind it. */
 @media (max-width:899px) {
   .nextchapter-header .nextchapter-header__content { display:grid; grid-template-columns:1fr auto; grid-template-rows:51px auto; gap:0; min-height:63px; padding:6px 20px }
   .nextchapter-header .nextchapter-menu-toggle { display:flex; grid-column:2; grid-row:1 }
-  .nextchapter-header .nextchapter-menu-toggle:hover { background:var(--ds-action-primary-hover) }
-  .nextchapter-header .nextchapter-menu-toggle:active { background:var(--ds-action-primary-pressed) }
-  .nextchapter-header nav { display:none; grid-column:1 / -1; margin:6px -20px -6px; padding:28px 20px; border-top:1px solid var(--ds-border-control); min-height:calc(100svh - 64px); flex-direction:column; align-items:stretch; justify-content:flex-start; gap:24px }
+  .nextchapter-header .nextchapter-menu-toggle:hover { background:var(--nc-action-primary-hover) }
+  .nextchapter-header .nextchapter-menu-toggle:active { background:var(--nc-action-primary-pressed) }
+  .nextchapter-header nav { display:none; grid-column:1 / -1; margin:6px -20px -6px; padding:28px 20px; border-top:1px solid var(--nc-border-control); min-height:calc(100svh - 64px); flex-direction:column; align-items:stretch; justify-content:flex-start; gap:24px }
   .nextchapter-header--open nav { display:flex }
   .nextchapter-primary, .nextchapter-utilities, .nextchapter-account-links { display:flex; width:100%; margin:0; flex-direction:column; align-items:flex-end; gap:24px }
-  .nextchapter-utilities { border-top:1px solid var(--ds-border-control); padding-top:20px }
+  .nextchapter-utilities { border-top:1px solid var(--nc-border-control); padding-top:20px }
   .nextchapter-header .theme-toggle { order:2 }
   /* Inside 1px strokes: 4px/6px label insets and 32px outer height. */
   .nextchapter-header .nextchapter-nav-item { padding:7px 3px; margin:0 }
-  .nextchapter-header .nextchapter-nav-item:hover, .nextchapter-header .nextchapter-nav-item[aria-current="page"] { border-radius:6px; padding-left:3px; padding-right:3px; margin:0; color:var(--ds-action-secondary-fg) }
+  .nextchapter-header .nextchapter-nav-item:hover, .nextchapter-header .nextchapter-nav-item[aria-current="page"] { border-radius:6px; padding-left:3px; padding-right:3px; margin:0; color:var(--nc-action-secondary-fg) }
   .nextchapter-header .nextchapter-nav-item[aria-current="page"] { padding-left:5px; padding-right:5px }
 }
 @media (prefers-reduced-motion:reduce) {

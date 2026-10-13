@@ -30,7 +30,7 @@ An important layout discrepancy: Builder currently uses the **same 860px maximum
 | [navigation.css](../tools/shared/navigation.css), lines 1–46 | Shared header, active/focus state and extracted theme switch |
 | [icons.css](../tools/shared/icons.css) and [icons.mjs](../tools/shared/icons.mjs) | SVG icon presentation and accessible DOM helper |
 
-The `--ds-*` prefix provides a coherent shared namespace. Each functional app retains shorter aliases on both `:root` and `body`; the latter is important because `body.light` owns semantic overrides. Builder's `--muted` means **tertiary** text, while Tracker's means **secondary** text. Builder's `--muted-light` corresponds to Tracker's `--muted`. A shared component cannot safely assume these names have identical meaning.
+The `--nc-*` prefix provides a coherent shared namespace. Each functional app retains shorter aliases on both `:root` and `body`; the latter is important because `body.light` owns semantic overrides. Builder's `--muted` means **tertiary** text, while Tracker's means **secondary** text. Builder's `--muted-light` corresponds to Tracker's `--muted`. A shared component cannot safely assume these names have identical meaning.
 
 ### Color primitives
 
@@ -64,7 +64,7 @@ Alpha definitions include `dark`/`light` in their names, but their values are fi
 | Error | Reference to accent | Same reference resolves to light accent |
 | Panel radius | Radius large, 10px | Same |
 
-Color ownership is centralized, but role usage is incomplete: `--ds-error` is defined yet Tracker `.error` uses its accent alias; warning, error and interactive accents share gold. There are no dedicated disabled, focus-ring, selected, on-accent or hover semantic roles. Distinct roles may be useful even if Figma initially maps some to the same value. Do not introduce a large matrix of hypothetical statuses.
+Color ownership is centralized, but role usage is incomplete: `--nc-error` is defined yet Tracker `.error` uses its accent alias; warning, error and interactive accents share gold. There are no dedicated disabled, focus-ring, selected, on-accent or hover semantic roles. Distinct roles may be useful even if Figma initially maps some to the same value. Do not introduce a large matrix of hypothetical statuses.
 
 ### Hardcoded colors and duplication
 
@@ -167,7 +167,7 @@ Identifiable gaps and recommendations:
 
 1. **Initialization timing:** module execution waits for parsing/fetching and initially empty headers also wait for JS. A saved light preference can briefly show dark default; this is a timing risk from source, not a measured flash. If confirmed under throttling, use a tiny early theme initializer or equivalent shared initialization strategy without changing the persisted key or moving all theme semantics casually from body to root.
 2. **Native color scheme:** Tracker and placeholder declare dark/light `color-scheme`; Builder does not. Native controls can therefore differ despite equal CSS colors. Centralize an approved color-scheme convention and test native controls in both themes.
-3. **Alias coupling:** retain body-scoped aliases during migration. New shared components should consume explicit `--ds-*` roles; removing aliases before consumers migrate would break theming.
+3. **Alias coupling:** retain body-scoped aliases during migration. New shared components should consume explicit `--nc-*` roles; removing aliases before consumers migrate would break theming.
 4. **Role contrast:** changing hue alone will not fix light contrast. Specify on-accent, focus, error and readable muted roles with tested mappings in each theme.
 5. **Scope:** no need to add system-theme mode, theme context/provider or cross-app state framework. The current two-theme contract is deliberate existing behavior; system preference is a separate product decision only if wanted later.
 6. **Storage event ownership:** handler checks the key, not storage area. A future sessionStorage key named `theme` could spuriously affect the UI; no current producer exists, so this is low-priority hardening rather than a present user defect.

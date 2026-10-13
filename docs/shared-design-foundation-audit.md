@@ -72,7 +72,7 @@ Shared styling does not require shared rendering. Radar's `el()` is a safe `text
 
 ## 5. Recommended token structure
 
-Use ordinary CSS custom properties with a `--ds-` prefix, three responsibilities and one common dark/light theme. No token compiler, JSON registry or product theme fork.
+Use ordinary CSS custom properties with a `--nc-` prefix, three responsibilities and one common dark/light theme. No token compiler, JSON registry or product theme fork.
 
 | Layer | Contents | Ownership |
 | --- | --- | --- |

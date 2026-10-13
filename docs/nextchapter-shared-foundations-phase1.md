@@ -18,36 +18,36 @@ All are independent of theme. Existing neutral tokens change; other Figma primit
 
 | Figma variable | Approved CSS value | Existing token | Proposed token | Status |
 | --- | --- | --- | --- | --- |
-| primary/200 | `#F8E1B6` | — | `--ds-primary-200` | New |
-| primary/300 | `#F1CC88` | — | `--ds-primary-300` | New |
-| primary/400 | `#E5AE54` | — | `--ds-primary-400` | New |
-| secondary/100 | `#EEE9FD` | — | `--ds-secondary-100` | New |
-| secondary/200 | `#D7CDFB` | — | `--ds-secondary-200` | New |
-| secondary/300 | `#B3A5F5` | — | `--ds-secondary-300` | New |
-| secondary/400 | `#9782EB` | — | `--ds-secondary-400` | New |
-| secondary/700 | `#523394` | — | `--ds-secondary-700` | New |
-| secondary/900 | `#35245B` | — | `--ds-secondary-900` | New |
-| neutral/50 | `#FFFFFF` | `--ds-neutral-50` | `--ds-neutral-50` | Changed |
-| neutral/100 | `#FAF9F7` | `--ds-neutral-100` | `--ds-neutral-100` | Changed |
-| neutral/200 | `#EFEBE7` | `--ds-neutral-200` | `--ds-neutral-200` | Changed |
-| neutral/300 | `rgb(212.1055609 208.48800302 219.91198361)` | `--ds-neutral-300` | `--ds-neutral-300` | Changed |
-| neutral/400 | `rgb(160.02370119 152.14999169 170.85000426)` | `--ds-neutral-400` | `--ds-neutral-400` | Changed |
-| neutral/500 | `#837A90` | `--ds-neutral-500` | `--ds-neutral-500` | Changed |
-| neutral/600 | `#68616F` | `--ds-neutral-600` | `--ds-neutral-600` | Changed |
-| neutral/700 | `#504759` | `--ds-neutral-700` | `--ds-neutral-700` | Changed |
-| neutral/800 | `#352D40` | `--ds-neutral-800` | `--ds-neutral-800` | Changed |
-| neutral/900 | `#231D2B` | `--ds-neutral-900` | `--ds-neutral-900` | Changed |
-| neutral/950 | `#15111B` | `--ds-neutral-950` | `--ds-neutral-950` | Changed |
-| peach/300 | `#FFAB8D` | — | `--ds-peach-300` | New |
-| success/50 | `#EFFAF3` | — | `--ds-success-50` | New |
-| success/300 | `#87CFA5` | — | `--ds-success-300` | New |
-| success/700 | `#195E3D` | — | `--ds-success-700` | New |
-| danger/50 | `#FFF1F4` | — | `--ds-danger-50` | New |
-| danger/300 | `#F79BB3` | — | `--ds-danger-300` | New |
-| danger/700 | `#9B1F43` | — | `--ds-danger-700` | New |
-| warning/50 | `#FFF7ED` | — | `--ds-warning-50` | New |
-| warning/300 | `#FDBA74` | — | `--ds-warning-300` | New |
-| warning/800 | `#9A3412` | — | `--ds-warning-800` | New |
+| primary/200 | `#F8E1B6` | — | `--nc-primary-200` | New |
+| primary/300 | `#F1CC88` | — | `--nc-primary-300` | New |
+| primary/400 | `#E5AE54` | — | `--nc-primary-400` | New |
+| secondary/100 | `#EEE9FD` | — | `--nc-secondary-100` | New |
+| secondary/200 | `#D7CDFB` | — | `--nc-secondary-200` | New |
+| secondary/300 | `#B3A5F5` | — | `--nc-secondary-300` | New |
+| secondary/400 | `#9782EB` | — | `--nc-secondary-400` | New |
+| secondary/700 | `#523394` | — | `--nc-secondary-700` | New |
+| secondary/900 | `#35245B` | — | `--nc-secondary-900` | New |
+| neutral/50 | `#FFFFFF` | `--nc-neutral-50` | `--nc-neutral-50` | Changed |
+| neutral/100 | `#FAF9F7` | `--nc-neutral-100` | `--nc-neutral-100` | Changed |
+| neutral/200 | `#EFEBE7` | `--nc-neutral-200` | `--nc-neutral-200` | Changed |
+| neutral/300 | `rgb(212.1055609 208.48800302 219.91198361)` | `--nc-neutral-300` | `--nc-neutral-300` | Changed |
+| neutral/400 | `rgb(160.02370119 152.14999169 170.85000426)` | `--nc-neutral-400` | `--nc-neutral-400` | Changed |
+| neutral/500 | `#837A90` | `--nc-neutral-500` | `--nc-neutral-500` | Changed |
+| neutral/600 | `#68616F` | `--nc-neutral-600` | `--nc-neutral-600` | Changed |
+| neutral/700 | `#504759` | `--nc-neutral-700` | `--nc-neutral-700` | Changed |
+| neutral/800 | `#352D40` | `--nc-neutral-800` | `--nc-neutral-800` | Changed |
+| neutral/900 | `#231D2B` | `--nc-neutral-900` | `--nc-neutral-900` | Changed |
+| neutral/950 | `#15111B` | `--nc-neutral-950` | `--nc-neutral-950` | Changed |
+| peach/300 | `#FFAB8D` | — | `--nc-peach-300` | New |
+| success/50 | `#EFFAF3` | — | `--nc-success-50` | New |
+| success/300 | `#87CFA5` | — | `--nc-success-300` | New |
+| success/700 | `#195E3D` | — | `--nc-success-700` | New |
+| danger/50 | `#FFF1F4` | — | `--nc-danger-50` | New |
+| danger/300 | `#F79BB3` | — | `--nc-danger-300` | New |
+| danger/700 | `#9B1F43` | — | `--nc-danger-700` | New |
+| warning/50 | `#FFF7ED` | — | `--nc-warning-50` | New |
+| warning/300 | `#FDBA74` | — | `--nc-warning-300` | New |
+| warning/800 | `#9A3412` | — | `--nc-warning-800` | New |
 
 ### Semantic modes
 
@@ -55,92 +55,92 @@ Tokens use the Figma path with slashes replaced by hyphens. Aliases listed here 
 
 | Figma role | Light alias | Dark alias | Existing token | Proposed token | Status |
 | --- | --- | --- | --- | --- | --- |
-| background/page | neutral/100 | neutral/950 | — | `--ds-background-page` | New |
-| surface/default | neutral/50 | neutral/900 | — | `--ds-surface-default` | New |
-| surface/raised | neutral/50 | neutral/800 | `--ds-surface-raised` | `--ds-surface-raised` | Changed |
-| surface/sunken | neutral/200 | neutral/950 | — | `--ds-surface-sunken` | New |
-| border/subtle | neutral/300 | neutral/700 | `--ds-border-subtle` | `--ds-border-subtle` | Changed |
-| border/control | neutral/500 | neutral/400 | `--ds-border-control` | `--ds-border-control` | Changed |
-| text/primary | neutral/900 | neutral/100 | `--ds-text-primary` | `--ds-text-primary` | Changed |
-| text/secondary | neutral/700 | neutral/200 | `--ds-text-secondary` | `--ds-text-secondary` | Changed |
-| text/muted | neutral/600 | neutral/400 | — | `--ds-text-muted` | New |
-| action/primary/bg | primary/200 | primary/200 | — | `--ds-action-primary-bg` | New |
-| action/primary/fg | neutral/900 | neutral/900 | — | `--ds-action-primary-fg` | New |
-| action/primary/hover | primary/300 | primary/300 | — | `--ds-action-primary-hover` | New |
-| action/primary/pressed | primary/400 | primary/400 | — | `--ds-action-primary-pressed` | New |
-| action/primary/border | neutral/700 | neutral/700 | — | `--ds-action-primary-border` | New |
-| action/secondary/bg | secondary/200 | secondary/200 | — | `--ds-action-secondary-bg` | New |
-| action/secondary/fg | neutral/900 | neutral/900 | — | `--ds-action-secondary-fg` | New |
-| action/secondary/hover | secondary/300 | secondary/300 | — | `--ds-action-secondary-hover` | New |
-| action/secondary/pressed | secondary/400 | secondary/400 | — | `--ds-action-secondary-pressed` | New |
-| action/secondary/border | secondary/700 | secondary/700 | — | `--ds-action-secondary-border` | New |
-| link/default | secondary/700 | secondary/200 | — | `--ds-link-default` | New |
-| link/hover | secondary/700 | secondary/100 | — | `--ds-link-hover` | New |
-| focus/ring | secondary/400 | secondary/300 | — | `--ds-focus-ring` | New |
-| selection/bg | secondary/100 | secondary/900 | — | `--ds-selection-bg` | New |
-| selection/fg | secondary/700 | secondary/100 | — | `--ds-selection-fg` | New |
-| selection/border | secondary/700 | secondary/300 | — | `--ds-selection-border` | New |
-| action/disabled/bg | neutral/200 | neutral/800 | — | `--ds-action-disabled-bg` | New |
-| action/disabled/fg | neutral/500 | neutral/400 | — | `--ds-action-disabled-fg` | New |
-| supporting/bg | peach/300 | peach/300 | — | `--ds-supporting-bg` | New |
-| supporting/fg | neutral/900 | neutral/900 | — | `--ds-supporting-fg` | New |
-| success/fg | success/700 | success/300 | — | `--ds-success-fg` | New |
-| success/bg | success/50 | neutral/900 | `--ds-success-bg` | `--ds-success-bg` | Changed |
-| success/border | success/700 | success/300 | — | `--ds-success-border` | New |
-| danger/fg | danger/700 | danger/300 | — | `--ds-danger-fg` | New |
-| danger/bg | danger/50 | neutral/900 | — | `--ds-danger-bg` | New |
-| danger/border | danger/700 | danger/300 | — | `--ds-danger-border` | New |
-| warning/fg | warning/800 | warning/300 | — | `--ds-warning-fg` | New |
-| warning/bg | warning/50 | neutral/900 | `--ds-warning-bg` | `--ds-warning-bg` | Changed |
-| warning/border | warning/800 | warning/300 | `--ds-warning-border` | `--ds-warning-border` | Changed |
-| text/placeholder | neutral/500 | neutral/500 | — | `--ds-text-placeholder` | New |
-| input/bg | neutral/100 | neutral/950 | — | `--ds-input-bg` | New |
-| input/hover | neutral/200 | neutral/800 | — | `--ds-input-hover` | New |
-| input/border | border/control | border/subtle | — | `--ds-input-border` | New |
-| loading/fg | secondary/700 | primary/200 | — | `--ds-loading-fg` | New |
-| loading/bg | neutral/200 | neutral/700 | — | `--ds-loading-bg` | New |
-| info/fg | neutral/950 | secondary/300 | — | `--ds-info-fg` | New |
-| info/bg | secondary/100 | neutral/900 | — | `--ds-info-bg` | New |
-| info/border | secondary/700 | secondary/300 | — | `--ds-info-border` | New |
-| action/tertiary/bg | surface/default at 0% opacity | surface/default at 0% opacity | — | `--ds-action-tertiary-bg` | New |
-| action/tertiary/fg | secondary/700 | secondary/400 | — | `--ds-action-tertiary-fg` | New |
-| action/tertiary/border | border/subtle | border/subtle | — | `--ds-action-tertiary-border` | New |
+| background/page | neutral/100 | neutral/950 | — | `--nc-background-page` | New |
+| surface/default | neutral/50 | neutral/900 | — | `--nc-surface-default` | New |
+| surface/raised | neutral/50 | neutral/800 | `--nc-surface-raised` | `--nc-surface-raised` | Changed |
+| surface/sunken | neutral/200 | neutral/950 | — | `--nc-surface-sunken` | New |
+| border/subtle | neutral/300 | neutral/700 | `--nc-border-subtle` | `--nc-border-subtle` | Changed |
+| border/control | neutral/500 | neutral/400 | `--nc-border-control` | `--nc-border-control` | Changed |
+| text/primary | neutral/900 | neutral/100 | `--nc-text-primary` | `--nc-text-primary` | Changed |
+| text/secondary | neutral/700 | neutral/200 | `--nc-text-secondary` | `--nc-text-secondary` | Changed |
+| text/muted | neutral/600 | neutral/400 | — | `--nc-text-muted` | New |
+| action/primary/bg | primary/200 | primary/200 | — | `--nc-action-primary-bg` | New |
+| action/primary/fg | neutral/900 | neutral/900 | — | `--nc-action-primary-fg` | New |
+| action/primary/hover | primary/300 | primary/300 | — | `--nc-action-primary-hover` | New |
+| action/primary/pressed | primary/400 | primary/400 | — | `--nc-action-primary-pressed` | New |
+| action/primary/border | neutral/700 | neutral/700 | — | `--nc-action-primary-border` | New |
+| action/secondary/bg | secondary/200 | secondary/200 | — | `--nc-action-secondary-bg` | New |
+| action/secondary/fg | neutral/900 | neutral/900 | — | `--nc-action-secondary-fg` | New |
+| action/secondary/hover | secondary/300 | secondary/300 | — | `--nc-action-secondary-hover` | New |
+| action/secondary/pressed | secondary/400 | secondary/400 | — | `--nc-action-secondary-pressed` | New |
+| action/secondary/border | secondary/700 | secondary/700 | — | `--nc-action-secondary-border` | New |
+| link/default | secondary/700 | secondary/200 | — | `--nc-link-default` | New |
+| link/hover | secondary/700 | secondary/100 | — | `--nc-link-hover` | New |
+| focus/ring | secondary/400 | secondary/300 | — | `--nc-focus-ring` | New |
+| selection/bg | secondary/100 | secondary/900 | — | `--nc-selection-bg` | New |
+| selection/fg | secondary/700 | secondary/100 | — | `--nc-selection-fg` | New |
+| selection/border | secondary/700 | secondary/300 | — | `--nc-selection-border` | New |
+| action/disabled/bg | neutral/200 | neutral/800 | — | `--nc-action-disabled-bg` | New |
+| action/disabled/fg | neutral/500 | neutral/400 | — | `--nc-action-disabled-fg` | New |
+| supporting/bg | peach/300 | peach/300 | — | `--nc-supporting-bg` | New |
+| supporting/fg | neutral/900 | neutral/900 | — | `--nc-supporting-fg` | New |
+| success/fg | success/700 | success/300 | — | `--nc-success-fg` | New |
+| success/bg | success/50 | neutral/900 | `--nc-success-bg` | `--nc-success-bg` | Changed |
+| success/border | success/700 | success/300 | — | `--nc-success-border` | New |
+| danger/fg | danger/700 | danger/300 | — | `--nc-danger-fg` | New |
+| danger/bg | danger/50 | neutral/900 | — | `--nc-danger-bg` | New |
+| danger/border | danger/700 | danger/300 | — | `--nc-danger-border` | New |
+| warning/fg | warning/800 | warning/300 | — | `--nc-warning-fg` | New |
+| warning/bg | warning/50 | neutral/900 | `--nc-warning-bg` | `--nc-warning-bg` | Changed |
+| warning/border | warning/800 | warning/300 | `--nc-warning-border` | `--nc-warning-border` | Changed |
+| text/placeholder | neutral/500 | neutral/500 | — | `--nc-text-placeholder` | New |
+| input/bg | neutral/100 | neutral/950 | — | `--nc-input-bg` | New |
+| input/hover | neutral/200 | neutral/800 | — | `--nc-input-hover` | New |
+| input/border | border/control | border/subtle | — | `--nc-input-border` | New |
+| loading/fg | secondary/700 | primary/200 | — | `--nc-loading-fg` | New |
+| loading/bg | neutral/200 | neutral/700 | — | `--nc-loading-bg` | New |
+| info/fg | neutral/950 | secondary/300 | — | `--nc-info-fg` | New |
+| info/bg | secondary/100 | neutral/900 | — | `--nc-info-bg` | New |
+| info/border | secondary/700 | secondary/300 | — | `--nc-info-border` | New |
+| action/tertiary/bg | surface/default at 0% opacity | surface/default at 0% opacity | — | `--nc-action-tertiary-bg` | New |
+| action/tertiary/fg | secondary/700 | secondary/400 | — | `--nc-action-tertiary-fg` | New |
+| action/tertiary/border | border/subtle | border/subtle | — | `--nc-action-tertiary-border` | New |
 
 Transparent tertiary backgrounds serialize as `transparent`, equivalent to the live surface/default alias at zero opacity in both modes.
 
 ### Typography
 
-New roles are foundations, not automatically applied to existing headings or components. Each prefix supplies `-family`, `-size`, `-line-height` and `-weight`; all styles use zero tracking via `--ds-type-letter-spacing: 0`. `--ds-font-serif` and `--ds-font-sans` change in place; `--ds-font-mono` is new. UI Title retains Figma's precise numeric size rather than rounding it to the prompt's 21.33px.
+New roles are foundations, not automatically applied to existing headings or components. Each prefix supplies `-family`, `-size`, `-line-height` and `-weight`; all styles use zero tracking via `--nc-type-letter-spacing: 0`. `--nc-font-serif` and `--nc-font-sans` change in place; `--nc-font-mono` is new. UI Title retains Figma's precise numeric size rather than rounding it to the prompt's 21.33px.
 
 | Figma style | Family | Size / line height (px) | Weight | New CSS prefix |
 | --- | --- | --- | --- | --- |
-| Type/Display | DM Serif Display | 50 / 64 | 400 | `--ds-type-display` |
-| Type/Heading/H1 | DM Serif Display | 38 / 48 | 400 | `--ds-type-h1` |
-| Type/Heading/H2 | DM Serif Display | 28 / 36 | 400 | `--ds-type-h2` |
-| Type/Heading/H3 | DM Serif Display | 21 / 32 | 400 | `--ds-type-h3` |
-| Type/Heading/H4 | DM Serif Display | 16 / 24 | 400 | `--ds-type-h4` |
-| Type/Body/Large | Inter | 21 / 32 | 400 | `--ds-type-body-large` |
-| Type/Body/Default | Inter | 16 / 24 | 400 | `--ds-type-body-default` |
-| Type/Body/Small | Inter | 12 / 20 | 400 | `--ds-type-body-small` |
-| Type/Caption | Inter | 12 / 16 | 400 | `--ds-type-caption` |
-| Type/UI/Title | Inter | 21.33333396911621 / 28 | 600 | `--ds-type-ui-title` |
-| Type/UI/Label | Inter | 16 / 24 | 500 | `--ds-type-ui-label` |
-| Type/UI/Button | Inter | 16 / 16 | 500 | `--ds-type-ui-button` |
-| Type/UI/Button Sm | Inter | 12 / 12 | 500 | `--ds-type-ui-button-small` |
-| Type/UI/Badge | Inter | 12 / 20 | 500 | `--ds-type-ui-badge` |
-| Type/Meta | IBM Plex Mono | 12 / 16 | 400 | `--ds-type-meta` |
+| Type/Display | DM Serif Display | 50 / 64 | 400 | `--nc-type-display` |
+| Type/Heading/H1 | DM Serif Display | 38 / 48 | 400 | `--nc-type-h1` |
+| Type/Heading/H2 | DM Serif Display | 28 / 36 | 400 | `--nc-type-h2` |
+| Type/Heading/H3 | DM Serif Display | 21 / 32 | 400 | `--nc-type-h3` |
+| Type/Heading/H4 | DM Serif Display | 16 / 24 | 400 | `--nc-type-h4` |
+| Type/Body/Large | Inter | 21 / 32 | 400 | `--nc-type-body-large` |
+| Type/Body/Default | Inter | 16 / 24 | 400 | `--nc-type-body-default` |
+| Type/Body/Small | Inter | 12 / 20 | 400 | `--nc-type-body-small` |
+| Type/Caption | Inter | 12 / 16 | 400 | `--nc-type-caption` |
+| Type/UI/Title | Inter | 21.33333396911621 / 28 | 600 | `--nc-type-ui-title` |
+| Type/UI/Label | Inter | 16 / 24 | 500 | `--nc-type-ui-label` |
+| Type/UI/Button | Inter | 16 / 16 | 500 | `--nc-type-ui-button` |
+| Type/UI/Button Sm | Inter | 12 / 12 | 500 | `--nc-type-ui-button-small` |
+| Type/UI/Badge | Inter | 12 / 20 | 500 | `--nc-type-ui-badge` |
+| Type/Meta | IBM Plex Mono | 12 / 16 | 400 | `--nc-type-meta` |
 
 ### Other dimensions
 
 | Figma definition | Approved value | Existing / proposed CSS token | Status |
 | --- | --- | --- | --- |
-| spacing/1 | 4px | `--ds-space-1` | Unchanged |
-| spacing/2 | 8px | `--ds-space-2` | Unchanged |
-| spacing/3 | 12px | `--ds-space-3` | Unchanged |
-| spacing/4 | 16px | `--ds-space-4` | Unchanged |
-| radius/default | 8px | `--ds-radius-default` | New |
-| Focus guidance: outer ring | 2px | `--ds-focus-width` | New token; existing width preserved |
-| Focus guidance: local-surface gap | 2px | `--ds-focus-offset` | New token; existing 2/3/4px outlines align to approved 2px |
+| spacing/1 | 4px | `--nc-space-1` | Unchanged |
+| spacing/2 | 8px | `--nc-space-2` | Unchanged |
+| spacing/3 | 12px | `--nc-space-3` | Unchanged |
+| spacing/4 | 16px | `--nc-space-4` | Unchanged |
+| radius/default | 8px | `--nc-radius-default` | New |
+| Focus guidance: outer ring | 2px | `--nc-focus-width` | New token; existing width preserved |
+| Focus guidance: local-surface gap | 2px | `--nc-focus-offset` | New token; existing 2/3/4px outlines align to approved 2px |
 
 Other spacing/radius collection members are deferred rather than imported as unused scales. Existing named radius tokens remain compatibility values as explained in category B.
 
@@ -148,14 +148,14 @@ Other spacing/radius collection members are deferred rather than imported as unu
 
 | Existing token | Approved role / preservation |
 | --- | --- |
-| `--ds-surface-page` | background/page |
-| `--ds-surface-raised` | surface/raised, exact live mapping |
-| `--ds-surface-inset` | surface/sunken |
-| `--ds-text-tertiary` | text/muted |
-| `--ds-accent` | link/default; readable interactive text |
-| `--ds-accent-bg` / `--ds-accent-border` | selection/bg / selection/border |
-| `--ds-success` / `--ds-warning` / `--ds-error` | success/fg / warning/fg / danger/fg |
-| `--ds-radius-panel` | legacy 10px, unchanged |
+| `--nc-surface-page` | background/page |
+| `--nc-surface-raised` | surface/raised, exact live mapping |
+| `--nc-surface-inset` | surface/sunken |
+| `--nc-text-tertiary` | text/muted |
+| `--nc-accent` | link/default; readable interactive text |
+| `--nc-accent-bg` / `--nc-accent-border` | selection/bg / selection/border |
+| `--nc-success` / `--nc-warning` / `--nc-error` | success/fg / warning/fg / danger/fg |
+| `--nc-radius-panel` | legacy 10px, unchanged |
 
 App aliases stay on `:root, body`, including Builder's tertiary `--muted` and Tracker's secondary `--muted`. Primary and revision button fills/labels use action/primary/bg and fg explicitly: the old accent could not safely represent both pale fills and readable links. Tracker error text uses danger/fg. Existing outlines use focus/ring and the approved width/gap; no new keyboard behaviors or component variants. Native controls inherit dark/light color-scheme from the foundation; theme storage and navigation logic remain unchanged.
 
