@@ -1,3 +1,6 @@
 /* Suite content uses the header's outer width and responsive side insets. */
 .nc-content { width:100%; max-width:1400px; margin:0 auto; padding:0 28px 2rem; }
 @media (max-width:899px) { .nc-content { padding-left:20px; padding-right:20px; } }
+
+/* Route/reading containers retain focus for orientation without a control halo. */
+.nc-content :is(main,section,article,aside,[role="tabpanel"]):is(:focus,:focus-visible) { outline:none; }

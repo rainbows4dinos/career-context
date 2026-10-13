@@ -32,7 +32,7 @@ button:hover { border-color:var(--accent) }
 .primary { background:var(--ds-action-primary-bg); color:var(--ds-action-primary-fg); border-color:var(--ds-action-primary-border); font-weight:500 }
 .secondary { color:var(--muted) }
 button:disabled { opacity:.5; cursor:wait }
-:focus-visible { outline:var(--ds-focus-width) solid var(--ds-focus-ring); outline-offset:var(--ds-focus-offset) }
+:is(a[href],button,input,select,textarea,summary,[role="button"],[role="link"],[role="tab"],[role="switch"],[role="checkbox"],[role="radio"]):focus-visible { outline:var(--ds-focus-width) solid var(--ds-focus-ring); outline-offset:var(--ds-focus-offset) }
 .panel { background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:1.5rem; margin-bottom:1rem }
 .narrow { max-width:520px; margin:2rem auto }
 .muted,.empty-column { color:var(--muted) }
