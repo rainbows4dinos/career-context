@@ -32,6 +32,9 @@ Explores how AI changes interaction models, onboarding, trust, workflow orchestr
 - Staff Product Designer
 - Principal Product Designer
 - Lead Product Designer
+- Director, Product Design
+– Head of Product Design
+
 
 ## Secondary Targets
 - Product Design Lead
@@ -255,7 +258,7 @@ May 2026 – Jul 2026
 
 # Education
 
-## Bachelor of Science, Multimedia & Web Design
+## Bachelor of Science, Interactive Media Design
 Art Institute of Portland, High Honors
 
 ---
