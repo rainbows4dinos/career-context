@@ -124,21 +124,21 @@
   @media (max-width: 600px) { .field-row { grid-template-columns: 1fr } .revise-bar button { width: 100% } .tab-bar { flex-wrap: wrap } .tab-actions { width: 100%; margin-left: 0; padding: 8px 0 } .tab-actions button { flex: 1 } }
 
 </style>
-<link rel="stylesheet" href="shared/components.css" />
+<link rel="stylesheet" href="shared/components.css?v=20261013-dismiss" />
 <link rel="stylesheet" href="shared/layout.css">
 </head>
 <body>
   <header id="nextchapter-header" data-app="builder"></header>
 <div class="shell nc-content">
   <section class="app-heading" aria-labelledby="builder-title" style="margin-bottom:2.5rem">
-    <h1 id="builder-title">Résumé Builder <span id="buildTag" style="font-size:11px;font-weight:400;opacity:0.5;vertical-align:middle"></span></h1>
+    <h1 id="builder-title">Résumé Builder</h1>
     <p style="max-width: 90%;">Custom resume and cover letter generator using my job-hunting context files, docx templates, and Claude. Learn more on my <a href="https://github.com/rainbows4dinos/nextchapter" target="_blank">GitHub page</a>. Check out my portfolio at <a href="https://www.larryjr.design" target="_blank">www.larryjr.design</a></p>
   </section>
 
   <ol class="step-bar nc-step-progress" aria-label="Application progress">
-    <li class="nc-step-progress__stage"><div class="nc-step nc-step--active" id="step0" aria-current="step"><span class="nc-step__badge"><svg class="gravity-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="shared/vendor/gravity-icons/sprite.svg#circle-number-1"></use></svg></span><span class="nc-step__label">Job details</span><span class="nc-visually-hidden" data-step-state>Current</span></div></li>
-    <li class="nc-step-progress__stage"><div class="nc-step nc-step--upcoming" id="step1"><span class="nc-step__badge"><svg class="gravity-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="shared/vendor/gravity-icons/sprite.svg#circle-number-2"></use></svg></span><span class="nc-step__label">Generating</span><span class="nc-visually-hidden" data-step-state>Upcoming</span></div></li>
-    <li class="nc-step-progress__stage"><div class="nc-step nc-step--upcoming" id="step2"><span class="nc-step__badge"><svg class="gravity-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="shared/vendor/gravity-icons/sprite.svg#circle-number-3"></use></svg></span><span class="nc-step__label">Preview + Download</span><span class="nc-visually-hidden" data-step-state>Upcoming</span></div></li>
+    <li class="nc-step-progress__stage"><div class="nc-step nc-step--active" id="step0" aria-current="step"><span class="nc-step__badge" aria-hidden="true">1</span><span class="nc-step__label">Job details</span><span class="nc-visually-hidden" data-step-state>Current</span></div></li>
+    <li class="nc-step-progress__stage"><div class="nc-step nc-step--upcoming" id="step1"><span class="nc-step__badge" aria-hidden="true">2</span><span class="nc-step__label">Generating</span><span class="nc-visually-hidden" data-step-state>Upcoming</span></div></li>
+    <li class="nc-step-progress__stage"><div class="nc-step nc-step--upcoming" id="step2"><span class="nc-step__badge" aria-hidden="true">3</span><span class="nc-step__label">Preview + Download</span><span class="nc-visually-hidden" data-step-state>Upcoming</span></div></li>
   </ol>
 
   <!-- Pane 0: Input -->
@@ -185,7 +185,7 @@
       <div class="loading-status" id="loadStatus">Analyzing job description...</div>
       <div class="loading-sub" id="loadSub">Identifying what they actually care about</div>
       </div>
-      <div id="generationError" class="nc-alert" style="margin-top:1rem"></div>
+      <div id="generationError" class="nc-alert"></div>
     </div>
   </div>
 
@@ -201,14 +201,14 @@
         <button class="secondary nc-button nc-button--tertiary nc-button--lg" onclick="startOver()">Start New Application</button>
       </div>
     </div>
-    <div id="downloadError" class="nc-alert" style="margin-bottom:1rem"></div>
+    <div id="downloadError" class="nc-alert"></div>
     <div id="tabResume" role="tabpanel" aria-labelledby="resumeTab" tabindex="0"><div class="card" id="resumeOut"></div></div>
     <div id="tabCL" role="tabpanel" aria-labelledby="clTab" tabindex="0" hidden style="display:none"><div class="card" id="clOut"></div></div>
     <div class="revise-status" id="reviseStatus" role="status" aria-live="polite">
       <div class="nc-spinner" aria-hidden="true"></div>
       <span id="reviseStatusText">Revising...</span>
     </div>
-    <div id="revisionError" class="nc-alert" style="margin-bottom:1rem"></div>
+    <div id="revisionError" class="nc-alert"></div>
     <div class="revise-bar nc-field">
       <label class="nc-visually-hidden" for="reviseNote">Revision request</label>
       <textarea class="nc-textarea" id="reviseNote" rows="1" placeholder="Ask for a revision — e.g. Make the opening punchier, or drop the Elevate bullet" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();goRevise()}"></textarea>
@@ -220,7 +220,7 @@
 
 <!-- docx loaded lazily on first download click -->
 <script type="module">
-import { setAlert } from './shared/status.mjs';
+import { setAlert } from './shared/status.mjs?v=20261013-dismiss';
 import { HANDOFF_PARAM, clearExpiredHandoffs, readHandoff, consumeHandoff } from './shared/resume-handoff.mjs';
 
 function receiveRadarJob() {
@@ -238,7 +238,7 @@ function receiveRadarJob() {
         description: document.getElementById('jobDesc')
       }, () => window.confirm('Replace the company, job title and job description already entered here with the job sent from Prospect Tracker? Other content and settings will be kept.'));
       notice.hidden = false;
-      setAlert(notice, { message: applied ? 'Job details received from Prospect Tracker. Review them before generating.' : 'Transfer declined. Your existing job details were kept.', variant: 'info' });
+      setAlert(notice, { message: applied ? 'Job details received from Prospect Tracker. Review them before generating.' : 'Transfer declined. Your existing job details were kept.', variant: 'info', dismissible: true });
     }
     try { clearExpiredHandoffs(storage, url); } catch { /* abandoned-payload cleanup is best effort */ }
   } catch (error) {
@@ -262,7 +262,7 @@ window.addEventListener('hashchange', receiveRadarJob);
 <script>
 // Shared UI adapters do not participate in generation or export data.
 const fieldUI = import('./shared/fields.mjs');
-const statusUI = import('./shared/status.mjs');
+const statusUI = import('./shared/status.mjs?v=20261013-dismiss');
 const notificationUI = import('./shared/notifications.mjs');
 fieldUI.then(ui => ui.bindFieldValidation(document));
 function inlineMessage(id, message, variant = 'danger') {
@@ -273,47 +273,8 @@ function inlineMessage(id, message, variant = 'danger') {
   });
 }
 function notify(message) { notificationUI.then(ui => ui.showToast({ message, variant: 'success' })); }
-// Version tag: reads the latest commit for this file from GitHub, then compares it
-// against the deploy time of the page actually running. Catches a cached page.
-async function showVersion() {
-  const t = document.getElementById('buildTag');
-  if (!t) return;
-  t.textContent = 'build ' + BUILD;
-  try {
-    const res = await fetch('https://api.github.com/repos/rainbows4dinos/nextchapter/commits?path=tools/resume-tailor.html&per_page=1', { cache: 'no-store' });
-    if (!res.ok) throw new Error('GitHub API ' + res.status);
-    const [commit] = await res.json();
-    if (!commit) throw new Error('no commits returned');
-
-    const committed = new Date(commit.commit.committer.date);
-    const sha = commit.sha.slice(0, 7);
-    const when = committed.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
-                 ' ' + committed.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-
-    // Is the page in the browser older than the newest commit to it?
-    let stale = false;
-    try {
-      const head = await fetch(location.href, { method: 'HEAD', cache: 'no-store' });
-      const lastMod = head.headers.get('Last-Modified');
-      if (lastMod) stale = new Date(lastMod).getTime() + 120000 < committed.getTime();
-    } catch (_) { /* file:// or no HEAD, skip the staleness check */ }
-
-    t.textContent = sha + ' · ' + when;
-    if (stale) {
-      t.textContent += ' · cached page, hard reload';
-      t.style.color = '#c98a2b';
-      t.style.opacity = '1';
-    }
-  } catch (e) {
-    console.warn('Version check unavailable:', e.message);
-    t.textContent = 'build ' + BUILD;
-  }
-}
-
-document.addEventListener('DOMContentLoaded', showVersion);
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const BUILD = '2026-10-05-a'; // fallback only, the version tag is read from GitHub at load
 const REPO_RAW = 'https://raw.githubusercontent.com/rainbows4dinos/nextchapter/main';
 // Proxy forwards requests to Anthropic API to work around CORS on GitHub Pages.
 // Set to null to call Anthropic directly (works locally or in Claude artifacts).
@@ -419,7 +380,9 @@ function setStep(n) {
     if (i===n) step.setAttribute('aria-current', 'step');
     else step.removeAttribute('aria-current');
     step.querySelector('[data-step-state]').textContent = i<n ? 'Completed' : i===n ? 'Current' : 'Upcoming';
-    step.querySelector('use').setAttribute('href', 'shared/vendor/gravity-icons/sprite.svg#' + (i<n ? 'circle-check' : 'circle-number-' + (i+1)));
+    step.querySelector('.nc-step__badge').innerHTML = i<n
+      ? '<svg class="gravity-icon" width="20" height="20" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><use href="shared/vendor/gravity-icons/sprite.svg#check"></use></svg>'
+      : String(i+1);
   });
   ['pane0','pane1','pane2'].forEach((id,i)=>{
     document.getElementById(id).style.display=i===n?'':'none';

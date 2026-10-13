@@ -23,8 +23,47 @@
     .about h3 { font:var(--nc-type-h3-weight) var(--nc-type-h3-size)/var(--nc-type-h3-line-height) var(--nc-type-h3-family); margin-top:1.5rem }
     .about p { margin:0 0 var(--nc-space-4) }
     .about a { overflow-wrap:anywhere }
+    .about-build { margin-top:2rem; font:var(--nc-type-meta-weight) var(--nc-type-meta-size)/var(--nc-type-meta-line-height) var(--nc-type-meta-family); color:var(--nc-text-muted) }
+    .about-build.stale { color:var(--nc-warning-fg) }
   </style>
   <link rel="stylesheet" href="shared/layout.css">
+  <script>
+    // Build tag: reads the latest commit on main from GitHub, then compares it
+    // against the deploy time of the page actually running. Catches a cached page.
+    async function showVersion() {
+      const t = document.getElementById('buildTag');
+      if (!t) return;
+      try {
+        const res = await fetch('https://api.github.com/repos/rainbows4dinos/nextchapter/commits?sha=main&per_page=1', { cache: 'no-store' });
+        if (!res.ok) throw new Error('GitHub API ' + res.status);
+        const [commit] = await res.json();
+        if (!commit) throw new Error('no commits returned');
+
+        const committed = new Date(commit.commit.committer.date);
+        const sha = commit.sha.slice(0, 7);
+        const when = committed.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
+                     ' ' + committed.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+
+        // Is the page in the browser older than the newest commit?
+        let stale = false;
+        try {
+          const head = await fetch(location.href, { method: 'HEAD', cache: 'no-store' });
+          const lastMod = head.headers.get('Last-Modified');
+          if (lastMod) stale = new Date(lastMod).getTime() + 120000 < committed.getTime();
+        } catch (_) { /* file:// or no HEAD, skip the staleness check */ }
+
+        t.textContent = 'build ' + sha + ' · ' + when;
+        if (stale) {
+          t.textContent += ' · cached page, hard reload';
+          t.classList.add('stale');
+        }
+        t.hidden = false;
+      } catch (e) {
+        console.warn('Version check unavailable:', e.message);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', showVersion);
+  </script>
 </head>
 <body>
   <header id="nextchapter-header" data-app="about"></header>
@@ -44,6 +83,7 @@
     <h2>Shared context, separate responsibilities</h2>
     <p>The tools share canonical career facts, supporting experience, and writing guidance. Opportunity records remain separate from that context: tracking a company does not mean publishing it.</p>
     <p>The project’s <a href="https://github.com/rainbows4dinos/nextchapter">README and source repository</a> explain the tools, their shared context, and how they are maintained.</p>
+    <p id="buildTag" class="about-build" hidden></p>
   </main>
   </div>
 </body>
