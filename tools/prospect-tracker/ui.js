@@ -267,15 +267,21 @@ export function editorView(root, row) {
   }
   form.append(fields); bindFieldValidation(form); panels.append(form);
   if (row) {
-    const section = el('section', '', 'panel editor__status'); section.append(el('h2', 'Status'));
-    const currentBadge = statusBadge(row.status); currentBadge.id = 'current-status-badge'; section.append(currentBadge);
+    const sidebar = el('aside', '', 'panel editor__status'); sidebar.setAttribute('aria-label', 'Prospect status and history');
+    const section = el('section'); section.setAttribute('aria-labelledby', 'prospect-status-title');
+    const statusTitle = el('h2', 'Status'); statusTitle.id = 'prospect-status-title'; section.append(statusTitle);
+    const content = el('div', '', 'editor__status-content');
+    const currentBadge = statusBadge(row.status); currentBadge.id = 'current-status-badge'; content.append(currentBadge);
     const statusForm = el('form', '', 'status-controls'); statusForm.id = 'status-form';
     const statusFields = el('fieldset', '', 'status-controls');
-    statusFields.append(selectField('status', 'Current status', SELECTABLE_STATUSES, row.status));
-    statusForm.append(statusFields); section.append(statusForm);
-    const statusFeedback = el('p', '', 'feedback nc-alert'); statusFeedback.id = 'status-feedback'; statusFeedback.setAttribute('role','status'); section.append(statusFeedback);
-    section.append(el('p', 'Status saves automatically when selected. Applied date is editable under More job details.', 'muted'));
-    const history = el('section'); history.id = 'history'; history.setAttribute('aria-live','polite'); section.append(history); panels.append(section);
+    statusFields.append(selectField('status', 'Change Status', SELECTABLE_STATUSES, row.status));
+    statusForm.append(statusFields); content.append(statusForm);
+    const help = el('p', 'Status saves automatically when selected. Applied date is editable under More job details.', 'editor__status-help'); help.id = 'status-help';
+    statusFields.querySelector('select')?.setAttribute('aria-describedby', help.id);
+    content.append(help);
+    const statusFeedback = el('p', '', 'feedback nc-alert'); statusFeedback.id = 'status-feedback'; statusFeedback.setAttribute('role','status'); content.append(statusFeedback);
+    section.append(content); sidebar.append(section);
+    const history = el('section'); history.id = 'history'; history.setAttribute('aria-live','polite'); history.setAttribute('aria-labelledby', 'status-history-title'); sidebar.append(history); panels.append(sidebar);
   }
   root.replaceChildren(editor);
   return form;
@@ -290,5 +296,6 @@ export function historyView(root, events) {
     item.append(statusBadge(/** @type {import('./model.js').ProspectStatus} */ (event.to_status)));
     const time = el('time', new Date(event.recorded_at).toLocaleString()); time.dateTime = event.recorded_at; item.append(time); list.append(item);
   }
-  root.replaceChildren(el('h3', 'Status history'), events.length ? list : el('p', 'No status events recorded yet.', 'muted'));
+  const title = el('h3', 'Status history'); title.id = 'status-history-title';
+  root.replaceChildren(title, events.length ? list : el('p', 'No status events recorded yet.', 'editor__status-help'));
 }

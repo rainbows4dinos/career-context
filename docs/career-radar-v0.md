@@ -12,7 +12,7 @@ Open [Career Radar](../tools/prospect-tracker/index.html) through a web server, 
 
 - `#/board`: four lifecycle columns with counts and prospect cards. **Prospects** groups prospect/interested and any legacy applying records; **Applied** retains its own column; **In-Process** groups recruiter/interviewing/final/offer; **Done** groups passed/rejected/withdrawn/closed. Cards in grouped columns display their exact saved status. Done is visually quieter and collapsed on each board render; select its heading to expand it. The columns fit desktop widths and scroll horizontally on smaller screens. Refresh explicitly to see changes made elsewhere.
 - `#/prospects/new`: only company and role are required. Enter manually or retrieve an editable Greenhouse, Ashby or Lever posting preview. Job description and URL are immediately available; notes and other core fields are under **More job details**, which opens for a retrieved preview. Source is optional free text with channel suggestions; compensation supports multiple lines.
-- `#/prospects/<uuid>`: edit details and notes, open a safe job link, or select **Current status** to save it immediately. Status saves separately from details; applied date is not inferred.
+- `#/prospects/<uuid>`: edit details and notes, open a safe job link, or select **Change Status** to save it immediately. Status saves separately from details; applied date is not inferred.
 
 Desktop cards can also move across columns using native drag-and-drop. Prospects, Applied and In-Process assign prospect, applied and recruiter respectively; Done requires selecting Passed, Rejected, Withdrawn or Closed in an anchored chooser. Both board and editor share the revision-guarded status save path. See [status badges and Kanban moves](prospect-tracker-kanban.md) for tone mappings, cancellation/rollback behavior and validation.
 
@@ -27,6 +27,10 @@ Status selection saves through the existing guarded write and database history t
 Saves wait for database confirmation. Failed saves retain the draft; conflicts retain it and offer **Reload saved prospect**, which explicitly discards the draft. Create retries reconcile the same UUID before attempting another insert. Unsaved navigation and reload prompt before discarding. Drafts live only in memory and are lost on a confirmed reload or sign-out. Auth sessions persist through the SDK; prospect state lives in Supabase. A signed-out event clears private views and drafts in every open Radar tab.
 
 The UI builds user content with DOM text nodes, never HTML interpretation. It uses the résumé builder's font/color/radius tokens and shared `theme` preference without extracting or refactoring the builder's styles.
+
+### Prospect Details status sidebar
+
+The Prospect Details status sidebar now follows Builder's results-sidebar styling: 28px padding, shared panel-radius corners, 28px between current-status and history zones, and 16px/24px medium Inter section headings with 8px below each heading. Helper text and timestamps use the shared small-body style. Loading/error history messages remain inside the existing zone without another nested panel. Status selection, badge updates, guarded saves and history behavior remain unchanged. Local synthetic browser checks passed for both themes, desktop and 390px stacked layouts with no horizontal overflow, automatic status/history updates and reload persistence. Typecheck/lint and diff whitespace checks passed. Hosted publication of this styling change has not been verified at this documentation checkpoint.
 
 ### Résumé Builder handoff
 

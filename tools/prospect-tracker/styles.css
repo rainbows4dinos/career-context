@@ -26,7 +26,7 @@ p { margin:.5rem 0 1rem } header p { margin:0 }
 nav,.actions,.view-heading { display:flex; flex-wrap:wrap; align-items:center; gap:1rem }
 nav { width:100% }
 a { color:var(--accent); text-decoration:none } a:hover { background:var(--accent-bg) }
-button,input,select,textarea { font:inherit; border-radius:8px }
+button,input,select,textarea { font:inherit; border-radius:var(--nc-radius-default) }
 button { cursor:pointer; padding:10px 16px; border:1px solid var(--border); background:transparent; color:var(--text) }
 button:hover { border-color:var(--accent) }
 .primary { background:var(--nc-action-primary-bg); color:var(--nc-action-primary-fg); border-color:var(--nc-action-primary-border); font-weight:500 }
@@ -37,7 +37,7 @@ button:disabled { opacity:.5; cursor:wait }
 .narrow { max-width:520px; margin:2rem auto }
 .muted,.empty-column { color:var(--muted) }
 #notice:empty,#login-error:empty,.feedback:empty { display:none }
-#notice:not(.nc-alert),.feedback:not(.nc-alert),#login-error:not(.nc-alert) { padding:.75rem 1rem; background:var(--accent-bg); border-radius:8px; overflow-wrap:anywhere }
+#notice:not(.nc-alert),.feedback:not(.nc-alert),#login-error:not(.nc-alert) { padding:.75rem 1rem; background:var(--accent-bg); border-radius:var(--nc-radius-default); overflow-wrap:anywhere }
 .error { color:var(--nc-danger-fg) }
 .view-heading { justify-content:space-between; margin-bottom:1rem }
 .shell:has(.board) #tracker-heading { border:0; margin-top:calc(2 * var(--nc-space-4)); margin-bottom:var(--nc-space-4); padding-bottom:var(--nc-space-4) }
@@ -75,12 +75,11 @@ button:disabled { opacity:.5; cursor:wait }
 .column-done[open] summary { margin-bottom:1rem }
 .prospect-card strong { color:var(--muted) }
 .count { color:var(--muted) }
-.prospect-card { display:block; padding:12px; margin-bottom:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); text-decoration:none; overflow-wrap:anywhere }
+.prospect-card { display:block; padding:12px; margin-bottom:10px; border:1px solid var(--border); border-radius:var(--nc-radius-default); background:var(--bg); color:var(--text); text-decoration:none; overflow-wrap:anywhere }
 .prospect-card:hover { text-decoration:none }
 .prospect-card strong { display:block; font-weight:500; color:var(--accent) }
 .prospect-card span { display:block; margin-top:4px }
 .prospect-card .nc-status-badge { display:inline-flex; margin-top:8px }
-.editor__status > .nc-status-badge { margin-bottom:12px }
 .prospect-card small { display:block; color:var(--muted); margin-top:8px }
 .prospect-card time { margin-top:6px }
 label { display:block; font-size:13px; font-weight:400; margin-bottom:1rem }
@@ -93,8 +92,19 @@ details { margin:1rem 0 } summary { cursor:pointer; color:var(--muted); margin-b
 .editor__back { display:inline-block; margin-block:var(--nc-space-4) }
 .editor--detail .editor__heading { font:var(--nc-type-h1-weight) var(--nc-type-h1-size)/var(--nc-type-h1-line-height) var(--nc-type-h1-family); margin-bottom:var(--nc-space-4); overflow-wrap:anywhere }
 .editor__panels > * { min-width:0 }
-.editor__status { align-self:start }
-.editor__status > h2 { font-size:22px }
+/* Match Builder's results sidebar: padded shell, UI headings and separate zones. */
+.editor__status.panel { align-self:start; display:flex; flex-direction:column; gap:28px; padding:28px; margin:0; overflow-wrap:anywhere }
+.editor__status section { min-width:0 }
+.editor__status :is(h2,h3) { font:var(--nc-type-ui-label-weight) var(--nc-type-ui-label-size)/var(--nc-type-ui-label-line-height) var(--nc-type-ui-label-family); margin:0 0 8px; padding-left:2px }
+.editor__status-content { display:flex; flex-direction:column; gap:12px }
+.editor__status-content > .nc-status-badge { align-self:flex-start }
+.editor__status-content > .status-controls { margin-top:8px }
+.editor__status .nc-alert { margin:0 }
+.editor__status .editor__status-help, .editor__status time { margin:0; color:var(--nc-text-muted); font:var(--nc-type-body-small-weight) var(--nc-type-body-small-size)/var(--nc-type-body-small-line-height) var(--nc-type-body-small-family) }
+.editor__status .history { margin:0; padding-left:20px }
+.editor__status .history li:last-child { margin-bottom:0 }
+.editor__status .history time { margin-top:4px }
+.editor__status #history > .panel { padding:0; margin:0; border:0; border-radius:0; background:transparent }
 .job-url-control { position:relative }
 .job-url-control--linked .nc-input { padding-right:76px }
 .job-url-control__open { position:absolute; right:12px; top:8px; line-height:24px; font-weight:500 }

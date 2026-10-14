@@ -6,6 +6,14 @@ Historical extraction snapshot. The October 11 [Phase 1 shared foundations](next
 
 Shared CSS token names now use `--nc-` (nextchapter). Definitions, application/component consumers, browser-test color probes and documentation references were renamed together. Token values, aliases, theme selectors and export logic are unchanged. Four-page comparisons in both themes confirmed identical resolved styles; all current namespace references are defined. Historical tables below use the current prefix for consistency.
 
+## Content card radii — October 14, 2026
+
+Outer content cards use `--nc-radius-panel`: Builder form/loading/document/feedback cards, Tracker panels and board columns, and the shared panel styling used by About and the Career Radar placeholder. Smaller internal surfaces use `--nc-radius-default`: prospect cards, inline Alerts, Toasts and legacy feedback surfaces. Existing local `--radius` aliases resolve to the panel token on the theme element.
+
+Builder preview cards and the Tracker status sidebar no longer override their panel radius with hardcoded 24px corners. Keep numeric radius values in `tools/shared/tokens.css`, so changing a token updates its consumers together. Navigation pills, switches, badges, compact buttons and popovers retain their own component shapes; résumé document/export formatting is outside this card-shell change. Four entry pages carry matching token/component/Tracker-stylesheet cache revisions.
+
+Local browser checks confirmed equal panel-token radii for both Tracker detail panels and all board columns, plus all four Builder card shells in dark/light themes. Prospect cards and an inline ingestion Alert resolved to the default token. Builder preview-shell values were inspected in the DOM without generating application documents. Typecheck, lint and `git diff --check` passed; no hosted publication is claimed for this change.
+
 ## Standard UI transitions — October 13, 2026
 
 | Token | Value | Use |

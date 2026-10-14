@@ -177,7 +177,7 @@
 
 /* Alerts and Toasts share semantic vocabulary, but have distinct surfaces. */
 .nc-alert, .nc-toast {
-  display: flex; align-items: flex-start; gap: 4px; padding: 8px; border: 1px solid; border-radius: 8px;
+  display: flex; align-items: flex-start; gap: 4px; padding: 8px; border: 1px solid; border-radius: var(--nc-radius-default);
   min-width: 0; max-width: 100%; text-align: left;
   font: var(--nc-type-ui-badge-weight) var(--nc-type-ui-badge-size)/var(--nc-type-ui-badge-line-height) var(--nc-type-ui-badge-family);
   letter-spacing: var(--nc-type-letter-spacing);
