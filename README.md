@@ -2,7 +2,7 @@
 
 Shared professional context and personal career tools for Larry Reynolds: résumé tailoring, portfolio positioning, interview preparation, and opportunity evaluation.
 
-nextchapter connects three applications: Career Radar (coming soon) for discovery and evaluation, Prospect Tracker for managing prospects and applications, and Résumé Builder for tailored application materials. Prospect Tracker retains existing manual tracking and editable job URL previews (Greenhouse, Ashby, Lever and limited Workday).
+nextchapter connects three applications: Career Radar (coming soon) for discovery and evaluation, Prospect Tracker for managing prospects and applications, and Résumé Builder for tailored application materials. Prospect Tracker retains existing manual tracking and editable job URL previews (Greenhouse, Ashby, Lever, account-qualified Workable and limited Workday).
 
 ## Shared career context
 
@@ -27,6 +27,8 @@ Keep personal job-search staging/seed files, reconciliation reports, backups, so
 Prospect Tracker's database and typed application live in `supabase/` and `tools/prospect-tracker/`. The initial migration is applied to the hosted project. See [setup and validation](docs/career-radar-v0.md) and the [implementation plan](docs/career-radar-v0-implementation-plan.md).
 
 For URL import, see [Greenhouse configuration and hosted results](docs/career-radar-greenhouse-ingestion.md), [Ashby/Lever implementation and deployment steps](docs/career-radar-ashby-lever-ingestion.md), [limited Workday support and deployment](docs/career-radar-workday-ingestion.md), and the [approved ingestion architecture](docs/career-radar-url-ingestion-plan.md).
+
+For Workable, see [supported links, validation and deployment](docs/prospect-tracker-workable-ingestion.md) and the preceding [compatibility spike](docs/prospect-tracker-workable-spike.md).
 
 ## Repository instructions
 

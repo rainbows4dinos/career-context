@@ -20,6 +20,8 @@ export async function startFixture(port = 0) {
   const leverPage = await readFile(new URL('./lever/posting.html', import.meta.url), 'utf8');
   const workday = JSON.parse(await readFile(new URL('./workday/posting.json', import.meta.url), 'utf8'));
   const workdayPage = await readFile(new URL('./workday/posting.html', import.meta.url), 'utf8');
+  const workable = JSON.parse(await readFile(new URL('./workable/posting.json', import.meta.url), 'utf8'));
+  const workableAccount = JSON.parse(await readFile(new URL('./workable/account.json', import.meta.url), 'utf8'));
   const user = { id: owner, aud: 'authenticated', role: 'authenticated', email: 'radar@example.invalid', created_at: new Date().toISOString(), app_metadata: {}, user_metadata: {}, is_anonymous: false };
   const encode = value => Buffer.from(JSON.stringify(value)).toString('base64url');
   const token = `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ sub: owner, role: 'authenticated', aud: 'authenticated', exp: Math.floor(Date.now() / 1000) + 3600 })}.synthetic`;
@@ -52,6 +54,16 @@ export async function startFixture(port = 0) {
           authenticate: async value => value === token ? owner : null,
           fetcher: async target => {
             const destination = new URL(String(target));
+            if (destination.hostname === 'apply.workable.com') {
+              const identity = recognizePosting(JSON.parse(text).url);
+              if (destination.pathname.includes('/api/v2/')) {
+                if (identity.posting_id === 'NOTFOUND404') return Response.json({}, { status: 404 });
+                if (identity.posting_id === 'DENIED403') return Response.json({}, { status: 403 });
+                return Response.json({ ...workable, shortcode: identity.posting_id });
+              }
+              if (identity.posting_id === 'PARTIAL999') return Response.json({}, { status: 404 });
+              return Response.json({ ...workableAccount, subdomain: identity.board });
+            }
             if (destination.hostname.endsWith('.myworkdayjobs.com') || destination.hostname.endsWith('.myworkdaysite.com')) {
               const identity = recognizePosting(JSON.parse(text).url);
               if (destination.pathname.includes('/wday/cxs/')) {

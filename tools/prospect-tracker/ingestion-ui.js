@@ -12,7 +12,7 @@ import { PROVIDER_NAMES } from './ingestion/posting-url.js';
  */
 export function mountIngestion(form, options) {
   const panel = el('section', '', 'panel ingestion');
-  panel.append(el('h3', 'Import a job posting'), el('p', 'Paste a hosted Greenhouse, Ashby, Lever or supported Workday job link, then review before saving. Other sites can be entered manually.', 'muted'));
+  panel.append(el('h3', 'Import a job posting'), el('p', 'Paste a hosted job link from Greenhouse, Ashby, Lever, Workable or a supported Workday site, then review before saving. For Workable, use the full company/job address shown after opening the posting. Other sites can be entered manually.', 'muted'));
   const retrieveForm = el('form');
   const fields = el('fieldset');
   const label = el('div', '', 'nc-field');

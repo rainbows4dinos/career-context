@@ -2,7 +2,7 @@
 
 Date: October 7, 2026
 
-Status: Architecture approved by the user on October 7, 2026, with the decisions recorded below. Greenhouse was the first authorized slice; its deployment and authenticated hosted acceptance are recorded in [the Greenhouse guide](career-radar-greenhouse-ingestion.md). The user subsequently authorized Ashby and Lever using that reference architecture; their implementation, deployment and authenticated hosted validation are recorded in [the adapter guide](career-radar-ashby-lever-ingestion.md). The user subsequently approved limited Workday ingestion after its compatibility spike; see [implementation, limits and deployment status](career-radar-workday-ingestion.md). Generic employer retrieval and discovery remain future work.
+Status: Architecture approved by the user on October 7, 2026, with the decisions recorded below. Greenhouse was the first authorized slice; its deployment and authenticated hosted acceptance are recorded in [the Greenhouse guide](career-radar-greenhouse-ingestion.md). The user subsequently authorized Ashby and Lever using that reference architecture; their implementation, deployment and authenticated hosted validation are recorded in [the adapter guide](career-radar-ashby-lever-ingestion.md). The user subsequently approved limited Workday ingestion after its compatibility spike; see [implementation, limits and deployment status](career-radar-workday-ingestion.md). The user subsequently authorized limited Workable support from its spike; see [the Workable guide](prospect-tracker-workable-ingestion.md). Generic employer retrieval and discovery remain future work.
 
 ## Goal and scope
 

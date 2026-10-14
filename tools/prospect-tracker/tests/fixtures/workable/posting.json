@@ -1,0 +1,22 @@
+{
+  "id": 123456,
+  "shortcode": "ABC123DEF4",
+  "title": "Senior Product Designer",
+  "accountUid": "44444444-dddd-4444-8444-444444444444",
+  "state": "published",
+  "isInternal": false,
+  "remote": false,
+  "workplace": "hybrid",
+  "type": "full",
+  "published": "2026-10-12T00:00:00.000Z",
+  "code": "DESIGN-123",
+  "location": {"city":"Example City","region":"Example Region","country":"United States"},
+  "locations": [
+    {"city":"Example City","region":"Example Region","country":"United States","hidden":false},
+    {"city":"Toronto","region":"Ontario","country":"Canada","hidden":false},
+    {"city":"Private Office","country":"Hidden Country","hidden":true}
+  ],
+  "description": "<p>Design useful systems.</p><script>doNotExecute()</script><p>Pay: USD 150,000–190,000 per year.</p>",
+  "requirements": "<ul><li>Design interactions.</li><li>Collaborate with engineers.</li></ul>",
+  "benefits": "<p>Flexible leave.</p><p>Closing notice.</p>"
+}

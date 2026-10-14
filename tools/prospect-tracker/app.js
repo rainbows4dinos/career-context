@@ -11,7 +11,7 @@ import { createStatusSaver } from './status-save.js';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
 import { boardView, button, editorView, historyView, messageView, setProspectStatusBadge } from './ui.js?v=20261013-no-refresh';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
-import { mountIngestion } from './ingestion-ui.js?v=20261013-statuses';
+import { mountIngestion } from './ingestion-ui.js?v=20261014-workable';
 
 /** @param {import('@supabase/supabase-js').SupabaseClient<import('./database.types.js').Database>} client */
 export async function startRadar(client) {

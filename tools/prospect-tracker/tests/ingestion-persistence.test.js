@@ -33,7 +33,8 @@ test('authenticated retrieve/cancel write nothing; explicit existing create path
 for (const [provider, url] of [
   ['Ashby','https://jobs.ashbyhq.com/example/11111111-aaaa-4111-8111-111111111111'],
   ['Lever','https://jobs.lever.co/example/22222222-bbbb-4222-8222-222222222222'],
-  ['Workday','https://example.wd5.myworkdayjobs.com/en-US/External_Careers/job/Example-City/Senior-Product-Designer_REQ-123-1']
+  ['Workday','https://example.wd5.myworkdayjobs.com/en-US/External_Careers/job/Example-City/Senior-Product-Designer_REQ-123-1'],
+  ['Workable','https://apply.workable.com/example/j/ABC123DEF4/']
 ]) test(`${provider} authenticated preview/Cancel writes nothing; failed save preserves facts and normal retry creates one prospect/history event`, async () => {
   const fixture = await startFixture();
   const client = createClient(fixture.origin, 'sb_publishable_synthetic', { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
@@ -53,7 +54,7 @@ for (const [provider, url] of [
     assert.equal(saved.id,input.id);assert.equal(saved.status,'prospect');assert.equal(saved.applied_on,null);assert.equal(saved.source,null);
     const history = await data.listStatusEvents(saved.id);
     assert.equal(history.length,1);assert.equal(history[0].from_status,null);assert.equal(history[0].to_status,'prospect');
-    assert.equal((await data.getProspect(saved.id)).compensation_text,preview.draft.compensation_text);
+    assert.equal((await data.getProspect(saved.id)).compensation_text,preview.draft.compensation_text ?? null);
     assert.equal((await stats()).prospects,1);assert.equal((await stats()).events,1);
   } finally { await client.auth.signOut({ scope: 'local' }); await fixture.close(); }
 });

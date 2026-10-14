@@ -16,18 +16,19 @@ Deno.test('production dependencies normalize the sanitized Greenhouse fixture un
   assert.doesNotMatch(result.draft.job_description!, /doNotExecute|<p>/);
 });
 
-for (const provider of ['ashby', 'lever', 'workday'] as const) {
+for (const provider of ['ashby', 'lever', 'workday', 'workable'] as const) {
   Deno.test(`${provider} Deno handler uses authenticated bounded API/page retrieval and the shared preview contract`, async () => {
     const path = '../../../tools/prospect-tracker/tests/fixtures/';
     const data = JSON.parse(await Deno.readTextFile(new URL(`${path}${provider}/${provider === 'ashby' ? 'board.json' : 'posting.json'}`, import.meta.url)));
-    const page = await Deno.readTextFile(new URL(`${path}${provider}/posting.html`, import.meta.url));
-    const postingUrl = provider === 'ashby' ? data.jobs[1].jobUrl : provider === 'workday' ? data.jobPostingInfo.externalUrl : data.hostedUrl;
+    const page = provider === 'workable' ? '' : await Deno.readTextFile(new URL(`${path}${provider}/posting.html`, import.meta.url));
+    const account = provider === 'workable' ? JSON.parse(await Deno.readTextFile(new URL(`${path}workable/account.json`, import.meta.url))) : null;
+    const postingUrl = provider === 'workable' ? 'https://apply.workable.com/example/j/ABC123DEF4/' : provider === 'ashby' ? data.jobs[1].jobUrl : provider === 'workday' ? data.jobPostingInfo.externalUrl : data.hostedUrl;
     const destinations: string[] = [];
     const handler = createIngestionHandler({ ownerId, allowedOrigins: ['https://example.github.io'], authenticate: () => Promise.resolve(ownerId),
       fetcher: (target, init) => {
         destinations.push(String(target)); assert.equal(init!.redirect, 'manual');
         assert.equal(Object.keys(init!.headers!).length, 1);
-        return Promise.resolve(destinations.length === 1 ? Response.json(data) : new Response(page, { headers: { 'content-type': 'text/html' } }));
+        return Promise.resolve(destinations.length === 1 ? Response.json(data) : provider === 'workable' ? Response.json(account) : new Response(page, { headers: { 'content-type': 'text/html' } }));
       }
     });
     const request = (authorized: boolean) => new Request('https://example.invalid/', { method: 'POST', headers: { 'content-type': 'application/json', ...(authorized ? { authorization: 'Bearer synthetic' } : {}) }, body: JSON.stringify({ url: postingUrl }) });
