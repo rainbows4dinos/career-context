@@ -1,6 +1,6 @@
 # Career Radar product spec
 
-Status: Living product plan; discovery and recommendation workflows are not implemented.
+Status: Living product plan; profile editor implemented for #3 (hosted migration pending); discovery and recommendation workflows are not implemented.
 Updated: 2026-10-14
 Parent: [#2 — Product overview and MVP](https://github.com/rainbows4dinos/nextchapter/issues/2)
 
@@ -46,7 +46,7 @@ MVP success means the user can understand why a role surfaced, decide quickly, f
 
 | Decision | Feature |
 | --- | --- |
-| Profile UI versus lightweight configuration, versioning, and unknown compensation treatment | [#3](https://github.com/rainbows4dinos/nextchapter/issues/3) |
+| Profile editing, versioning and unknown compensation: see [implemented decisions](profile.md); conversational proposals remain later work | [#3](https://github.com/rainbows4dinos/nextchapter/issues/3) |
 | Initial sources, API/retrieval restrictions, coverage, reliability, and refresh strategy | [#4](https://github.com/rainbows4dinos/nextchapter/issues/4) |
 | Minimum evidence, assessment representation, ranking, wildcard mix, reevaluation triggers, and cost limits | [#5](https://github.com/rainbows4dinos/nextchapter/issues/5) |
 | Feed ordering, card density, and placement of detailed rationale | [#6](https://github.com/rainbows4dinos/nextchapter/issues/6) |
@@ -64,7 +64,7 @@ Persistence is Supabase, with Auth and RLS protecting private records. Opportuni
 
 Keep costs low through deterministic eligibility screening before selective AI evaluation and cached assessments for unchanged postings/profile versions. Existing allowlisted URL ingestion can inform source planning, but manual posting retrieval does not establish discovery coverage.
 
-Older [career-radar-v0 setup documentation](../career-radar-v0.md) describes today's Prospect Tracker. The current Radar route is a coming-soon page, and the legacy directory redirects to Tracker. This spec defines planned Radar behavior without prescribing new schemas, endpoints, providers, or component structures.
+Older [career-radar-v0 setup documentation](../career-radar-v0.md) describes today's Prospect Tracker. The current Radar route provides the [career profile editor](profile.md), and the legacy directory redirects to Tracker. This spec defines planned Radar behavior without prescribing new schemas, endpoints, providers, or component structures.
 
 ## Feature issues
 

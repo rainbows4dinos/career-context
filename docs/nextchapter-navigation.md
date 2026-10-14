@@ -4,14 +4,14 @@ Phase 2C extends `tools/shared/navigation.mjs` and `navigation.css` across the s
 
 | Destination | Static path | Responsibility |
 | --- | --- | --- |
-| Career Radar | `tools/career-radar.html` | Future discovery/evaluation; remains a public placeholder |
+| Career Radar | `tools/career-radar.html` | Public introduction; private profile editor after sign-in; discovery/evaluation planned |
 | Prospect Tracker | `tools/prospect-tracker/` | Authenticated prospect/application tracking, posting previews and Builder handoff |
 | Résumé Builder | `tools/resume-tailor.html` | Public generation, revision, previews and downloads |
 | About | `tools/about.html` | Public README-based introduction to the tools and their shared context |
 
 Existing Tracker hashes and Builder URLs remain unchanged. The header sits before each application shell so its background spans the viewport. Shared `layout.css` applies a centered 1400px maximum outer content width, 28px side padding on desktop/tablet and 20px below 900px, matching the header’s mobile category. Inner reading/form panels retain their local width constraints.
 
-As of October 13, 2026, Tracker's application directory and canonical URL are `tools/prospect-tracker/`. Shared authentication imports, public-page assets, Pages configuration generation and ingestion-function imports use that directory. `tools/career-radar/index.html` is only a compatibility redirect for existing Tracker bookmarks; it preserves queries and hashes with `location.replace()`. Career Radar's coming-soon page remains at `tools/career-radar.html`. Future Radar routing can replace the legacy redirect when that feature is implemented. No database or Supabase project identity changes are required. The hosted deployment has not been verified for this move.
+As of October 13, 2026, Tracker's application directory and canonical URL are `tools/prospect-tracker/`. Shared authentication imports, public-page assets, Pages configuration generation and ingestion-function imports use that directory. `tools/career-radar/index.html` is only a compatibility redirect for existing Tracker bookmarks; it preserves queries and hashes with `location.replace()`. Career Radar's separate page remains at `tools/career-radar.html`; issue #3 adds its private profile editor (see [profile decisions](career-radar/profile.md)). Future Radar routing can replace the legacy redirect when that feature is implemented. No database or Supabase project identity changes are required. The hosted deployment has not been verified for this move.
 
 Local migration validation passed: all 100 Node tests, application typecheck/lint, shared navigation lint, ingestion-function typecheck and five Deno tests. Browser navigation acceptance passed under `/nextchapter/tools/`, covering all four pages, login/return/logout, persisted sessions, cross-tab clearing and zero prospect/history writes. Legacy directory and `index.html` bookmarks preserved queries/hashes under both root and project-prefixed paths. The browser harness now waits for header transitions before measuring geometry.
 
@@ -43,7 +43,7 @@ Log In on Tracker focuses its existing email field and preserves the current rou
 
 Log Out uses the existing `signOut({scope:'local'})` call and shows shared Toast feedback. It remains on the current page. Tracker retains its protected workspace/login presentation and deferred SDK callbacks, clears protected UI on `SIGNED_OUT`, guards pending writes through the shared account busy state, and retains its existing unsaved-change confirmation through a cancellable `nextchapter:before-sign-out` event. The redundant Tracker-only Sign out button/styles/listener are removed; Board/Add prospect and the credential form remain.
 
-No public page initializes Tracker's data layer or reads prospects. Career Radar remains a placeholder. Authentication does not gate Builder or About. No schema, ingestion, duplicate matching, persistence, generation, revision, handoff or export logic changed.
+No public page initializes Tracker's data layer or reads prospects. Issue #3 adds Career Radar’s separate profile data layer behind sign-in; see [profile setup](career-radar/profile.md). Authentication does not gate Builder or About. The original navigation change did not alter schema, ingestion, duplicate matching, persistence, generation, revision, handoff or export logic. Profile persistence added later is documented separately.
 
 ## About page and adoption
 

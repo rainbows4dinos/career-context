@@ -9,7 +9,7 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
-        process: 'readonly', URL: 'readonly', crypto: 'readonly',
+        Blob: 'readonly', structuredClone: 'readonly', process: 'readonly', URL: 'readonly', crypto: 'readonly',
         console: 'readonly', Buffer: 'readonly', Response: 'readonly', fetch: 'readonly',
         Request: 'readonly', Headers: 'readonly', setTimeout: 'readonly', clearTimeout: 'readonly', atob: 'readonly',
         TextDecoder: 'readonly', TextEncoder: 'readonly', AbortController: 'readonly', ReadableStream: 'readonly',

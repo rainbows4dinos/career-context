@@ -39,6 +39,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      // Migration-based PostgreSQL snapshot; regenerate hosted types after applying the profile migration.
+      career_profiles: {
+        Row: {
+          owner_id: string;
+          explicit_profile: Json;
+          inferred_signals: Json;
+          reviewed_at: string;
+          revision: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          owner_id?: string;
+          explicit_profile: Json;
+          inferred_signals?: Json;
+          reviewed_at: string;
+          revision?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          owner_id?: string;
+          explicit_profile?: Json;
+          inferred_signals?: Json;
+          reviewed_at?: string;
+          revision?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+
       prospect_status_events: {
         Row: {
           from_status: string | null

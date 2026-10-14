@@ -17,16 +17,17 @@
   </script>
   <script type="module" src="shared/navigation.mjs?v=20261013-tracker-route"></script>
   <link rel="stylesheet" href="shared/layout.css">
+  <link rel="stylesheet" href="career-profile.css">
 </head>
 <body>
   <header id="nextchapter-header" data-app="radar"></header>
   <div class="shell nc-content">
-    <main class="panel narrow" aria-labelledby="radar-title">
-      <h1 id="radar-title">Career Radar</h1>
-      <h2>Coming soon</h2>
-      <p>Discover professional opportunities and evaluate which ones are worth pursuing.</p>
-      <p>For now, manage your job search in <a href="prospect-tracker/">Prospect Tracker</a> and prepare tailored application materials in <a href="resume-tailor.html">Résumé Builder</a>.</p>
-    </main>
+    <h1>Career Radar</h1>
+    <p>Start with what matters to you. Discovery and recommendations will come later.</p>
+    <p id="profile-notice" role="status" aria-live="polite"></p>
+    <main id="profile-workspace"><p>Connecting to Career Radar…</p></main>
+    <noscript><p>Career Radar needs JavaScript to review and save your profile.</p></noscript>
   </div>
+  <script type="module" src="prospect-tracker/career-profile-app.js"></script>
 </body>
 </html>

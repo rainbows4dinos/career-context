@@ -1,0 +1,35 @@
+# Career profile — issue #3
+
+## Scope and behavior
+
+`tools/career-radar.html` now provides a conventional structured profile editor. The route, shared navigation, theme, Supabase client, public configuration and login/return flow are retained. Tracker, legacy Tracker redirect, Resume Builder and ingestion behavior are unchanged. No chat, discovery, feed, assessment engine or AI calls are added.
+
+The profile groups experience/strengths, preferences, practical constraints and exploration. Stable factor IDs cover seniority, IC/player-coach/management scope, consumer/enterprise focus, sectors, working style, location, time zones, employment type, dealbreakers and exploration. Values remain editable text at this stage. Each preference has hard/strong/soft/explore importance; a blank value means undecided, not exclusion. Importance applies to the whole factor, so keep mixed requirements in separate dimensions where possible. Future normalization is evaluation work, not part of this editor.
+
+Compensation is a numeric minimum **base** amount, currency and annual/hourly period with its own importance and explicit policy for missing compensation. A blank minimum means no threshold. Unknown salary defaults to manual review, never estimation; the user may choose exclusion. Review USD and annual defaults before setting an amount.
+
+## Drafts, source of truth and privacy
+
+On first signed-in load, the app reads relative `resume-master.md` and suggests strengths, target roles and player-coach positioning. These are public career-context facts and positioning, not an approved search profile. Missing context falls back to blank fields. Canonical career files are read but never edited. Review is mandatory before the first save and after edits/imports; nothing is automatically inserted.
+
+A separate Consumer Design Watch draft is delivered privately outside this public repository. Import its JSON through **Import draft**, review every value/importance, fill undecided constraints, check the review box and save. The private draft contains both confirmed context and explicitly labeled suggestions; it does not establish compensation, location requirements, working hours, employment type or dealbreakers. Do not commit personal seed files or copied chat excerpts. Export is a local download of the current form, including unsaved edits; importing does not save or change inferred signals.
+
+Saved `explicit_profile` is the source of truth. `inferred_signals` is a separate JSON array, displayed as inert text. The current client can read signals but has no write permission or data method for them. No inferred values are merged into explicit settings. A future conversational feature must propose changes separately and obtain user approval through a deliberate edit/save action. `reviewedFactors` rejects unreviewed input and exposes revision plus stable explicit factor IDs for later assessment citations; it does not implement assessments.
+
+## Persistence and versioning
+
+Apply `supabase/migrations/20261014000000_career_profiles.sql` to the intended Supabase project through the existing migration process before deploying the page. **This implementation does not apply the migration to hosted Supabase.** It adds one `career_profiles` row per Auth owner, protected by select/insert/update RLS. Anonymous access and delete are denied. Column grants limit browser writes to explicit settings and review confirmation; ownership, signals and revision metadata are not browser-writable.
+
+JSON schema version starts at 1. PostgreSQL increments the profile revision only when explicit settings change and updates the exact timestamp on every update. Writes match the exact Supabase timestamp without parsing/reformatting microseconds. A stale update never succeeds silently, and first-save insert never upserts over an existing profile. Export the retained edits and reload to reconcile concurrent/ambiguous saves. There is a latest revision counter, **not** full profile history; append-only snapshots can be introduced if a later feature needs audit/replay.
+
+The new table type is a migration-based PostgreSQL introspection snapshot appended to existing hosted types. After applying the migration, run the scoped `types:generate` against the intended project and review the resulting diff. The bootstrap `types:local-snapshot` includes profiles but continues to produce the whole bootstrap schema; it is not a replacement for hosted generation.
+
+Drafts stay in memory, not local storage. Navigation/logout guards warn about unsaved changes; saving disables editing and sign-out. Auth changes clear the protected editor, and generation tokens prevent late reads/saves from restoring a previous owner's data. Existing auth/configuration errors and missing migration are surfaced with retry/reload guidance.
+
+## Validation
+
+From `tools/prospect-tracker`, run `npm ci`, `npm run typecheck`, `npm run lint` and `npm test`. Tests cover format/importance/compensation bounds, review gating, isolation from contradictory inference, public context draft, exact timestamp writes, failed and stale saves, real PostgreSQL RLS/column grants, immutable ownership and explicit-only revisions. Existing Tracker/ingestion/history/handoff/navigation tests are included.
+
+Browser acceptance uses `node tests/fixtures/radar-server.js` and its documented **synthetic** credentials only. The fixture serves both root and `/nextchapter/` Pages paths, uses the vendored SDK, and applies real migrations/RLS in local PostgreSQL. Never use hosted credentials in this fixture.
+
+Checked in Chrome: signed-out access, existing login and return, public-context draft, explicit save/reload, compensation and importance persistence, inert script-like input, failed-save retention/retry, revision increment, two-tab conflict with draft retention, logout warning and protected UI clearing. Hosted migration/application is outstanding. Import JSON validation is automated; browser file upload was blocked by the extension's file URL access setting. Desktop (1440px) and phone (390px) layouts fit without horizontal overflow; dark/light themes, Tracker’s board and the Builder form were checked. Résumé generation/export were not rerun because their code is unchanged.
