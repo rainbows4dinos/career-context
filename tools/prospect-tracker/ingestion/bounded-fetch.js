@@ -1,5 +1,7 @@
 import { IngestionError } from './errors.js';
 
+export const POSTING_BYTE_LIMIT = 1024 * 1024;
+
 /** Enforce limits on streamed, decoded bytes, not just Content-Length.
  * @param {Request|Response} value @param {number} limit @param {AbortSignal} signal
  */
@@ -33,8 +35,9 @@ export async function readBounded(value, limit, signal) {
 /** Destinations must be constructed by the provider adapter, never upstream HTML.
  * @param {typeof fetch} fetcher @param {string} url @param {AbortSignal} signal
  * @param {string} [provider] @param {'json'|'html'} [format]
+ * @param {number} [byteLimit] Fixed by the adapter, never supplied by the request.
  */
-export async function retrievePosting(fetcher, url, signal, provider = 'Greenhouse', format = 'json') {
+export async function retrievePosting(fetcher, url, signal, provider = 'Greenhouse', format = 'json', byteLimit = POSTING_BYTE_LIMIT) {
   const response = await fetcher(url, {
     method: 'GET', redirect: 'manual', signal, headers: { Accept: format === 'json' ? 'application/json' : 'text/html' }
   });
@@ -44,7 +47,7 @@ export async function retrievePosting(fetcher, url, signal, provider = 'Greenhou
     if (response.status >= 300 && response.status < 400) throw new IngestionError('redirect_blocked', `${provider} redirected this request. Redirects are not supported; use a hosted posting link.`, 502);
     if (!response.ok) throw new IngestionError('retrieval_failed', `${provider} could not retrieve this posting. Try again or add it manually.`, 502);
     if (!response.headers.get('content-type')?.toLowerCase().includes(format === 'json' ? 'application/json' : 'text/html')) throw new IngestionError('invalid_posting', `${provider} returned an unexpected response.`, 502);
-    const text = await readBounded(response, 1024 * 1024, signal);
+    const text = await readBounded(response, byteLimit, signal);
     if (format === 'html') return text;
     try { return /** @type {unknown} */ (JSON.parse(text)); }
     catch { throw new IngestionError('invalid_posting', `${provider} returned invalid posting data.`, 502); }

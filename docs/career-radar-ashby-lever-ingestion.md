@@ -62,7 +62,7 @@ The existing verified Supabase Auth, configured single-owner restriction, exact-
 - HTTPS, validated tokens and hardcoded ATS hosts/path templates. No IP/private-network targets, arbitrary hosts or upstream destination following.
 - Redirects are rejected, including optional metadata redirects. Only GET with an Accept header goes to ATS hosts.
 - At most **two ATS requests**, plus the existing Auth verification, per new-provider operation. Greenhouse still uses one ATS request.
-- Existing **4 KiB** request body, **2,048-character** URL, **1 MiB per upstream response**, **32 KiB** Auth response and **15-second overall** deadline remain. Streamed limits reject oversized bodies rather than truncating them. Metadata shares the same deadline; deadline exhaustion aborts retrieval.
+- Limits are **4 KiB** request body, **2,048-character** URL, **1 MiB per individual-posting/metadata response**, **4 MiB for Ashby's whole-board API response**, **32 KiB** Auth response and **15-second overall** deadline. The selected Ashby job also has a **1 MiB serialized UTF-8** ceiling. Streamed limits reject oversized bodies rather than truncating them. Metadata shares the same deadline; deadline exhaustion aborts retrieval.
 - Metadata parsing caps JSON-LD script blocks, nesting and inspected objects. All HTML is inert and converted to plain text; the browser renders text only.
 - Retrieval performs no database requests/writes. No raw archive, cache, cookies, secret forwarding or application logging of bodies/tokens was added. JSON responses remain `no-store`.
 
@@ -126,7 +126,15 @@ All 41 pre-existing prospects and 46 events were byte-for-byte unchanged in the 
 
 ## Limits and lessons before Workday
 
-- Ashby returns the whole board. Large boards can exceed the response ceiling; fail to manual entry rather than silently truncate or increase limits automatically.
+### Ashby board-size correction — October 13, 2026
+
+A reported import failed because the provider returned a 2,848,970-byte board containing 186 jobs, although the requested job's serialized object was only 26,403 bytes. This reproduced the original generic 1 MiB response ceiling, independently of the Tracker URL migration. The Ashby adapter now uses an explicit 4 MiB board ceiling and checks the selected job against a 1 MiB serialized UTF-8 ceiling. Other providers and optional hosted metadata retain their existing limits. Whole-board responses still require complete, valid JSON and exact identity selection; no truncation, dynamic ceiling increases or fallback destinations were added.
+
+Validation passed: 102 Node tests, application typecheck/lint, function typecheck and five Deno tests. Regression cases cover a multi-megabyte board with the target last, oversized streamed/advertised board responses, an oversized selected job with multibyte text, and unchanged 1 MiB hosted-page limits. A public live pipeline smoke check returned the expected employer/title, description and provenance using exactly two ATS requests. No live response bodies were archived.
+
+The existing `job-ingest` function was redeployed with JWT verification enabled. Retrying the reported link in authenticated hosted Prospect Tracker produced the editable preview, including employer, title, description, location and compensation. The preview was left open for the user; Save was not invoked. No schema, secrets or frontend deployment changes were needed.
+
+- Ashby returns the whole board. Boards over the fixed 4 MiB response ceiling fail to manual entry rather than silently truncate or increase limits automatically.
 - Employer metadata is optional and hosted pages can be large. A blocked/oversized page retains API facts but leaves company blank; this is an expected partial-preview outcome.
 - Only hosted URL shapes are supported. No custom employer domains, board listings, authenticated/private postings or headless retrieval.
 - Ashby republication is not an original posting date. Lever publication depends on matched page metadata. Users may need to supply dates themselves.

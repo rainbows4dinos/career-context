@@ -54,6 +54,29 @@ test('Ashby selects exact board posting, keeps all salary tiers/geography and ne
   for (const field of ['source','status','applied_on','connections','overall_assessment']) assert.equal(field in preview.draft, false);
 });
 
+test('Ashby imports one complete posting from a multi-megabyte board without truncating jobs', async () => {
+  const board = { ...ashby, jobs: [
+    ...Array.from({ length: 120 }, () => ({ ...ashby.jobs[0], descriptionPlain: 'Unrelated synthetic posting. '.repeat(900) })),
+    ashby.jobs[1]
+  ] };
+  assert.ok(Buffer.byteLength(JSON.stringify(board)) > 2.8 * 1024 * 1024);
+  let calls = 0;
+  const preview = await ingestPosting(urls.ashby, { now, signal: signal(), fetcher: async () => ++calls === 1 ? json(board) : html(pages.ashby) });
+  assert.equal(calls, 2);
+  assert.equal(preview.identity.posting_id, identity('ashby').posting_id);
+  assert.equal(preview.draft.title, 'Senior Product Designer');
+  assert.equal(preview.draft.company, 'Example Studio');
+  assert.match(preview.draft.job_description, /Closing notice\./);
+  assert.equal(decodePreview(preview, urls.ashby).draft.job_description, preview.draft.job_description);
+});
+
+test('Ashby retains a 1 MiB decoded-byte ceiling for the selected posting', async () => {
+  const board = { ...ashby, jobs: [{ ...ashby.jobs[1], descriptionPlain: '😀'.repeat(300000) }] };
+  let calls = 0;
+  await assert.rejects(ingestPosting(urls.ashby, { signal: signal(), fetcher: async () => { calls++; return json(board); } }), error => error.code === 'too_large');
+  assert.equal(calls, 1);
+});
+
 test('Ashby missing company/compensation/optional facts remain missing; false isRemote never invents onsite', () => {
   const result = normalizeAshby({ title: 'Designer', isRemote: false }, identity('ashby'), {}, urls.ashby, now);
   assert.equal(result.draft.title, 'Designer');
@@ -127,7 +150,15 @@ for (const provider of ['ashby','lever']) {
     }
   });
   test(`${provider} API responses still enforce streamed size limits and metadata shares the authenticated deadline`,async()=>{
-    await assert.rejects(ingestPosting(urls[provider],{signal:signal(),fetcher:async()=>new Response(JSON.stringify({large:'x'.repeat(1024*1024)}),{headers:{'content-type':'application/json'}})}),e=>e.code==='too_large');
+    const byteLimit = (provider === 'ashby' ? 4 : 1) * 1024 * 1024;
+    for (const contentLength of [false, true]) {
+      let calls = 0;
+      await assert.rejects(ingestPosting(urls[provider], { signal: signal(), fetcher: async () => {
+        calls++;
+        return new Response(JSON.stringify({ large: 'x'.repeat(byteLimit) }), { headers: { 'content-type': 'application/json', ...(contentLength ? { 'content-length': String(byteLimit + 20) } : {}) } });
+      } }), error => error.code === 'too_large');
+      assert.equal(calls, 1);
+    }
     const ownerId='11111111-1111-4111-8111-111111111111';let calls=0;
     const handler=createIngestionHandler({ownerId,allowedOrigins:['https://example.github.io'],authenticate:async()=>ownerId,timeoutMs:20,fetcher:async()=>++calls===1?json(provider==='ashby'?ashby:lever):new Response(new ReadableStream({start(){}}),{headers:{'content-type':'text/html'}})});
     const response=await handler(new Request('https://example.invalid',{method:'POST',headers:{authorization:'Bearer synthetic','content-type':'application/json'},body:JSON.stringify({url:urls[provider]})}));

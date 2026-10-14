@@ -1,8 +1,12 @@
 import { IngestionError } from './errors.js';
 import { recognizePosting, samePosting } from './posting-url.js';
-import { retrievePosting } from './bounded-fetch.js';
+import { retrievePosting, POSTING_BYTE_LIMIT } from './bounded-fetch.js';
 import { retrieveMetadata } from './posting-metadata.js';
 import { object, text, descriptionText, postingText, finishPreview } from './posting-facts.js';
+
+// Ashby's public API returns the entire board, including every job description.
+// Keep a fixed board ceiling and the usual per-posting ceiling after selection.
+const ASHBY_BOARD_BYTE_LIMIT = 4 * POSTING_BYTE_LIMIT;
 
 /** Select the exact identity, never the first job or a fuzzy title match.
  * @param {unknown} input @param {import('./preview.js').PostingIdentity} identity
@@ -108,7 +112,10 @@ export function normalizeAshby(raw, identity, metadata, originalUrl, now, warnin
 export async function ingestAshby(url, options) {
   const identity = recognizePosting(url);
   if (identity.provider !== 'ashby') throw new IngestionError('unsupported_url', 'Use an Ashby hosted posting link.');
-  const raw = selectAshbyPosting(await retrievePosting(options.fetcher, identity.retrieval_url, options.signal, 'Ashby'), identity);
+  const raw = selectAshbyPosting(await retrievePosting(options.fetcher, identity.retrieval_url, options.signal, 'Ashby', 'json', ASHBY_BOARD_BYTE_LIMIT), identity);
+  if (new TextEncoder().encode(JSON.stringify(raw)).byteLength > POSTING_BYTE_LIMIT) {
+    throw new IngestionError('too_large', 'This Ashby posting is too large.', 413);
+  }
   /** @type {string[]} */ const warnings = [];
   const metadata = await retrieveMetadata(identity, text(raw.title), options, warnings);
   return normalizeAshby(raw, identity, metadata, url, options.now ?? new Date(), warnings, options.discoveredOn);
