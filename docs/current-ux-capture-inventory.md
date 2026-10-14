@@ -63,7 +63,7 @@ Mobile coverage: job details, generation/error pane, resume preview, cover-lette
 
 ## Career Radar
 
-Sources: [index.html](../tools/career-radar/index.html), [ui.js](../tools/career-radar/ui.js), [app.js](../tools/career-radar/app.js), [ingestion-ui.js](../tools/career-radar/ingestion-ui.js), [bootstrap.js](../tools/career-radar/bootstrap.js).
+Sources: [index.html](../tools/prospect-tracker/index.html), [ui.js](../tools/prospect-tracker/ui.js), [app.js](../tools/prospect-tracker/app.js), [ingestion-ui.js](../tools/prospect-tracker/ingestion-ui.js), [bootstrap.js](../tools/prospect-tracker/bootstrap.js).
 
 | ID | View / state | Trigger or distinction |
 | --- | --- | --- |
@@ -98,7 +98,7 @@ Sources: [index.html](../tools/career-radar/index.html), [ui.js](../tools/career
 
 Mobile coverage: sign in, empty/populated board (including horizontal scroll), add/import form, duplicate review and existing prospect with status/history. Capture long editor views in full.
 
-The existing [disposable Radar fixture](../tools/career-radar/tests/fixtures/radar-server.js) can supply synthetic auth, posting retrieval and save failures without hosted writes. Check shared stylesheet serving before using it for fidelity captures; its existing path restrictions do not serve the sibling shared-token stylesheet.
+The existing [disposable Radar fixture](../tools/prospect-tracker/tests/fixtures/radar-server.js) can supply synthetic auth, posting retrieval and save failures without hosted writes. Check shared stylesheet serving before using it for fidelity captures; its existing path restrictions do not serve the sibling shared-token stylesheet.
 
 ## Baseline foundations
 

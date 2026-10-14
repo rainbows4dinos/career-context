@@ -1,14 +1,14 @@
 # Career Radar v0: Manual Prospect Tracking
 
-The application is now named **Prospect Tracker** in the UI. Its existing `tools/career-radar/` routes and internal contracts remain unchanged. The new Career Radar is a separate coming-soon page. See [nextchapter navigation](nextchapter-navigation.md).
+The application is now named **Prospect Tracker** in the UI. Its existing `tools/prospect-tracker/` routes and internal contracts remain unchanged. The new Career Radar is a separate coming-soon page. See [nextchapter navigation](nextchapter-navigation.md).
 
 Career Radar now has a static UI for sign-in, a board grouping twelve canonical statuses into four lifecycle columns, manual prospect creation, core details/notes editing, explicit status changes, and status history. Greenhouse URL-to-preview ingestion is deployed with a separately deployed authenticated Edge Function; see [its setup, validation and limits](career-radar-greenhouse-ingestion.md). Ashby/Lever adapters are deployed with authenticated hosted acceptance; see [their validation, deployment and acceptance results](career-radar-ashby-lever-ingestion.md). Limited Workday ingestion is deployed with authenticated hosted retrieval/preview acceptance; see [supported sites, validation and deployment status](career-radar-workday-ingestion.md). The approved two-table migration was applied to the hosted project on October 6, 2026; public signup is disabled. A minimal Résumé Builder handoff is implemented locally as described below. There is no discovery, arbitrary-site scraping, AI, assessment editor, connection editor, or application automation.
 
-The résumé builder links to Radar and accepts its temporary job handoffs. Résumé generation, preview, export logic, the proxy Worker, and career-context files are unchanged. Radar's npm package remains scoped to `tools/career-radar/`; Pages adds only public configuration generation, without a frontend build step or dependency installation.
+The résumé builder links to Radar and accepts its temporary job handoffs. Résumé generation, preview, export logic, the proxy Worker, and career-context files are unchanged. Radar's npm package remains scoped to `tools/prospect-tracker/`; Pages adds only public configuration generation, without a frontend build step or dependency installation.
 
 ## Use the application
 
-Open [Career Radar](../tools/career-radar/index.html) through a web server, or follow its link from the résumé builder. Sign in using the one provisioned Supabase Auth email/password user (separate from your Supabase dashboard login). There is no signup or password-reset UI.
+Open [Career Radar](../tools/prospect-tracker/index.html) through a web server, or follow its link from the résumé builder. Sign in using the one provisioned Supabase Auth email/password user (separate from your Supabase dashboard login). There is no signup or password-reset UI.
 
 - `#/board`: four lifecycle columns with counts and prospect cards. **Prospects** groups prospect/interested and any legacy applying records; **Applied** retains its own column; **In-Process** groups recruiter/interviewing/final/offer; **Done** groups passed/rejected/withdrawn/closed. Cards in grouped columns display their exact saved status. Done is visually quieter and collapsed on each board render; select its heading to expand it. The columns fit desktop widths and scroll horizontally on smaller screens. Refresh explicitly to see changes made elsewhere.
 - `#/prospects/new`: only company and role are required. Enter manually or retrieve an editable Greenhouse, Ashby or Lever posting preview. Job description and URL are immediately available; notes and other core fields are under **More job details**, which opens for a retrieved preview. Source is optional free text with channel suggestions; compensation supports multiple lines.
@@ -36,7 +36,7 @@ Select **Send to Résumé Builder** on an existing prospect to open a new Builde
 
 Payloads expire after five minutes and are removed before accepted fields are filled (also on decline). The sender schedules expiry cleanup; expired or malformed leftovers are removed on the next visit/send if the tabs close first. Storage restrictions, quota failures or blocked popups produce recovery feedback without silently truncating descriptions or altering drafts. Both pages must run on the same origin with browser storage available; `file://` handoffs are unsupported. This transport is not shared application state or authentication.
 
-Validation: [handoff tests](../tools/career-radar/tests/resume-handoff.test.js) cover long text, missing fields, one-time consumption, confirmation, independent transfers, expiry, malformed payloads, path scoping and storage failures. Local isolated Chrome acceptance exercised the real Radar detail action and Builder initialization under `/career-context/tools/`, including a nearly 390,000-character saved description, repeated sends, an existing Builder draft, declined/accepted replacement, unrelated settings, error recovery and unchanged synthetic database/write counts. This is local validation, not a claim of deployed acceptance.
+Validation: [handoff tests](../tools/prospect-tracker/tests/resume-handoff.test.js) cover long text, missing fields, one-time consumption, confirmation, independent transfers, expiry, malformed payloads, path scoping and storage failures. Local isolated Chrome acceptance exercised the real Radar detail action and Builder initialization under `/career-context/tools/`, including a nearly 390,000-character saved description, repeated sends, an existing Builder draft, declined/accepted replacement, unrelated settings, error recovery and unchanged synthetic database/write counts. This is local validation, not a claim of deployed acceptance.
 
 ## Schema
 
@@ -92,9 +92,9 @@ RLS limits authenticated users to their own prospects and associated history. Co
 
 Get the URL and publishable key from the project's Supabase Connect/API settings. The URL provided in this session is intentionally not embedded in application source. There is no service-role credential requirement.
 
-Export public variables into the shell; [.env.example](../tools/career-radar/.env.example) documents their names but is not loaded automatically. Keep actual secret values in external credential tooling, not an `.env` file inside this public repository. Git ignores alone do not define a safe Pages publishing boundary.
+Export public variables into the shell; [.env.example](../tools/prospect-tracker/.env.example) documents their names but is not loaded automatically. Keep actual secret values in external credential tooling, not an `.env` file inside this public repository. Git ignores alone do not define a safe Pages publishing boundary.
 
-From `tools/career-radar/`:
+From `tools/prospect-tracker/`:
 
 ```sh
 npm ci
@@ -105,9 +105,9 @@ The generator validates the environment and writes ignored `public-env.js` conta
 
 GitHub Pages cannot access runtime environment variables. Configure GitHub repository **Variables** `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` in **Settings → Secrets and variables → Actions**. The Pages workflow generates the module before uploading the static site. No operator token, database password, or service-role key belongs in those application variables. If either public variable is absent, the résumé builder deploys and Radar shows a setup/connection error. Invalid values or secret keys fail the entire deployment, including new résumé updates; Pages keeps serving its last successful deployment. This fail-closed behavior is deliberate.
 
-`index.html` maps `@supabase/supabase-js` to the committed browser module at `vendor/supabase.js`. It contains the pinned npm package's standalone bundle plus a single ESM export; no SDK code is fetched from a CDN at runtime. Licenses, hashes, and update instructions are in [vendor/README.md](../tools/career-radar/vendor/README.md). After a reviewed SDK update, run `npm ci`, `npm run vendor:generate`, and `npm run vendor:check`, then review and commit the generated assets. Pages needs no npm installation or SDK generation. There is no frontend bundler.
+`index.html` maps `@supabase/supabase-js` to the committed browser module at `vendor/supabase.js`. It contains the pinned npm package's standalone bundle plus a single ESM export; no SDK code is fetched from a CDN at runtime. Licenses, hashes, and update instructions are in [vendor/README.md](../tools/prospect-tracker/vendor/README.md). After a reviewed SDK update, run `npm ci`, `npm run vendor:generate`, and `npm run vendor:check`, then review and commit the generated assets. Pages needs no npm installation or SDK generation. There is no frontend bundler.
 
-`bootstrap.js` loads public configuration and the application; missing configuration or a missing SDK asset produces a reload/setup error. For local use, generate configuration, then serve the repository root (for example, `python3 -m http.server 8000`) and open `/tools/career-radar/`. Avoid `file://` URLs, which cannot load the module application correctly.
+`bootstrap.js` loads public configuration and the application; missing configuration or a missing SDK asset produces a reload/setup error. For local use, generate configuration, then serve the repository root (for example, `python3 -m http.server 8000`) and open `/tools/prospect-tracker/`. Avoid `file://` URLs, which cannot load the module application correctly.
 
 ## Apply the migration
 
@@ -129,11 +129,11 @@ In the hosted Auth settings, disable public signup and provision your one email/
 
 ## Generated types
 
-[database.types.ts](../tools/career-radar/database.types.ts) was generated and downloaded from the hosted project's dashboard on October 6, 2026, after applying the migration. It includes `public`, the dashboard's `graphql_public` definitions, and the hosted PostgREST version. Do not hand-edit it. CLI generation below intentionally targets `public` only.
+[database.types.ts](../tools/prospect-tracker/database.types.ts) was generated and downloaded from the hosted project's dashboard on October 6, 2026, after applying the migration. It includes `public`, the dashboard's `graphql_public` definitions, and the hosted PostgREST version. Do not hand-edit it. CLI generation below intentionally targets `public` only.
 
 Without CLI authentication, use **Integrations → Data API → Docs → Tables and Views / Introduction → Generate and download types**, then replace `database.types.ts` with the downloaded file and run typecheck. See [Supabase's type-generation documentation](https://supabase.com/docs/guides/api/rest/generating-types).
 
-After applying the migration, from `tools/career-radar/`:
+After applying the migration, from `tools/prospect-tracker/`:
 
 ```sh
 npm run types:generate
@@ -176,7 +176,7 @@ Create operations are not automatically retried. Retain the same UUID and check 
 
 ## Validation
 
-From `tools/career-radar/`:
+From `tools/prospect-tracker/`:
 
 ```sh
 npm run typecheck

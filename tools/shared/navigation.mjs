@@ -4,7 +4,7 @@ import { showToast } from './notifications.mjs';
 // Static destinations resolve from this module, including a GitHub Pages prefix.
 const destinations = [
   ['radar', 'Career Radar', '../career-radar.html'],
-  ['tracker', 'Prospect Tracker', '../career-radar/'],
+  ['tracker', 'Prospect Tracker', '../prospect-tracker/'],
   ['builder', 'Résumé Builder', '../resume-tailor.html'],
   ['about', 'About', '../about.html']
 ];
@@ -22,7 +22,7 @@ if (header) {
   const wordmark = document.createElement('a');
   wordmark.className = 'nextchapter-wordmark';
   wordmark.textContent = 'nextchapter';
-  wordmark.href = new URL('../career-radar/', import.meta.url).href;
+  wordmark.href = new URL('../prospect-tracker/', import.meta.url).href;
   const nav = document.createElement('nav');
   nav.id = 'nextchapter-navigation';
   nav.setAttribute('aria-label', 'Main navigation');
@@ -143,7 +143,7 @@ if (header) {
 
   // The existing Tracker client is shared with bootstrap; public pages only
   // initialize its session, never the Tracker data layer or protected workspace.
-  /** @typedef {ReturnType<typeof import('../career-radar/supabase-client.js').createRadarClient>} Client */
+  /** @typedef {ReturnType<typeof import('../prospect-tracker/supabase-client.js').createRadarClient>} Client */
   /** @type {Client|undefined} */
   let client;
   /** @type {Awaited<ReturnType<Client['auth']['getSession']>>['data']['session']} */
@@ -162,7 +162,7 @@ if (header) {
   const initializeAccount = async () => {
     state = 'loading'; updateAccount();
     try {
-      const { getRadarClient } = await import('../career-radar/supabase-client.js');
+      const { getRadarClient } = await import('../prospect-tracker/supabase-client.js');
       client = await getRadarClient();
       subscription?.unsubscribe();
       subscription = client.auth.onAuthStateChange((_event, nextSession) => {
@@ -182,7 +182,7 @@ if (header) {
       if (header.dataset.app === 'tracker') {
         document.getElementById('login-email')?.focus();
       } else {
-        const login = new URL('../career-radar/', import.meta.url);
+        const login = new URL('../prospect-tracker/', import.meta.url);
         login.searchParams.set('returnTo', window.location.href);
         window.location.assign(login.href);
       }

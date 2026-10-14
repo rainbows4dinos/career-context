@@ -43,17 +43,17 @@ Source references: [Ashby public Job Postings API](https://developers.ashbyhq.co
 
 | Created modules | Responsibility |
 | --- | --- |
-| `tools/career-radar/ingestion/posting-url.js` | Shared recognition, canonicalization, provider-scoped identity comparison and fixed API destinations |
-| `tools/career-radar/ingestion/preview.js`, `errors.js` | Shared JSDoc preview contract and typed errors |
-| `tools/career-radar/ingestion/posting-facts.js` | Existing inert description parser, plain-text helpers and shared draft/provenance normalization |
-| `tools/career-radar/ingestion/posting-metadata.js` | Bounded optional ATS-page JSON-LD extraction; no outbound metadata hints |
-| `tools/career-radar/ingestion/ashby.js`, `lever.js` | Provider-specific retrieval, exact response validation and pure normalization |
-| `tools/career-radar/ingestion/pipeline.js` | Provider dispatch independent of UI, Auth and database writes |
-| `tools/career-radar/tests/ats-ingestion.test.js`, `tests/fixtures/ashby/`, `tests/fixtures/lever/` | Synthetic deterministic JSON/HTML and adapter/boundary tests |
+| `tools/prospect-tracker/ingestion/posting-url.js` | Shared recognition, canonicalization, provider-scoped identity comparison and fixed API destinations |
+| `tools/prospect-tracker/ingestion/preview.js`, `errors.js` | Shared JSDoc preview contract and typed errors |
+| `tools/prospect-tracker/ingestion/posting-facts.js` | Existing inert description parser, plain-text helpers and shared draft/provenance normalization |
+| `tools/prospect-tracker/ingestion/posting-metadata.js` | Bounded optional ATS-page JSON-LD extraction; no outbound metadata hints |
+| `tools/prospect-tracker/ingestion/ashby.js`, `lever.js` | Provider-specific retrieval, exact response validation and pure normalization |
+| `tools/prospect-tracker/ingestion/pipeline.js` | Provider dispatch independent of UI, Auth and database writes |
+| `tools/prospect-tracker/tests/ats-ingestion.test.js`, `tests/fixtures/ashby/`, `tests/fixtures/lever/` | Synthetic deterministic JSON/HTML and adapter/boundary tests |
 
 Modified shared files: `ingestion/greenhouse-url.js`, `greenhouse.js`, `bounded-fetch.js`, `handler.js`, `ingestion-client.js`, `duplicate-match.js`, and `ingestion-ui.js`. Greenhouse's parser is shared without changing its output; existing exports remain compatible. The UI uses provider labels rather than retrieval branches. The same Edge Function calls the dispatcher; the existing application/data layer still owns persistence.
 
-Validation changes: `supabase/functions/job-ingest/index.test.ts`, `tools/career-radar/tests/ingestion-persistence.test.js`, `tests/fixtures/radar-server.js`, and the scoped package's function-test fixture read paths. No new packages, import maps, lock changes or frontend build are needed. Repository instructions, overview, v0 guide and ingestion plan link to this implementation.
+Validation changes: `supabase/functions/job-ingest/index.test.ts`, `tools/prospect-tracker/tests/ingestion-persistence.test.js`, `tests/fixtures/radar-server.js`, and the scoped package's function-test fixture read paths. No new packages, import maps, lock changes or frontend build are needed. Repository instructions, overview, v0 guide and ingestion plan link to this implementation.
 
 ## Security and limits
 
@@ -70,7 +70,7 @@ Distributed rate limiting remains deliberately deferred. Add it before discovery
 
 ## Validation and acceptance
 
-From `tools/career-radar/`:
+From `tools/prospect-tracker/`:
 
 ```sh
 npm run typecheck

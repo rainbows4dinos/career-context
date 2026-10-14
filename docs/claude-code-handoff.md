@@ -6,7 +6,7 @@ Prepared October 12, 2026. Implementation baseline: `f43e811` on `main`, pushed 
 
 Read [AGENTS.md](../AGENTS.md) before editing, then inspect the current working tree. [CLAUDE.md](../CLAUDE.md) imports those instructions; it does not own a separate policy. This document records implementation state, not authorization for additional features. Continue only with the user's next requested task.
 
-nextchapter is the product and repository name (renamed from `career-context`; Pages is served under `/nextchapter/`). Preserve the existing URLs and static GitHub Pages deployment. Career Radar is a coming-soon page, while Prospect Tracker is the existing authenticated tracking application at `tools/career-radar/`.
+nextchapter is the product and repository name (renamed from `career-context`; Pages is served under `/nextchapter/`). Preserve the existing URLs and static GitHub Pages deployment. Career Radar is a coming-soon page, while Prospect Tracker is the existing authenticated tracking application at `tools/prospect-tracker/`.
 
 ## Completed implementation
 
@@ -25,7 +25,7 @@ The earlier [component audit](component-system-audit.md) and [APCA reevaluation]
 - The Medium popover contains About and session-aware Log In/Log Out. Its icon button is 28px with a 12px glyph; the panel is 180px wide with 12px padding/gap and a 16px radius. It supports Escape/focus return, outside clicks, focus-leave dismissal and responsive reset. It uses native links/buttons without modal or ARIA menu semantics.
 - Two real-pointer bugs were fixed: outside-click detection uses `event.composedPath()` because opening replaces the SVG icon; inside pointer presses suppress focus dismissal until release because macOS browsers can blur a link without focusing the clicked account button. Preserve these protections when changing menu behavior. Programmatic `.click()` alone did not catch these failures.
 - The switch is 48×28 with a 20px thumb, vertically centered using `top:50%` and half-height translation. Global border-box keeps specified outer dimensions unchanged. Default Dark, `body.light`, guarded `localStorage.theme`, cross-tab theme changes and reduced-motion behavior remain intact.
-- [supabase-client.js](../tools/career-radar/supabase-client.js) exposes `getRadarClient()`, a cached initialization promise shared by Tracker bootstrap and the header within each page. Public pages initialize authentication only, without Tracker's prospect data layer. Each tab has its own SDK client; existing SDK session persistence/refresh and cross-tab events remain in use.
+- [supabase-client.js](../tools/prospect-tracker/supabase-client.js) exposes `getRadarClient()`, a cached initialization promise shared by Tracker bootstrap and the header within each page. Public pages initialize authentication only, without Tracker's prospect data layer. Each tab has its own SDK client; existing SDK session persistence/refresh and cross-tab events remain in use.
 - [navigation-return.mjs](../tools/shared/navigation-return.mjs) accepts only same-origin suite entry paths, preserving queries/hashes and removing nested `returnTo` values. Login on Tracker focuses its existing form; login elsewhere navigates to Tracker and returns after authentication. Logout stays on the current page. Tracker retains its dirty-editor confirmation, pending-write guard and protected-UI clearing.
 - [about.html](../tools/about.html) is a public README-based introduction. The header does not gate public Builder/About/Radar content when account configuration is unavailable; the account action offers Retry account.
 
@@ -43,15 +43,15 @@ Run from the repository root:
 npm --prefix tools/career-radar run typecheck
 npm --prefix tools/career-radar run lint
 npm --prefix tools/career-radar test
-tools/career-radar/node_modules/.bin/eslint \
-  --config tools/career-radar/eslint.config.js tools/shared/navigation.mjs
+tools/prospect-tracker/node_modules/.bin/eslint \
+  --config tools/prospect-tracker/eslint.config.js tools/shared/navigation.mjs
 git diff --check
 ```
 
 Browser acceptance requires the disposable fixture and an isolated Chrome profile. Start each long-running service in a separate terminal; use an unused temporary profile and debugging port 9229:
 
 ```sh
-node tools/career-radar/tests/fixtures/radar-server.js
+node tools/prospect-tracker/tests/fixtures/radar-server.js
 ```
 
 ```sh
@@ -64,10 +64,10 @@ node tools/career-radar/tests/fixtures/radar-server.js
 
 ```sh
 # Third terminal, after both services are ready:
-node tools/career-radar/tests/browser/navigation.mjs
+node tools/prospect-tracker/tests/browser/navigation.mjs
 ```
 
-The fixture listens on 8777 and supplies only a synthetic account/data store. The test uses a GitHub Pages-style `/career-context/tools/` prefix, blocks hosted auth/context/generation requests and allows font requests. It creates/closes its own tabs and saves screenshots outside the repository. Stop the disposable services afterward. Do not use a personal browser profile or production credentials. Restricted environments may require permission to bind localhost for fixture-based tests. Dependencies remain scoped to `tools/career-radar/`; no new test framework is needed.
+The fixture listens on 8777 and supplies only a synthetic account/data store. Navigation acceptance uses the current `/nextchapter/tools/` prefix; other existing browser checks also exercise the former `/career-context/tools/` prefix. Tests block hosted auth/context/generation requests and allow font requests. They create/close their own tabs and save screenshots outside the repository. Stop the disposable services afterward. Do not use a personal browser profile or production credentials. Restricted environments may require permission to bind localhost for fixture-based tests. Dependencies remain scoped to `tools/prospect-tracker/`; no new test framework is needed.
 
 ## Boundaries and remaining work
 

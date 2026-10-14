@@ -1,5 +1,5 @@
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
-import { setAccountBusy } from '../shared/navigation.mjs?v=20261013-transitions';
+import { setAccountBusy } from '../shared/navigation.mjs?v=20261013-tracker-route';
 import { returnAfterLogin } from '../shared/navigation-return.mjs';
 import { setAlert } from '../shared/status.mjs';
 import { showToast } from '../shared/notifications.mjs';

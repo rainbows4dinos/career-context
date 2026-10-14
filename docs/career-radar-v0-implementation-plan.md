@@ -16,10 +16,10 @@ Do not implement automated job discovery, scraping, AI assessment, URL ingestion
 
 ## Location and routes
 
-Put the application at `tools/career-radar/index.html`. Its hosted URL will be:
+Put the application at `tools/prospect-tracker/index.html`. Its hosted URL will be:
 
 ```text
-/career-context/tools/career-radar/
+/career-context/tools/prospect-tracker/
 ```
 
 Use hash routes so direct links and reloads work on GitHub Pages without server rewrites:
@@ -197,15 +197,15 @@ Paths in the table are relative to the repository root.
 
 | Action | Files |
 | --- | --- |
-| Create app shell and styling | `tools/career-radar/index.html`, `tools/career-radar/styles.css` |
-| Create routing/auth controller | `tools/career-radar/app.js` |
-| Create rendering and forms | `tools/career-radar/ui.js` |
-| Create validation and vocabularies | `tools/career-radar/model.js` |
-| Create Supabase configuration/client | `tools/career-radar/config.js`, `tools/career-radar/supabase-client.js` |
-| Create data access | `tools/career-radar/data.js` |
-| Generate types | `tools/career-radar/database.types.ts` |
+| Create app shell and styling | `tools/prospect-tracker/index.html`, `tools/prospect-tracker/styles.css` |
+| Create routing/auth controller | `tools/prospect-tracker/app.js` |
+| Create rendering and forms | `tools/prospect-tracker/ui.js` |
+| Create validation and vocabularies | `tools/prospect-tracker/model.js` |
+| Create Supabase configuration/client | `tools/prospect-tracker/config.js`, `tools/prospect-tracker/supabase-client.js` |
+| Create data access | `tools/prospect-tracker/data.js` |
+| Generate types | `tools/prospect-tracker/database.types.ts` |
 | Create database setup | `supabase/config.toml`, `supabase/migrations/<timestamp>_career_radar_v0.sql` |
-| Create focused checks | `supabase/tests/career_radar.test.sql`, `tools/career-radar/tests/model.test.js` |
+| Create focused checks | `supabase/tests/career_radar.test.sql`, `tools/prospect-tracker/tests/model.test.js` |
 | Document setup and acceptance | `docs/career-radar-v0.md` |
 | Update repository documentation | `README.md`, `AGENTS.md` |
 | Ignore CLI temporary artifacts | `.gitignore` |

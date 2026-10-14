@@ -31,7 +31,7 @@ Static HTML also works; use the appropriate relative sprite path:
 
 ## Regenerate or update
 
-From `tools/career-radar/`:
+From `tools/prospect-tracker/`:
 
 ```sh
 npm ci

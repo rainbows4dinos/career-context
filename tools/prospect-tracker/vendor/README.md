@@ -10,7 +10,7 @@ API requests still go to the configured project.
 upstream bundle and adapted module. `LICENSES.txt` retains notices for Supabase
 and its bundled dependencies. Do not hand-edit generated files.
 
-From `tools/career-radar/`:
+From `tools/prospect-tracker/`:
 
 ```sh
 npm ci

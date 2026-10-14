@@ -16,7 +16,7 @@ test('exact complete and long text round trips once, with only a token in a Page
   for (const description of [job.description, ('Long line 😀\n\n').repeat(30000)]) {
     const store = storage();
     const input = { ...job, description };
-    const url = new URL('../resume-tailor.html', 'https://example.github.io/career-context/tools/career-radar/index.html');
+    const url = new URL('../resume-tailor.html', 'https://example.github.io/career-context/tools/prospect-tracker/index.html');
     const sent = createHandoff(store, url, input, 100, token);
     assert.equal(sent.url.pathname, destination.pathname);
     assert.equal(sent.url.search, '');

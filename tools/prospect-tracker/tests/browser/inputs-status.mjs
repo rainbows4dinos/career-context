@@ -143,7 +143,7 @@ try {
   assert.equal(await evaluate(builder, "document.getElementById('revisionError').textContent"), '');
   console.log('PASS Builder generation/retry/success Toast, persistent revision failure, blank/whitespace revision errors, stopped spinners and Start New');
 
-  tracker = await page(base + 'career-radar/');
+  tracker = await page(base + 'prospect-tracker/');
   await wait(tracker, "!!document.querySelector('.board') || !document.getElementById('login').hidden");
   if (await evaluate(tracker, "!document.getElementById('login').hidden")) {
     await evaluate(tracker, "document.getElementById('login-form').requestSubmit()");

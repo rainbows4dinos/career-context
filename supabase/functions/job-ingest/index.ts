@@ -1,5 +1,5 @@
-import { readPublicConfig } from '../../../tools/career-radar/config.js';
-import { createAuthenticator, createIngestionHandler } from '../../../tools/career-radar/ingestion/handler.js';
+import { readPublicConfig } from '../../../tools/prospect-tracker/config.js';
+import { createAuthenticator, createIngestionHandler } from '../../../tools/prospect-tracker/ingestion/handler.js';
 
 // Platform JWT verification stays enabled; Auth additionally verifies the actual
 // user and the handler restricts retrieval to the configured personal account.

@@ -20,13 +20,13 @@ Likely duplicates show their saved status/application information and matching r
 | --- | --- |
 | `supabase/functions/job-ingest/index.ts` | Deno entry point, exact-origin configuration, public-key configuration, verified owner authentication |
 | `supabase/functions/job-ingest/deno.json`, `deno.lock` | Pinned server dependencies and integrity lock |
-| `tools/career-radar/ingestion/greenhouse-url.js` | Strict hosted URL recognition and internally constructed API destination |
-| `tools/career-radar/ingestion/bounded-fetch.js` | Streamed byte limits and redirect/status handling |
-| `tools/career-radar/ingestion/greenhouse.js` | UI/database-independent retrieval, inert description parsing, fact normalization and provenance |
-| `tools/career-radar/ingestion/handler.js` | Testable HTTP/authentication boundary and overall deadline |
-| `tools/career-radar/ingestion-client.js` | Authenticated SDK invocation and runtime response validation |
-| `tools/career-radar/duplicate-match.js` | Pure identity/company/title comparison |
-| `tools/career-radar/ingestion-ui.js` | Loading/cancel, editable preview, field-origin labels and explicit duplicate decisions |
+| `tools/prospect-tracker/ingestion/greenhouse-url.js` | Strict hosted URL recognition and internally constructed API destination |
+| `tools/prospect-tracker/ingestion/bounded-fetch.js` | Streamed byte limits and redirect/status handling |
+| `tools/prospect-tracker/ingestion/greenhouse.js` | UI/database-independent retrieval, inert description parsing, fact normalization and provenance |
+| `tools/prospect-tracker/ingestion/handler.js` | Testable HTTP/authentication boundary and overall deadline |
+| `tools/prospect-tracker/ingestion-client.js` | Authenticated SDK invocation and runtime response validation |
+| `tools/prospect-tracker/duplicate-match.js` | Pure identity/company/title comparison |
+| `tools/prospect-tracker/ingestion-ui.js` | Loading/cancel, editable preview, field-origin labels and explicit duplicate decisions |
 | `data.js`, `app.js`, `ui.js`, `styles.css` | Paginated identity reads and integration with the existing create/editor flow |
 
 Shared modules live inside Radar's scoped package so Node and Deno use the same JavaScript and parser dependencies without creating another npm package. They are imported by the Edge Function, not coupled to the Add Prospect UI. Backend parser/handler modules are not loaded by the browser. Type-only references in `model.js` now use the actual `.ts` database snapshot path so both checkers resolve them; the generated snapshot is unchanged.
@@ -36,16 +36,16 @@ The response contains only a whitelisted partial detail draft plus original/cano
 Created files:
 
 - `supabase/functions/job-ingest/index.ts`, `index.test.ts`, `deno.json`, `deno.lock`.
-- `tools/career-radar/ingestion/greenhouse-url.js`, `bounded-fetch.js`, `greenhouse.js`, `handler.js`.
-- `tools/career-radar/ingestion-client.js`, `duplicate-match.js`, `ingestion-ui.js`.
-- `tools/career-radar/tests/ingestion.test.js`, `ingestion-persistence.test.js`, `fixtures/radar-server.js`, `fixtures/greenhouse/posting.json`.
+- `tools/prospect-tracker/ingestion/greenhouse-url.js`, `bounded-fetch.js`, `greenhouse.js`, `handler.js`.
+- `tools/prospect-tracker/ingestion-client.js`, `duplicate-match.js`, `ingestion-ui.js`.
+- `tools/prospect-tracker/tests/ingestion.test.js`, `ingestion-persistence.test.js`, `fixtures/radar-server.js`, `fixtures/greenhouse/posting.json`.
 - `docs/career-radar-greenhouse-ingestion.md`.
 
 Modified files:
 
 - `AGENTS.md`, `README.md`, `docs/career-radar-v0.md`, and the previously saved/untracked `docs/career-radar-url-ingestion-plan.md`.
 - `supabase/config.toml`.
-- `tools/career-radar/app.js`, `data.js`, `ui.js`, `styles.css`, `model.js`, `tsconfig.json`, `eslint.config.js`, `package.json`, `package-lock.json`, `tests/data.test.js`.
+- `tools/prospect-tracker/app.js`, `data.js`, `ui.js`, `styles.css`, `model.js`, `tsconfig.json`, `eslint.config.js`, `package.json`, `package-lock.json`, `tests/data.test.js`.
 
 No migration, generated database snapshot, Pages workflow, résumé application, Worker or career-context file was changed.
 
@@ -102,7 +102,7 @@ For a full local Supabase stack, `supabase functions serve job-ingest --env-file
 
 ## Validation
 
-From `tools/career-radar/`:
+From `tools/prospect-tracker/`:
 
 ```sh
 npm ci

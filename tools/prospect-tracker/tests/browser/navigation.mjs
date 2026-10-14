@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
 
 const origin = 'http://127.0.0.1:8777';
-const prefix = `${origin}/career-context/tools/`;
+const prefix = `${origin}/nextchapter/tools/`;
 const endpoint = await (await fetch('http://127.0.0.1:9229/json/version')).json();
 const socket = new globalThis.WebSocket(endpoint.webSocketDebuggerUrl);
 await new Promise(resolve => socket.addEventListener('open', resolve, { once: true }));
@@ -63,6 +63,11 @@ async function key(page, name, code, value, text) {
   await send('Page.bringToFront', {}, page.sessionId);
   await send('Input.dispatchKeyEvent', { type: 'keyDown', key: name, code, windowsVirtualKeyCode: value, ...(text ? { text } : {}) }, page.sessionId);
   await send('Input.dispatchKeyEvent', { type: 'keyUp', key: name, code, windowsVirtualKeyCode: value }, page.sessionId);
+  await settleHeader(page);
+}
+async function settleHeader(page) {
+  await evaluate(page, 'new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+  await evaluate(page, "Promise.all(document.getElementById('nextchapter-header').getAnimations({subtree:true}).map(animation=>animation.finished.catch(()=>{})))");
 }
 // Real pointer events verify visibility, hit targets and overlay stacking.
 async function click(page, selector) {
@@ -81,9 +86,19 @@ async function width(page, value) {
   await send('Page.bringToFront', {}, page.sessionId);
   await send('Emulation.setDeviceMetricsOverride', { width: value, height: 800, deviceScaleFactor: 1, mobile: false }, page.sessionId);
   await evaluate(page, 'new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{window.scrollTo(0,0);resolve()})))');
+  await settleHeader(page);
 }
 const counters = await (await fetch(`${origin}/__fixture`)).json();
 try {
+  // Old bookmarks preserve queries and prospect hashes under root and Pages paths.
+  for (const base of [`${origin}/tools/`, prefix]) {
+    for (const legacy of ['career-radar/', 'career-radar/index.html']) {
+      const redirected = await page(`${base}${legacy}?keep=synthetic#/prospects/synthetic`);
+      await accountReady(redirected);
+      assert.equal(await evaluate(redirected, 'location.href'), `${base}prospect-tracker/?keep=synthetic#/prospects/synthetic`);
+      await close(redirected);
+    }
+  }
   // Header must render before public configuration/session resolution.
   const delayed = await page(`${prefix}about.html`, true);
   await wait(delayed, "document.getElementById('nextchapter-account').disabled");
@@ -101,7 +116,7 @@ try {
   assert.equal(await evaluate(unavailable, "document.getElementById('pane0').hidden"), false);
   await close(unavailable);
 
-  const applications = [['radar', 'career-radar.html'], ['tracker', 'career-radar/'], ['builder', 'resume-tailor.html'], ['about', 'about.html']];
+  const applications = [['radar', 'career-radar.html'], ['tracker', 'prospect-tracker/'], ['builder', 'resume-tailor.html'], ['about', 'about.html']];
   for (const [app, path] of applications) {
     const p = await page(prefix + path); await accountReady(p);
     await evaluate(p, 'document.fonts.ready');
@@ -187,7 +202,7 @@ try {
     await evaluate(p, "document.getElementById('login-email').value='radar@example.invalid';document.getElementById('login-password').value='fixture-only-password';document.getElementById('login-form').requestSubmit()");
     await wait(p, `location.href===${JSON.stringify(original)} && document.getElementById('nextchapter-account')?.textContent==='Log Out'`);
     await reload(p); await accountReady(p, 'Log Out');
-    const tracker = await page(prefix + 'career-radar/'); await accountReady(tracker, 'Log Out');
+    const tracker = await page(prefix + 'prospect-tracker/'); await accountReady(tracker, 'Log Out');
     await wait(tracker, "!document.getElementById('workspace').hidden && !!document.querySelector('.board')");
     await openUtilities(p, size);
     await click(p, '#nextchapter-account');
@@ -198,10 +213,10 @@ try {
   }
   console.log('Passed pointer-driven About and login/return/logout in all three layouts from all four pages, persisted sessions and cross-tab protected UI clearing.');
 
-  const unsafe = await page(`${prefix}career-radar/?returnTo=https%3A%2F%2Fattacker.invalid%2F`); await accountReady(unsafe);
+  const unsafe = await page(`${prefix}prospect-tracker/?returnTo=https%3A%2F%2Fattacker.invalid%2F`); await accountReady(unsafe);
   await evaluate(unsafe, "document.getElementById('login-email').value='radar@example.invalid';document.getElementById('login-password').value='fixture-only-password';document.getElementById('login-form').requestSubmit()");
   await accountReady(unsafe, 'Log Out');
-  assert.equal(await evaluate(unsafe, 'location.href'), prefix + 'career-radar/');
+  assert.equal(await evaluate(unsafe, 'location.href'), prefix + 'prospect-tracker/');
   // Existing dirty-editor confirmation must guard the relocated logout.
   await evaluate(unsafe, "location.hash='#/prospects/new'"); await wait(unsafe, "!!document.querySelector('#workspace input[name=company]')");
   await evaluate(unsafe, "document.querySelector('#workspace input[name=company]').value='Synthetic unsaved';document.querySelector('#workspace input[name=company]').dispatchEvent(new Event('input',{bubbles:true}));window.confirm=()=>false;document.getElementById('nextchapter-account').click()");

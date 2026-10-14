@@ -5,7 +5,7 @@ export function safeLoginReturn(value, moduleUrl) {
   try {
     const base = new URL('../', moduleUrl);
     const destination = new URL(value, base);
-    const paths = ['career-radar.html', 'career-radar/', 'career-radar/index.html', 'resume-tailor.html', 'about.html'];
+    const paths = ['career-radar.html', 'prospect-tracker/', 'prospect-tracker/index.html', 'resume-tailor.html', 'about.html'];
     if (!['http:', 'https:'].includes(destination.protocol) || destination.origin !== base.origin || destination.username || destination.password ||
         !paths.some(path => destination.pathname === new URL(path, base).pathname)) return null;
     // Never chain return destinations, even on an otherwise allowed page.

@@ -26,7 +26,7 @@ An important layout discrepancy: Builder currently uses the **same 860px maximum
 | --- | --- |
 | [tokens.css](../tools/shared/tokens.css), lines 1–83 | Primitive palette, alpha colors, font families, minimal spacing/radii; dark semantics and `body.light` mappings |
 | [Builder](../tools/resume-tailor.html), lines 17–151 | Legacy aliases, reset, app typography, forms, components and screen document styles |
-| [Tracker styles](../tools/career-radar/styles.css), lines 1–78 | Legacy aliases, native color scheme, reset, app typography, controls, board/editor layouts |
+| [Tracker styles](../tools/prospect-tracker/styles.css), lines 1–78 | Legacy aliases, native color scheme, reset, app typography, controls, board/editor layouts |
 | [navigation.css](../tools/shared/navigation.css), lines 1–46 | Shared header, active/focus state and extracted theme switch |
 | [icons.css](../tools/shared/icons.css) and [icons.mjs](../tools/shared/icons.mjs) | SVG icon presentation and accessible DOM helper |
 
@@ -149,9 +149,9 @@ Tracker's factories are reusable **inside Tracker**, not a cross-suite component
 
 **Cover Letter Preview:** same width and tab shell; more generous paragraph line height and inline metadata/separator styles. Both preview types are themed web presentations, not exact PDF/DOCX page renders. Keep export styling independent; dark UI changes must not darken exported documents.
 
-**Tracker:** grouped lifecycle board, ordinary prospect links and native Done disclosure. Applied sorts by known application date then discovery/creation recency, initially showing ten cards with an accessible show-all control ([view-model.js](../tools/career-radar/view-model.js), lines 6–64). Other columns preserve data-layer creation ordering ([data.js](../tools/career-radar/data.js), line 59). There is no user-facing search/filter/sort widget, drag-and-drop Kanban, or custom overlay to audit. Do not add those as design-system work.
+**Tracker:** grouped lifecycle board, ordinary prospect links and native Done disclosure. Applied sorts by known application date then discovery/creation recency, initially showing ten cards with an accessible show-all control ([view-model.js](../tools/prospect-tracker/view-model.js), lines 6–64). Other columns preserve data-layer creation ordering ([data.js](../tools/prospect-tracker/data.js), line 59). There is no user-facing search/filter/sort widget, drag-and-drop Kanban, or custom overlay to audit. Do not add those as design-system work.
 
-Tracker's editor uses two-column fields, Job Description above More job details/Notes, separate save/status forms, and append-only status history. Ingestion has editable provenance hints, warnings and explicit duplicate decisions. Busy states disable fieldsets and logout; workspace receives `aria-busy` ([app.js](../tools/career-radar/app.js), lines 60–67). These conventions should survive any visual rollout.
+Tracker's editor uses two-column fields, Job Description above More job details/Notes, separate save/status forms, and append-only status history. Ingestion has editable provenance hints, warnings and explicit duplicate decisions. Busy states disable fieldsets and logout; workspace receives `aria-busy` ([app.js](../tools/prospect-tracker/app.js), lines 60–67). These conventions should survive any visual rollout.
 
 **Header:** semantic nav, meaningful active link, native button, explicit focus outline, wrapping links and module-relative routes are sound foundations. No hamburger or router is needed. Weaknesses: generic `.theme-toggle`/`.toggle-*` selectors; switch colors use `--surface2`, `--border`, `--accent`, `--text`, `--muted`; hover thus differs with host aliases. Nav typography and some box-model assumptions remain inherited. Header rendering is a module side effect targeting one ID, suitable for one header per static page; multiple instances/lifecycle abstractions are unnecessary now. Tracker's second top-level header may create duplicate banner landmarks; confirm the accessibility tree before changing structure.
 

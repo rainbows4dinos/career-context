@@ -5,11 +5,15 @@ Phase 2C extends `tools/shared/navigation.mjs` and `navigation.css` across the s
 | Destination | Static path | Responsibility |
 | --- | --- | --- |
 | Career Radar | `tools/career-radar.html` | Future discovery/evaluation; remains a public placeholder |
-| Prospect Tracker | `tools/career-radar/` | Authenticated prospect/application tracking, posting previews and Builder handoff |
+| Prospect Tracker | `tools/prospect-tracker/` | Authenticated prospect/application tracking, posting previews and Builder handoff |
 | Résumé Builder | `tools/resume-tailor.html` | Public generation, revision, previews and downloads |
 | About | `tools/about.html` | Public README-based introduction to the tools and their shared context |
 
 Existing Tracker hashes and Builder URLs remain unchanged. The header sits before each application shell so its background spans the viewport. Shared `layout.css` applies a centered 1400px maximum outer content width, 28px side padding on desktop/tablet and 20px below 900px, matching the header’s mobile category. Inner reading/form panels retain their local width constraints.
+
+As of October 13, 2026, Tracker's application directory and canonical URL are `tools/prospect-tracker/`. Shared authentication imports, public-page assets, Pages configuration generation and ingestion-function imports use that directory. `tools/career-radar/index.html` is only a compatibility redirect for existing Tracker bookmarks; it preserves queries and hashes with `location.replace()`. Career Radar's coming-soon page remains at `tools/career-radar.html`. Future Radar routing can replace the legacy redirect when that feature is implemented. No database or Supabase project identity changes are required. The hosted deployment has not been verified for this move.
+
+Local migration validation passed: all 100 Node tests, application typecheck/lint, shared navigation lint, ingestion-function typecheck and five Deno tests. Browser navigation acceptance passed under `/nextchapter/tools/`, covering all four pages, login/return/logout, persisted sessions, cross-tab clearing and zero prospect/history writes. Legacy directory and `index.html` bookmarks preserved queries/hashes under both root and project-prefixed paths. The browser harness now waits for header transitions before measuring geometry.
 
 ## Shared navigation visual migration
 
@@ -31,7 +35,7 @@ Small-Open retains Figma's right-aligned links, 24px gaps, utility divider, Abou
 
 ## Global authentication integration
 
-`getRadarClient()` in the existing `tools/career-radar/supabase-client.js` caches the initialization promise. Tracker bootstrap and the shared header reuse that client within a page; existing public configuration, SDK, storage identity, session persistence and refresh settings remain unchanged. Public entry points add the same vendored SDK import map. Each page/tab has its own client as usual; the SDK propagates account changes across tabs.
+`getRadarClient()` in the existing `tools/prospect-tracker/supabase-client.js` caches the initialization promise. Tracker bootstrap and the shared header reuse that client within a page; existing public configuration, SDK, storage identity, session persistence and refresh settings remain unchanged. Public entry points add the same vendored SDK import map. Each page/tab has its own client as usual; the SDK propagates account changes across tabs.
 
 The header renders before asynchronous account initialization. Only the account action shows a disabled “Account…” loading state. Its resolved label is “Log In” or “Log Out”; an initialization error offers “Retry account” with configuration/connection guidance. Public Builder/About/Radar still work when account configuration is missing. If a module download/configuration failed, a reload may be needed after fixing it because browsers cache failed module loads.
 
@@ -50,9 +54,9 @@ No public page initializes Tracker's data layer or reads prospects. Career Radar
 Reproduction uses an isolated Chrome profile with remote debugging on port 9229 and the disposable synthetic fixture on port 8777:
 
 ```sh
-node tools/career-radar/tests/fixtures/radar-server.js
-node tools/career-radar/tests/browser/navigation.mjs
-node tools/career-radar/tests/browser/inputs-status.mjs
+node tools/prospect-tracker/tests/fixtures/radar-server.js
+node tools/prospect-tracker/tests/browser/navigation.mjs
+node tools/prospect-tracker/tests/browser/inputs-status.mjs
 npm --prefix tools/career-radar run typecheck
 npm --prefix tools/career-radar run lint
 npm --prefix tools/career-radar test
@@ -72,8 +76,8 @@ Repository rename remains separate: [readiness and cutover sequence](nextchapter
 
 - Shared sizing foundation: `tools/shared/tokens.css` (global border-box; token values unchanged).
 - Shared visual/mobile/auth UI: `tools/shared/navigation.mjs`, `tools/shared/navigation.css`; safe return utility: `tools/shared/navigation-return.mjs`.
-- Shared client and existing Tracker auth integration: `tools/career-radar/supabase-client.js`, `tools/career-radar/bootstrap.js`, `tools/career-radar/app.js`.
-- Application adoption and redundant-control cleanup: `tools/career-radar/index.html`, `tools/career-radar/styles.css`, `tools/career-radar.html`, `tools/resume-tailor.html`.
+- Shared client and existing Tracker auth integration: `tools/prospect-tracker/supabase-client.js`, `tools/prospect-tracker/bootstrap.js`, `tools/prospect-tracker/app.js`.
+- Application adoption and redundant-control cleanup: `tools/prospect-tracker/index.html`, `tools/prospect-tracker/styles.css`, `tools/career-radar.html`, `tools/resume-tailor.html`.
 - New public About page: `tools/about.html`.
-- Synthetic validation: `tools/career-radar/tests/browser/navigation.mjs`, `tools/career-radar/tests/navigation-return.test.js`, `tools/career-radar/tests/fixtures/radar-server.js` (serves About).
+- Synthetic validation: `tools/prospect-tracker/tests/browser/navigation.mjs`, `tools/prospect-tracker/tests/navigation-return.test.js`, `tools/prospect-tracker/tests/fixtures/radar-server.js` (serves About).
 - Documentation: `README.md`, `docs/nextchapter-navigation.md`.

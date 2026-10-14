@@ -8,4 +8,4 @@ await writeFile(new URL('../public-env.js', import.meta.url),
     SUPABASE_URL: config.supabaseUrl,
     SUPABASE_PUBLISHABLE_KEY: config.publishableKey
   }, null, 2)};\n`);
-console.log('Generated tools/career-radar/public-env.js (public credentials only).');
+console.log('Generated tools/prospect-tracker/public-env.js (public credentials only).');

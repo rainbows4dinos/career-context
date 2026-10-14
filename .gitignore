@@ -7,7 +7,7 @@ node_modules/
 !.env.example
 supabase/.temp/
 supabase/.branches/
-tools/career-radar/public-env.js
+tools/prospect-tracker/public-env.js
 
 # Private job-search import artifacts: keep outside the repository.
 # These unanchored patterns also guard accidental copies in subdirectories.

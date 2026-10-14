@@ -177,11 +177,11 @@ These paths are proposed, not implemented.
 | --- | --- |
 | `supabase/functions/job-ingest/index.ts` | Thin authenticated HTTP entry point, CORS, limits, typed errors |
 | `supabase/functions/job-ingest/deno.json` | Pinned server dependencies |
-| `tools/career-radar/ingestion/` | Shared URL recognition, bounded retrieval, Greenhouse extraction, normalization, response contract and testable HTTP boundary; the function imports these scoped modules |
-| `tools/career-radar/ingestion-client.js` | Invoke function and validate its response |
-| `tools/career-radar/duplicate-match.js` | Pure identity comparison |
-| `tools/career-radar/data.js` | Add a narrow, paginated identity query including `job_url` |
-| `tools/career-radar/app.js`, `ui.js`, `view-model.js`, `styles.css` | URL input, loading/cancel states, editable preview, duplicate review, existing save flow |
+| `tools/prospect-tracker/ingestion/` | Shared URL recognition, bounded retrieval, Greenhouse extraction, normalization, response contract and testable HTTP boundary; the function imports these scoped modules |
+| `tools/prospect-tracker/ingestion-client.js` | Invoke function and validate its response |
+| `tools/prospect-tracker/duplicate-match.js` | Pure identity comparison |
+| `tools/prospect-tracker/data.js` | Add a narrow, paginated identity query including `job_url` |
+| `tools/prospect-tracker/app.js`, `ui.js`, `view-model.js`, `styles.css` | URL input, loading/cancel states, editable preview, duplicate review, existing save flow |
 | Tests and sanitized fixtures | Extraction, normalization, security, matching, and browser-flow coverage |
 | `supabase/config.toml`, documentation, scoped tooling | Function configuration, deployment instructions, typecheck/test coverage |
 

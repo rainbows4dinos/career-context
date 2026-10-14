@@ -35,7 +35,7 @@ Implemented October 7, 2026 against baseline `1e1533a`, following the approved [
 
 The shared sheet supplies dark defaults and `body.light` overrides. Semantic references are declared on both `:root` and `body` so values resolve on the theme element. It contains no resets, component styles, font downloads or behavior.
 
-The [Builder](../tools/resume-tailor.html) loads `shared/tokens.css` before its embedded styles; [Radar](../tools/career-radar/index.html) loads `../shared/tokens.css` before [its local styles](../tools/career-radar/styles.css). Both paths work under the GitHub Pages repository subdirectory. No workflow, package or dependency changes are needed.
+The [Builder](../tools/resume-tailor.html) loads `shared/tokens.css` before its embedded styles; [Radar](../tools/prospect-tracker/index.html) loads `../shared/tokens.css` before [its local styles](../tools/prospect-tracker/styles.css). Both paths work under the GitHub Pages repository subdirectory. No workflow, package or dependency changes are needed.
 
 ## Compatibility
 

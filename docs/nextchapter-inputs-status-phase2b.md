@@ -42,13 +42,13 @@ Desktop positioning is bottom-right; mobile uses horizontal insets, with safe-ar
 | [tools/shared/status.mjs](../tools/shared/status.mjs) | Safe inline Alert adapter and shared severity icon names. |
 | [tools/shared/notifications.mjs](../tools/shared/notifications.mjs) | Small in-memory Toast manager. |
 | [tools/resume-tailor.html](../tools/resume-tailor.html) | Job/contact/notes/revision field adoption; persistent validation, generation/revision/download errors; accessible loading; generation/download success Toasts; inline handoff notices. |
-| [tools/career-radar/ui.js](../tools/career-radar/ui.js) | Editor inputs/native selects, separate associated labels/helpers, inline handoff Alerts and loading Spinner. |
-| [tools/career-radar/app.js](../tools/career-radar/app.js) | Inline auth/save/status failures, whitespace/URL field errors, save/status/sign-out Toasts. |
-| [tools/career-radar/index.html](../tools/career-radar/index.html) | Login label/input adoption, preserving types, autocomplete and required attributes. |
-| [tools/career-radar/ingestion-ui.js](../tools/career-radar/ingestion-ui.js) | Posting URL adoption, associated source hints, loading Spinner and persistent retrieval Alerts. |
-| [tools/career-radar/styles.css](../tools/career-radar/styles.css) | Retained local layout/textarea heights; legacy feedback styling excludes shared Alerts. |
-| [tools/career-radar/eslint.config.js](../tools/career-radar/eslint.config.js) | Existing lint configuration also covers the new browser `.mjs` test. |
-| [tools/career-radar/tests/browser/inputs-status.mjs](../tools/career-radar/tests/browser/inputs-status.mjs) | Dependency-free local Chrome acceptance checks with synthetic data and mocked generation. |
+| [tools/prospect-tracker/ui.js](../tools/prospect-tracker/ui.js) | Editor inputs/native selects, separate associated labels/helpers, inline handoff Alerts and loading Spinner. |
+| [tools/prospect-tracker/app.js](../tools/prospect-tracker/app.js) | Inline auth/save/status failures, whitespace/URL field errors, save/status/sign-out Toasts. |
+| [tools/prospect-tracker/index.html](../tools/prospect-tracker/index.html) | Login label/input adoption, preserving types, autocomplete and required attributes. |
+| [tools/prospect-tracker/ingestion-ui.js](../tools/prospect-tracker/ingestion-ui.js) | Posting URL adoption, associated source hints, loading Spinner and persistent retrieval Alerts. |
+| [tools/prospect-tracker/styles.css](../tools/prospect-tracker/styles.css) | Retained local layout/textarea heights; legacy feedback styling excludes shared Alerts. |
+| [tools/prospect-tracker/eslint.config.js](../tools/prospect-tracker/eslint.config.js) | Existing lint configuration also covers the new browser `.mjs` test. |
+| [tools/prospect-tracker/tests/browser/inputs-status.mjs](../tools/prospect-tracker/tests/browser/inputs-status.mjs) | Dependency-free local Chrome acceptance checks with synthetic data and mocked generation. |
 | This report | Contract, migration, validation and limitations. |
 
 Routine create/edit/status confirmations use Toasts and no longer duplicate inline confirmations. Save/retrieval/auth/generation/revision/download failures remain inline. Handoff confirmation stays beside its action; Builder receive/decline/error information stays inline. Revision's existing short “Done” status remains inline, without a duplicate Toast.
@@ -72,14 +72,14 @@ Passed:
 Run the committed acceptance script with the existing synthetic fixture server and an isolated Chrome debugging session:
 
 ```sh
-node tools/career-radar/tests/fixtures/radar-server.js
+node tools/prospect-tracker/tests/fixtures/radar-server.js
 # In another terminal (macOS):
 '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \
   --headless=new --remote-debugging-port=9229 \
   --user-data-dir=/private/tmp/nextchapter-phase2b-chrome \
   --no-first-run --no-default-browser-check about:blank
 # In a third terminal:
-node tools/career-radar/tests/browser/inputs-status.mjs
+node tools/prospect-tracker/tests/browser/inputs-status.mjs
 ```
 
 The acceptance script uses only the local fixture for auth/prospects and mocks generation. It permits the existing Google font styles for narrow-layout checks. It creates and closes its own test tabs. Other export/handoff regression checks were session-local; no new test framework or dependency was added.

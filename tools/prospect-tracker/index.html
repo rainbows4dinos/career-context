@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prospect Tracker — nextchapter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/tokens.css?v=20261013-kanban">
+  <link rel="stylesheet" href="../shared/icons.css">
+  <link rel="stylesheet" href="styles.css?v=20261013-toolbar-lg">
+  <link rel="stylesheet" href="../shared/navigation.css?v=20261013-transitions">
+  <link rel="stylesheet" href="../shared/components.css?v=20261013-badge-semibold">
+  <script type="importmap">
+    {"imports":{"@supabase/supabase-js":"./vendor/supabase.js", "./model.js":"./model.js?v=20261013-statuses", "./view-model.js":"./view-model.js?v=20261013-board-search"}}
+  </script>
+  <script type="module" src="../shared/navigation.mjs?v=20261013-tracker-route"></script>
+  <link rel="stylesheet" href="../shared/layout.css">
+</head>
+<body>
+  <header id="nextchapter-header" data-app="tracker"></header>
+  <div class="shell nc-content">
+    <header id="tracker-heading">
+      <div><h1>Prospect Tracker</h1><p>Your prospects, from first interest to a decision.</p></div>
+    </header>
+    <p id="notice" role="status" aria-live="polite"></p>
+    <section id="login" class="panel narrow" hidden aria-labelledby="login-title">
+      <h2 id="login-title">Sign in to Prospect Tracker</h2>
+      <p class="muted">Use your existing account. Your prospects are private.</p>
+      <form id="login-form">
+        <div class="nc-field"><label class="nc-field__label" for="login-email">Email<span class="nc-field__required" aria-hidden="true">*</span></label><input class="nc-input" id="login-email" name="email" type="email" autocomplete="username" required></div>
+        <div class="nc-field"><label class="nc-field__label" for="login-password">Password<span class="nc-field__required" aria-hidden="true">*</span></label><input class="nc-input" id="login-password" name="password" type="password" autocomplete="current-password" required></div>
+        <p id="login-error" role="alert"></p>
+        <button class="primary nc-button nc-button--primary nc-button--lg" type="submit">Sign in</button>
+      </form>
+    </section>
+    <main id="workspace" tabindex="-1"><p>Connecting to Prospect Tracker…</p></main>
+    <noscript><p>Prospect Tracker needs JavaScript to sign in and save prospects.</p></noscript>
+  </div>
+  <script type="module" src="bootstrap.js?v=20261013-toolbar-lg"></script>
+</body>
+</html>

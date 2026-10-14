@@ -9,9 +9,9 @@ Audit and proposal only. No application, style, configuration, dependency or dat
 Source references used below:
 
 - **B:** [Résumé Builder](../tools/resume-tailor.html): embedded CSS, static markup and global script functions in one file.
-- **R:** [Radar stylesheet](../tools/career-radar/styles.css): one external, application-wide stylesheet.
-- **UI:** [Radar UI factories](../tools/career-radar/ui.js); [ingestion UI](../tools/career-radar/ingestion-ui.js).
-- **Entries:** [Radar HTML](../tools/career-radar/index.html), [bootstrap](../tools/career-radar/bootstrap.js), [application controller](../tools/career-radar/app.js).
+- **R:** [Radar stylesheet](../tools/prospect-tracker/styles.css): one external, application-wide stylesheet.
+- **UI:** [Radar UI factories](../tools/prospect-tracker/ui.js); [ingestion UI](../tools/prospect-tracker/ingestion-ui.js).
+- **Entries:** [Radar HTML](../tools/prospect-tracker/index.html), [bootstrap](../tools/prospect-tracker/bootstrap.js), [application controller](../tools/prospect-tracker/app.js).
 
 Neither app has a CSS framework, preprocessor or frontend build. Builder uses simple classes, descendant selectors, inline styles and inline event handlers. Radar uses native ES modules, DOM factories and classes; its npm tooling is scoped to Radar. There is **no shared stylesheet or UI module today**: Radar explicitly copies Builder's tokens (R:1–3). Cross-links do not create a style dependency.
 

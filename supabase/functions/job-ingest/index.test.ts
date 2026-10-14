@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
-import { createIngestionHandler } from '../../../tools/career-radar/ingestion/handler.js';
-import { normalizeGreenhouse } from '../../../tools/career-radar/ingestion/greenhouse.js';
-import { recognizeGreenhouse } from '../../../tools/career-radar/ingestion/greenhouse-url.js';
-import { recognizePosting } from '../../../tools/career-radar/ingestion/posting-url.js';
+import { createIngestionHandler } from '../../../tools/prospect-tracker/ingestion/handler.js';
+import { normalizeGreenhouse } from '../../../tools/prospect-tracker/ingestion/greenhouse.js';
+import { recognizeGreenhouse } from '../../../tools/prospect-tracker/ingestion/greenhouse-url.js';
+import { recognizePosting } from '../../../tools/prospect-tracker/ingestion/posting-url.js';
 
 const ownerId = '11111111-1111-4111-8111-111111111111';
 const url = 'https://boards.greenhouse.io/example/jobs/12345?gh_src=tracking';
-const fixture = JSON.parse(await Deno.readTextFile(new URL('../../../tools/career-radar/tests/fixtures/greenhouse/posting.json', import.meta.url)));
+const fixture = JSON.parse(await Deno.readTextFile(new URL('../../../tools/prospect-tracker/tests/fixtures/greenhouse/posting.json', import.meta.url)));
 
 Deno.test('production dependencies normalize the sanitized Greenhouse fixture under Deno', () => {
   const result = normalizeGreenhouse(fixture, recognizeGreenhouse(url), url, new Date('2026-10-07T12:00:00Z'));
@@ -18,7 +18,7 @@ Deno.test('production dependencies normalize the sanitized Greenhouse fixture un
 
 for (const provider of ['ashby', 'lever', 'workday'] as const) {
   Deno.test(`${provider} Deno handler uses authenticated bounded API/page retrieval and the shared preview contract`, async () => {
-    const path = '../../../tools/career-radar/tests/fixtures/';
+    const path = '../../../tools/prospect-tracker/tests/fixtures/';
     const data = JSON.parse(await Deno.readTextFile(new URL(`${path}${provider}/${provider === 'ashby' ? 'board.json' : 'posting.json'}`, import.meta.url)));
     const page = await Deno.readTextFile(new URL(`${path}${provider}/posting.html`, import.meta.url));
     const postingUrl = provider === 'ashby' ? data.jobs[1].jobUrl : provider === 'workday' ? data.jobPostingInfo.externalUrl : data.hostedUrl;

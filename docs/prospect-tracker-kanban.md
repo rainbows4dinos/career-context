@@ -2,7 +2,7 @@
 
 The [Status-Badge component](https://www.figma.com/design/hLBR7Nl3GelwM9hstQb3Ah/Career-Radar?node-id=134-13529) uses 20px height, 4px/6px padding, 2px corners and Inter Regular 12/12 typography. Figma binds both themes to the same primitive colors: neutral/200, secondary/100, primary/200, success/50, danger/50 and warning/50 backgrounds, with neutral/900 foregrounds. The requested `--ds-badge-{tone}-bg/fg` contract is defined in shared tokens; shared `.nc-status-badge` classes consume it. Badges are noninteractive spans on cards, the editor’s saved status and status-history entries.
 
-`tools/career-radar/prospect-status.js` owns the status-to-tone mapping:
+`tools/prospect-tracker/prospect-status.js` owns the status-to-tone mapping:
 
 | Tone | Status values |
 | --- | --- |
@@ -37,14 +37,14 @@ Both editor selection and board moves call the shared `createStatusSaver()` gate
 | Files | Responsibility |
 | --- | --- |
 | `tools/shared/tokens.css`, `tools/shared/components.css` | Shared badge tokens and six visual classes. |
-| `tools/career-radar/prospect-status.js` | Central status-to-tone map. |
-| `tools/career-radar/view-model.js` | Column membership/defaults, central ordering, search/counts and drop resolution. |
-| `tools/career-radar/kanban.js` | Desktop drag feedback, local Done chooser and cleanup. |
-| `tools/career-radar/status-save.js` | Shared status persistence gate. |
-| `tools/career-radar/ui.js`, `tools/career-radar/styles.css` | Badge adoption, persistent search toolbar, result updates, viewport/column scrolling and drop/chooser styling. |
-| `tools/career-radar/app.js` | Optimistic board updates, rollback and editor integration. |
-| `tools/career-radar/index.html`, `tools/career-radar/bootstrap.js` | Matching browser asset revisions. |
-| `tools/career-radar/tests/view-model.test.js`, `tools/career-radar/tests/prospect-status.test.js`, `tools/career-radar/tests/status-save.test.js` | Search/count/order coverage, mapping/no-op resolution, save serialization, revisions, failure/retry and session gating. |
+| `tools/prospect-tracker/prospect-status.js` | Central status-to-tone map. |
+| `tools/prospect-tracker/view-model.js` | Column membership/defaults, central ordering, search/counts and drop resolution. |
+| `tools/prospect-tracker/kanban.js` | Desktop drag feedback, local Done chooser and cleanup. |
+| `tools/prospect-tracker/status-save.js` | Shared status persistence gate. |
+| `tools/prospect-tracker/ui.js`, `tools/prospect-tracker/styles.css` | Badge adoption, persistent search toolbar, result updates, viewport/column scrolling and drop/chooser styling. |
+| `tools/prospect-tracker/app.js` | Optimistic board updates, rollback and editor integration. |
+| `tools/prospect-tracker/index.html`, `tools/prospect-tracker/bootstrap.js` | Matching browser asset revisions. |
+| `tools/prospect-tracker/tests/view-model.test.js`, `tools/prospect-tracker/tests/prospect-status.test.js`, `tools/prospect-tracker/tests/status-save.test.js` | Search/count/order coverage, mapping/no-op resolution, save serialization, revisions, failure/retry and session gating. |
 | `docs/prospect-tracker-kanban.md`, `docs/career-radar-v0.md` | Current behavior and validation. |
 
 ## Viewport scrolling and search

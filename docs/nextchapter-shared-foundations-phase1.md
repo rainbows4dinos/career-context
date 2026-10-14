@@ -210,9 +210,9 @@ Existing app hover opacity, selected chips, error callouts and native controls r
 | --- | --- |
 | [tokens.css](../tools/shared/tokens.css) | Live primitives, 50 semantic roles in both modes, 15 type roles, families, focus dimensions, native color scheme and compatibility aliases |
 | [Builder](../tools/resume-tailor.html) | Approved font loading; existing primary/revision fill-label pairs and link outlines consume dedicated roles |
-| [Tracker entry](../tools/career-radar/index.html) | Approved font loading |
+| [Tracker entry](../tools/prospect-tracker/index.html) | Approved font loading |
 | [Career Radar placeholder](../tools/career-radar.html) | Approved font loading |
-| [Tracker styles](../tools/career-radar/styles.css) | Existing primary fill/label/border, outline and error color compatibility |
+| [Tracker styles](../tools/prospect-tracker/styles.css) | Existing primary fill/label/border, outline and error color compatibility |
 | [navigation.css](../tools/shared/navigation.css) | Existing outline uses dedicated focus color and approved width/gap |
 | [Milestone 1 report](shared-design-tokens.md) | Mark the earlier palette/font snapshot as historical and link to the current foundations |
 | This report | Source/mode/type mapping, preserved/deferred values, measured contrast, verification and limitations |

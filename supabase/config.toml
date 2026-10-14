@@ -17,7 +17,7 @@ enabled = false
 
 [auth]
 enabled = true
-site_url = "http://localhost:8000/tools/career-radar/"
+site_url = "http://localhost:8000/tools/prospect-tracker/"
 enable_signup = false
 
 [auth.email]

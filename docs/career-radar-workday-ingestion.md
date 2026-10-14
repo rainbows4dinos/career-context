@@ -43,11 +43,11 @@ Existing bounds remain: 4 KiB inbound body, 2,048-character URL, 1 MiB streamed 
 
 ## Files and validation
 
-New modules: `tools/career-radar/ingestion/workday-url.js` (URL identity) and `workday.js` (CXS validation, matching, extraction and bounded retrieval). Shared dispatch, preview provider/method variants and UI support text add Workday. The JSON-LD collector is reused with Workday-specific matching; existing Ashby/Lever matching is unchanged. Existing duplicate comparison, preview, create path, revision guards and status trigger remain authoritative.
+New modules: `tools/prospect-tracker/ingestion/workday-url.js` (URL identity) and `workday.js` (CXS validation, matching, extraction and bounded retrieval). Shared dispatch, preview provider/method variants and UI support text add Workday. The JSON-LD collector is reused with Workday-specific matching; existing Ashby/Lever matching is unchanged. Existing duplicate comparison, preview, create path, revision guards and status trigger remain authoritative.
 
-New synthetic fixtures and coverage live in `tools/career-radar/tests/fixtures/workday/` and `tests/workday-ingestion.test.js`. Existing SDK/migration-backed persistence and Deno handler suites also cover Workday. No live posting bodies or personal job-search records were committed as fixtures.
+New synthetic fixtures and coverage live in `tools/prospect-tracker/tests/fixtures/workday/` and `tests/workday-ingestion.test.js`. Existing SDK/migration-backed persistence and Deno handler suites also cover Workday. No live posting bodies or personal job-search records were committed as fixtures.
 
-From `tools/career-radar/`:
+From `tools/prospect-tracker/`:
 
 ```sh
 npm run typecheck
