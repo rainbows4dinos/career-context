@@ -38,6 +38,7 @@ Repository agents should read `AGENTS.md` and the career files relevant to their
 
 ## Existing tools
 
+- [index.html](index.html): the site root opens the Prospect Tracker board; signed-out visitors use its existing sign-in flow.
 - [tools/resume-tailor.html](tools/resume-tailor.html): the résumé and cover-letter builder. One static page covering tailoring, revisions, QA warnings, and downloads.
 - [tools/career-radar.html](tools/career-radar.html): Career Radar coming soon; discovery and evaluation are not implemented.
 - [tools/prospect-tracker/index.html](tools/prospect-tracker/index.html): Prospect Tracker, private prospect tracking with a status board, core details, status history and editable posting previews. Also linked from the résumé builder.
