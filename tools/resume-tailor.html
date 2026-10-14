@@ -160,7 +160,7 @@
 <div class="shell nc-content builder-shell">
   <section class="app-heading" aria-labelledby="builder-title">
     <h1 id="builder-title">Résumé Builder</h1>
-    <p style="max-width: 90%;">Custom resume and cover letter generator using my job-hunting context files, docx templates, and Claude. Learn more on my <a href="https://github.com/rainbows4dinos/nextchapter" target="_blank">GitHub page</a>. Check out my portfolio at <a href="https://www.larryjr.design" target="_blank">www.larryjr.design</a></p>
+    <p style="max-width: 90%;">Custom resume and cover letter generator using my job-hunting context files, docx templates, and Claude. Learn more on my <a href="https://github.com/rainbows4dinos/nextchapter" target="_blank">GitHub page</a>.<span id="builderPortfolio" hidden> Check out my portfolio at <a id="builderPortfolioLink" target="_blank" rel="noopener"></a></span></p>
   </section>
 
   <ol class="step-bar nc-step-progress" aria-label="Application progress">
@@ -308,6 +308,7 @@ window.addEventListener('hashchange', receiveRadarJob);
 const fieldUI = import('./shared/fields.mjs');
 const statusUI = import('./shared/status.mjs?v=20261013-dismiss');
 const notificationUI = import('./shared/notifications.mjs');
+const resumeContextUI = import('./shared/resume-context.mjs?v=20261013-context');
 fieldUI.then(ui => ui.bindFieldValidation(document));
 function inlineMessage(id, message, variant = 'danger') {
   const element = document.getElementById(id);
@@ -338,6 +339,7 @@ let FRAMING = null;
 let TONE = null;
 let VOICE = null;
 let RULES = null; // rules.json, the machine-readable half of voice-and-format.md
+let RESUME_CONTEXT = null;
 
 // Only used if rules.json cannot be fetched, so the page still runs.
 const DEFAULT_RULES = {
@@ -361,6 +363,11 @@ async function loadContext() {
   try {
     [MASTER, FRAMING, TONE, VOICE, RULES] = await Promise.all(files);
     if (!RULES) RULES = DEFAULT_RULES;
+    RESUME_CONTEXT = (await resumeContextUI).parseResumeContext(MASTER);
+    const portfolio = document.getElementById('builderPortfolioLink');
+    portfolio.href = RESUME_CONTEXT.website;
+    portfolio.textContent = contextUrlLabel(RESUME_CONTEXT.website);
+    document.getElementById('builderPortfolio').hidden = false;
     contextLoaded = true;
     renderChips(TONE);
   } catch(e) {
@@ -538,7 +545,7 @@ async function goTailor() {
   statusEl.textContent = 'Starting...';
   subEl.textContent = 'Connecting to API';
 
-  const prompt = `You are helping Larry Reynolds tailor his resume and cover letter for one specific job. The VOICE AND FORMAT RULES are authoritative. Where anything else conflicts with them, follow them.
+  const prompt = `You are helping ${RESUME_CONTEXT.name} tailor their resume and cover letter for one specific job. The VOICE AND FORMAT RULES are authoritative. Where anything else conflicts with them, follow them.
 
 MASTER RESUME (the facts layer):
 ${MASTER}
@@ -591,12 +598,12 @@ HARD CONSTRAINTS. Check each one before returning.
 ${rulesBlock()}
 - Include every role in the master resume, most recent first. Do not drop or merge roles.
 - Use only numbers that appear in the context above. Never invent or estimate a metric.
-- The Pattern: obey its Scope Notes. No launch credit, no shipped outcomes, no metrics, no brand work.
+- Obey every role's scope notes in the master resume and the voice and format rules.
 - Greeting, then opening, then exactly two body paragraphs, then a two sentence close.
 - The opening paragraph must say what role he is applying for in its first sentence. Never open on an observation about the industry, the discipline, or a tension in the work.
 - One story in the body, not a survey of the career. Do not restate resume bullets.
 - Do not end every paragraph on an insight. Some paragraphs just end.
-- Sentences that could appear in any other designer's application. Cut anything not specific to Larry or to this company.
+- Sentences that could appear in any other designer's application. Cut anything not specific to the applicant or to this company.
 
 LAST STEP BEFORE YOU RETURN: re-read every sentence you just wrote. If any contains a banned word, an em dash, or a second "not X, it is Y" construction, rewrite that sentence and then return the JSON.`;
 
@@ -701,6 +708,7 @@ LAST STEP BEFORE YOU RETURN: re-read every sentence you just wrote. If any conta
       }
     }
 
+    r.resume = (await resumeContextUI).applyCanonicalExperience(r.resume, RESUME_CONTEXT);
     generatedData = { ...r, jobTitle: title, company, hiringContact: contact, currentMonth: month };
     renderPreview(r, title, company, contact, month);
 
@@ -799,6 +807,12 @@ Return ONLY the updated resume JSON with the same structure plus a revision_summ
   "experience": [{ "company": "...", "title": "...", "dates": "...", "bullets": [...] }]
 }
 
+MASTER RESUME (the facts layer):
+${MASTER || ''}
+
+EXPERIENCE FRAMING (supporting evidence):
+${FRAMING || ''}
+
 VOICE AND FORMAT RULES (authoritative, follow exactly):
 ${VOICE || ''}
 
@@ -820,6 +834,12 @@ Return ONLY the updated cover letter JSON with the same structure plus a revisio
   "body_paragraphs": ["...", "..."],
   "closing_paragraph": "..."
 }
+
+MASTER RESUME (the facts layer):
+${MASTER || ''}
+
+EXPERIENCE FRAMING (supporting evidence):
+${FRAMING || ''}
 
 VOICE AND FORMAT RULES (authoritative, follow exactly):
 ${VOICE || ''}
@@ -858,7 +878,7 @@ Change only what the revision request asks for.`;
       : JSON.parse(JSON.stringify(generatedData.cover_letter));
 
     if (isResume) {
-      generatedData.resume = revised;
+      generatedData.resume = (await resumeContextUI).applyCanonicalExperience(revised, RESUME_CONTEXT);
     } else {
       generatedData.cover_letter = revised;
     }
@@ -941,6 +961,19 @@ function renderPreviewFeedback(r, diff) {
   }
 }
 
+function escapeContextText(value) {
+  return String(value || '').replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[character]));
+}
+function contextCredentials() { return [...RESUME_CONTEXT.education, ...RESUME_CONTEXT.certifications]; }
+function contextUrlLabel(url) { return url.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, ''); }
+function contextContacts(kind) {
+  const p = RESUME_CONTEXT;
+  const website = { text: contextUrlLabel(p.website), link: p.website };
+  const email = { text: p.email, link: 'mailto:' + p.email };
+  if (kind === 'signature') return [website, { text: p.phone }];
+  if (kind === 'letter') return [{ text: p.location }, email, website];
+  return [{ text: p.location }, { text: p.phone }, email, website, ...(p.linkedin ? [{ text: 'LinkedIn', link: p.linkedin }] : [])];
+}
 function renderPreview(r, title, company, contact, month, diff) {
   renderPreviewFeedback(r, diff);
   const res = r.resume||{};
@@ -999,24 +1032,24 @@ function renderPreview(r, title, company, contact, month, diff) {
     return `
     <div class="job">
       <div class="job-header">
-        <span class="job-title">${j.title}</span>
-        <span class="job-dates">${j.dates}</span>
+        <span class="job-title">${escapeContextText(j.title)}</span>
+        <span class="job-dates">${escapeContextText(j.dates)}</span>
       </div>
-      <div class="job-company">${j.company}</div>
+      <div class="job-company">${escapeContextText(j.company)}</div>
       ${blurbHtml}
       <ul class="job-bullets">${bulletsHtml}</ul>
     </div>`;
   }).join('');
 
   document.getElementById('resumeOut').innerHTML=`
-    <div class="resume-name">Larry Reynolds</div>
-    <div class="resume-title-line">Principal Product Designer · Portland, OR · larryjr.design · larry.jr.design@gmail.com · 503-475-7438</div>
+    <div class="resume-name">${escapeContextText(RESUME_CONTEXT.name)}</div>
+    <div class="resume-title-line">${[RESUME_CONTEXT.headline,RESUME_CONTEXT.location,contextUrlLabel(RESUME_CONTEXT.website),RESUME_CONTEXT.email,RESUME_CONTEXT.phone].map(escapeContextText).join(' · ')}</div>
     <div class="section-label">Summary</div>
     <div class="summary-text">${hl(res.summary, oldRes?.summary)}</div>
     <div class="section-label">Core Skills</div>${skillsHtml}
     <div class="section-label">Experience</div>${expHtml}
     <div class="section-label">Education &amp; Certifications</div>
-    <div style="font-size:13px;line-height:1.8;font-weight:300"><strong style="font-weight:500;color:var(--muted-light)">BS, Multimedia &amp; Web Design</strong> <span style="color:var(--muted)">— Art Institute of Portland, High Honors</span><br><strong style="font-weight:500;color:var(--muted-light)">Design Thinking Certificate</strong> <span style="color:var(--muted)">— IDEO U</span></div>`;
+    <div style="font-size:13px;line-height:1.8;font-weight:300">${contextCredentials().map(entry => `<strong style="font-weight:500;color:var(--muted-light)">${escapeContextText(entry.title)}</strong>${entry.detail ? ` <span style="color:var(--muted)">— ${escapeContextText(entry.detail)}</span>` : ''}`).join('<br>')}</div>`;
 
   // Cover letter — diff at paragraph level
   const cl = r.cover_letter||{};
@@ -1028,8 +1061,8 @@ function renderPreview(r, title, company, contact, month, diff) {
 
   const addressee = company ? `${contact}, ${company}` : contact;
   document.getElementById('clOut').innerHTML=`
-    <div style="font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:4px;letter-spacing:-0.01em">Larry Reynolds</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:1.25rem;font-weight:300;letter-spacing:0.02em">Portland, OR · larry.jr.design@gmail.com · larryjr.design</div>
+    <div style="font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:4px;letter-spacing:-0.01em">${escapeContextText(RESUME_CONTEXT.name)}</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:1.25rem;font-weight:300;letter-spacing:0.02em">${contextContacts('letter').map(entry => escapeContextText(entry.text)).join(' · ')}</div>
     <div style="width:100%;height:1px;background:var(--border-subtle);margin-bottom:1.25rem"></div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:300">${month}</div>
     <div style="font-size:13px;color:var(--muted-light);margin-bottom:3px;font-weight:300">${addressee}</div>
@@ -1038,7 +1071,7 @@ function renderPreview(r, title, company, contact, month, diff) {
       const changed = oldCL && p !== (oldAllParas[i]||'');
       return `<p>${changed ? `<span class="revised-highlight">${p}</span>` : p}</p>`;
     }).join('')}</div>
-    <div style="margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border-subtle)"><span style="font-family:var(--serif);font-size:16px;font-weight:600">Larry Reynolds</span><br><span style="font-size:12px;color:var(--muted);font-weight:300">larryjr.design · 503-475-7438</span></div>`;
+    <div style="margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border-subtle)"><span style="font-family:var(--serif);font-size:16px;font-weight:600">${escapeContextText(RESUME_CONTEXT.name)}</span><br><span style="font-size:12px;color:var(--muted);font-weight:300">${contextContacts('signature').map(entry => escapeContextText(entry.text)).join(' · ')}</span></div>`;
 }
 
 // ─── Docx builder (mirrors template XML exactly) ──────────────────────────────
@@ -1072,25 +1105,25 @@ function sectionHead(text,spaceBefore=200,spaceAfter=80) {
 function locationFor(company, kind) {
   const entry = (RULES && RULES.locations && RULES.locations[company]) || null;
   if (entry && entry[kind]) return entry[kind];
-  return kind === 'ats' ? 'Remote' : '(Remote)';
+  return '';
+}
+
+function docxContactRuns(kind, size) {
+  return contextContacts(kind).flatMap((entry, index) => [
+    ...(index ? [tr('  |  ', C_MUTED, size)] : []),
+    entry.link ? new ExternalHyperlink({ link: entry.link, children:[tr(entry.text,C_LINK,size,false,true)] }) : tr(entry.text,C_MUTED,size),
+  ]);
 }
 
 async function buildResumeDocx(res) {
   const children=[];
 
   // Name
-  children.push(new Paragraph({spacing:{before:0,after:40},children:[tr('Larry Reynolds',C_BLACK,52,true)]}));
+  children.push(new Paragraph({spacing:{before:0,after:40},children:[tr(RESUME_CONTEXT.name,C_BLACK,52,true)]}));
   // Title
-  children.push(new Paragraph({spacing:{before:0,after:60},children:[tr('Principal Product Designer',C_MED,23)]}));
-  // Contact
-  children.push(new Paragraph({spacing:{before:0,after:0},children:[
-    tr('Portland, OR (Remote)  |  503-475-7438  |  ',C_MUTED,17),
-    new ExternalHyperlink({link:'mailto:larry.jr.design@gmail.com',children:[tr('larry.jr.design@gmail.com',C_LINK,17,false,true)]}),
-    tr('  |  ',C_MUTED,17),
-    new ExternalHyperlink({link:'https://www.larryjr.design',children:[tr('larryjr.design',C_LINK,17,false,true)]}),
-    tr('  |  ',C_MUTED,17),
-    new ExternalHyperlink({link:'https://www.linkedin.com/in/larryjrdesign',children:[tr('LinkedIn',C_LINK,17,false,true)]}),
-  ]}));
+  children.push(new Paragraph({spacing:{before:0,after:60},children:[tr(RESUME_CONTEXT.headline,C_MED,23)]}));
+  // Contact from the master résumé
+  children.push(new Paragraph({spacing:{before:0,after:0},children:docxContactRuns('resume',17)}));
   // Header divider
   children.push(new Paragraph({border:{bottom:{style:BorderStyle.SINGLE,size:4,color:C_RULE,space:1}},spacing:{before:100,after:100},children:[]}));
   // Summary
@@ -1139,10 +1172,10 @@ async function buildResumeDocx(res) {
 
   // EDUCATION
   children.push(sectionHead('EDUCATION & CERTIFICATIONS'));
-  children.push(new Paragraph({spacing:{before:80,after:20},children:[tr('BS, Multimedia & Web Design',C_DARK,19,true)]}));
-  children.push(new Paragraph({spacing:{before:0,after:80},children:[tr('Art Institute of Portland, High Honors',C_MED,19)]}));
-  children.push(new Paragraph({spacing:{before:40,after:20},children:[tr('Design Thinking Certificate',C_DARK,19,true)]}));
-  children.push(new Paragraph({spacing:{before:0,after:0},children:[tr('IDEO U',C_MED,19)]}));
+  for (const entry of contextCredentials()) {
+    children.push(new Paragraph({spacing:{before:40,after:20},children:[tr(entry.title,C_DARK,19,true)]}));
+    if (entry.detail) children.push(new Paragraph({spacing:{before:0,after:80},children:[tr(entry.detail,C_MED,19)]}));
+  }
 
   const doc=new Document({
     numbering:{config:[{reference:'bullets',levels:[{level:0,format:LevelFormat.BULLET,text:'\u2022',alignment:AlignmentType.LEFT,style:{paragraph:{indent:{left:360,hanging:240}}}}]}]},
@@ -1157,14 +1190,9 @@ async function buildCoverLetterDocx(cl, jobTitle, company, contact, month) {
   const children=[];
 
   // Name
-  children.push(new Paragraph({spacing:{before:0,after:40},children:[tr('Larry Reynolds',C_BLACK,44,true)]}));
-  // Contact
-  children.push(new Paragraph({spacing:{before:0,after:60},children:[
-    tr('Portland, OR  |  ',C_MUTED,17),
-    new ExternalHyperlink({link:'mailto:larry.jr.design@gmail.com',children:[tr('larry.jr.design@gmail.com',C_LINK,17,false,true)]}),
-    tr('   |  ',C_MUTED,17),
-    new ExternalHyperlink({link:'https://www.larryjr.design',children:[tr('larryjr.design',C_LINK,17,false,true)]}),
-  ]}));
+  children.push(new Paragraph({spacing:{before:0,after:40},children:[tr(RESUME_CONTEXT.name,C_BLACK,44,true)]}));
+  // Contact from the master résumé
+  children.push(new Paragraph({spacing:{before:0,after:60},children:docxContactRuns('letter',17)}));
   // Divider
   children.push(new Paragraph({border:{bottom:{style:BorderStyle.SINGLE,size:4,color:C_RULE,space:1}},spacing:{before:60,after:200},children:[]}));
   // Spacer
@@ -1182,12 +1210,9 @@ async function buildCoverLetterDocx(cl, jobTitle, company, contact, month) {
   // Sign-off spacer
   children.push(new Paragraph({spacing:{before:300,after:0},children:[]}));
   // Closing name
-  children.push(new Paragraph({spacing:{before:0,after:40},children:[tr('Larry Reynolds',C_DARK,20,true)]}));
+  children.push(new Paragraph({spacing:{before:0,after:40},children:[tr(RESUME_CONTEXT.name,C_DARK,20,true)]}));
   // Closing contact
-  children.push(new Paragraph({spacing:{before:0,after:0},children:[
-    new ExternalHyperlink({link:'https://www.larryjr.design',children:[tr('larryjr.design',C_LINK,20,false,true)]}),
-    tr('  |  503-475-7438',C_MUTED,20),
-  ]}));
+  children.push(new Paragraph({spacing:{before:0,after:0},children:docxContactRuns('signature',20)}));
 
   const doc=new Document({
     sections:[{properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1440,bottom:1440,left:1440}}},children}],
@@ -1259,7 +1284,8 @@ async function downloadBundle() {
     const co = (generatedData.company || 'Application').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const ti = (generatedData.jobTitle || 'Role').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const folder = `${co}_${ti}`;
-    const base = `LarryReynolds_${co}_${ti}`;
+    const applicant = RESUME_CONTEXT.name.replace(/[^A-Za-z0-9]+/g, '');
+    const base = `${applicant}_${co}_${ti}`;
 
     step('Building PDFs...');
     const resumePdf = await withTimeout(pdfBlob(buildResumePdfDef(generatedData.resume)), 20000, 'Resume PDF');
@@ -1321,12 +1347,8 @@ async function buildAtsDocx(res) {
   const children=[];
 
   // Contact, one fact per line
-  children.push(atsLine('Larry Reynolds', true));
-  children.push(atsLine('Portland, OR'));
-  children.push(atsLine('503-475-7438'));
-  children.push(atsLine('larry.jr.design@gmail.com'));
-  children.push(atsLine('larryjr.design'));
-  children.push(atsLine('linkedin.com/in/larryjrdesign', false, 120));
+  children.push(atsLine(RESUME_CONTEXT.name, true));
+  for (const text of [RESUME_CONTEXT.location,RESUME_CONTEXT.phone,RESUME_CONTEXT.email,contextUrlLabel(RESUME_CONTEXT.website),...(RESUME_CONTEXT.linkedin ? [contextUrlLabel(RESUME_CONTEXT.linkedin)] : [])]) children.push(atsLine(text));
 
   children.push(atsHead('Summary'));
   children.push(atsLine(res.summary || ''));
@@ -1339,7 +1361,7 @@ async function buildAtsDocx(res) {
   children.push(atsHead('Work Experience'));
   for (const job of res.experience || []) {
     const loc = locationFor(job.company,'ats');
-    children.push(new Paragraph({ spacing:{before:200, after:0}, children:[ tr(job.company + ', ' + loc, C_DARK, 20, true) ] }));
+    children.push(new Paragraph({ spacing:{before:200, after:0}, children:[ tr([job.company, loc].filter(Boolean).join(', '), C_DARK, 20, true) ] }));
     children.push(atsLine(job.title || ''));
     children.push(atsLine(job.dates || '', false, 60));
     for (const b of job.bullets || []) {
@@ -1349,8 +1371,7 @@ async function buildAtsDocx(res) {
   }
 
   children.push(atsHead('Education'));
-  children.push(atsLine('BS, Multimedia & Web Design, Art Institute of Portland'));
-  children.push(atsLine('Design Thinking Certificate, IDEO U'));
+  for (const entry of contextCredentials()) children.push(atsLine([entry.title,entry.detail].filter(Boolean).join(', ')));
 
   const doc=new Document({
     numbering:{config:[{reference:'bullets',levels:[{level:0,format:LevelFormat.BULLET,text:'\u2022',alignment:AlignmentType.LEFT,
@@ -1379,15 +1400,11 @@ function pdfSectionHead(text) {
   ];
 }
 
-function pdfContactLine() {
-  return { fontSize:8, color:PDF_MUTED, text: [
-    'Portland, OR (Remote)  |  503-475-7438  |  ',
-    { text:'larry.jr.design@gmail.com', color:PDF_LINK, link:'mailto:larry.jr.design@gmail.com' },
-    '  |  ',
-    { text:'larryjr.design', color:PDF_LINK, link:'https://www.larryjr.design' },
-    '  |  ',
-    { text:'LinkedIn', color:PDF_LINK, link:'https://www.linkedin.com/in/larryjrdesign' },
-  ]};
+function pdfContactLine(kind = 'resume', fontSize = 8) {
+  return { fontSize, color:PDF_MUTED, text:contextContacts(kind).flatMap((entry,index) => [
+    ...(index ? ['  |  '] : []),
+    entry.link ? { text:entry.text, color:PDF_LINK, link:entry.link } : entry.text,
+  ]) };
 }
 
 function pdfBullet(bullet) {
@@ -1400,8 +1417,8 @@ function pdfBullet(bullet) {
 
 function buildResumePdfDef(res) {
   const content = [
-    { text:'Larry Reynolds', fontSize:22, bold:true, color:'#000000', margin:[0,0,0,2] },
-    { text:'Principal Product Designer', fontSize:11.5, color:PDF_MED, margin:[0,0,0,3] },
+    { text:RESUME_CONTEXT.name, fontSize:22, bold:true, color:'#000000', margin:[0,0,0,2] },
+    { text:RESUME_CONTEXT.headline, fontSize:11.5, color:PDF_MED, margin:[0,0,0,3] },
     pdfContactLine(),
     pdfRule([0,6,0,8]),
     { text: res.summary || '', fontSize:9.5, color:PDF_DARK, lineHeight:1.25, margin:[0,0,0,2] },
@@ -1430,11 +1447,8 @@ function buildResumePdfDef(res) {
   }
 
   content.push(...pdfSectionHead('EDUCATION & CERTIFICATIONS'));
-  content.push({ fontSize:9.5, margin:[0,0,0,1], text:[
-    { text:'BS, Multimedia & Web Design', bold:true, color:PDF_DARK }, { text:', Art Institute of Portland, High Honors', color:PDF_MED },
-  ]});
-  content.push({ fontSize:9.5, text:[
-    { text:'Design Thinking Certificate', bold:true, color:PDF_DARK }, { text:', IDEO U', color:PDF_MED },
+  for (const entry of contextCredentials()) content.push({ fontSize:9.5, margin:[0,0,0,1], text:[
+    { text:entry.title, bold:true, color:PDF_DARK }, { text:entry.detail ? ', ' + entry.detail : '', color:PDF_MED },
   ]});
 
   return { pageSize:'LETTER', pageMargins:[54,54,54,54], defaultStyle: pdfDefaultStyle(), content };
@@ -1445,23 +1459,15 @@ function buildCoverLetterPdfDef(cl, jobTitle, company, contact, month) {
   const paras = [ cl.greeting || ('Hi ' + (contact || 'there') + ','), cl.opening_paragraph, ...(cl.body_paragraphs || []), cl.closing_paragraph ].filter(Boolean);
 
   const content = [
-    { text:'Larry Reynolds', fontSize:22, bold:true, color:'#000000', margin:[0,0,0,2] },
-    { fontSize:8, color:PDF_MUTED, text:[
-      'Portland, OR  |  ',
-      { text:'larry.jr.design@gmail.com', color:PDF_LINK, link:'mailto:larry.jr.design@gmail.com' },
-      '  |  ',
-      { text:'larryjr.design', color:PDF_LINK, link:'https://www.larryjr.design' },
-    ]},
+    { text:RESUME_CONTEXT.name, fontSize:22, bold:true, color:'#000000', margin:[0,0,0,2] },
+    pdfContactLine('letter'),
     pdfRule([0,8,0,14]),
     { text: month, fontSize:10, color:PDF_MUTED, margin:[0,0,0,10] },
     { text: addressee, fontSize:10, color:PDF_DARK, margin:[0,0,0,3] },
     { text: 'Re: ' + jobTitle, fontSize:10, bold:true, color:PDF_DARK, margin:[0,0,0,14] },
     ...paras.map(p => ({ text:p, fontSize:10, color:PDF_DARK, lineHeight:1.35, margin:[0,0,0,10] })),
-    { text:'Larry Reynolds', fontSize:10, bold:true, color:PDF_DARK, margin:[0,14,0,2] },
-    { fontSize:10, color:PDF_MUTED, text:[
-      { text:'larryjr.design', color:PDF_LINK, link:'https://www.larryjr.design' },
-      '  |  503-475-7438',
-    ]},
+    { text:RESUME_CONTEXT.name, fontSize:10, bold:true, color:PDF_DARK, margin:[0,14,0,2] },
+    pdfContactLine('signature',10),
   ];
 
   return { pageSize:'LETTER', pageMargins:[54,54,54,54], defaultStyle: pdfDefaultStyle(), content };
