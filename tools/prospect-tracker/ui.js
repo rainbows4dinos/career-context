@@ -48,9 +48,9 @@ export function messageView(root, message, retry) {
   root.replaceChildren(panel);
 }
 /** @typedef {{query:string, doneOpen:boolean, scrollLeft:number, scrollTop:Record<string,number>}} BoardState */
-/** @param {HTMLElement} root @param {import('./data.js').ProspectCard[]} cards @param {() => void} refresh
+/** @param {HTMLElement} root @param {import('./data.js').ProspectCard[]} cards
  * @param {Partial<import('./kanban.js').MoveOptions> & {state?:BoardState}} [options] */
-export function boardView(root, cards, refresh, options = {}) {
+export function boardView(root, cards, options = {}) {
   const state = options.state ?? { query: '', doneOpen: false, scrollLeft: 0, scrollTop: {} };
   const controller = new AbortController();
   const listenerOptions = { signal: controller.signal };
@@ -61,8 +61,6 @@ export function boardView(root, cards, refresh, options = {}) {
   const add = link('Add Prospect', '#/prospects/new');
   add.className = 'nc-button nc-button--primary nc-button--lg';
   add.prepend(gravityIcon('plus', { size: 16 }));
-  const reload = button('Refresh', refresh, 'nc-button nc-button--tertiary nc-button--lg');
-  reload.prepend(gravityIcon('arrow-rotate-left', { size: 16 }));
   const search = el('div', '', 'board-search'); search.setAttribute('role', 'search');
   const results = el('span', '', 'board-search-results');
   const searchField = el('div', '', 'board-search-field');
@@ -73,7 +71,7 @@ export function boardView(root, cards, refresh, options = {}) {
   clear.setAttribute('aria-label', 'Clear search'); clear.title = 'Clear search';
   clear.append(gravityIcon('xmark', { size: 16 }));
   searchField.append(label, input, clear); search.append(results, searchField);
-  toolbar.append(add, reload, search); heading.append(toolbar);
+  toolbar.append(add, search); heading.append(toolbar);
   const hint = el('p', '', 'nc-visually-hidden');
   hint.id = 'board-instructions';
   const board = el('div', '', 'board');

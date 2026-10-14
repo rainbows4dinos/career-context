@@ -9,7 +9,7 @@ import { errorMessage, parseRoute, readDetails } from './view-model.js';
 import { validateStatus, validateHttpUrl } from './model.js';
 import { createStatusSaver } from './status-save.js';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
-import { boardView, button, editorView, historyView, messageView, setProspectStatusBadge } from './ui.js?v=20261013-toolbar-lg';
+import { boardView, button, editorView, historyView, messageView, setProspectStatusBadge } from './ui.js?v=20261013-no-refresh';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
 import { mountIngestion } from './ingestion-ui.js?v=20261013-statuses';
 
@@ -102,7 +102,7 @@ export async function startRadar(client) {
           if (!current()) return;
           if (boardViewController) boardViewController.update(cards);
           else {
-            boardViewController = boardView(workspace, cards, () => { if (canMove()) void renderRoute(); }, { canMove, move, state: boardState });
+            boardViewController = boardView(workspace, cards, { canMove, move, state: boardState });
             boardCleanup = () => boardViewController?.dispose();
           }
         };
@@ -123,9 +123,17 @@ export async function startRadar(client) {
             if (!current()) return;
             cards = before; renderBoard();
             const message = error instanceof StaleProspectError
-              ? 'This prospect changed elsewhere. The move was undone. Refresh the board before trying again.'
+              ? 'This prospect changed elsewhere. The move was undone. Reload the board before trying again.'
               : `Could not save status. The move was undone. ${errorMessage(error)}`;
-            showToast({ message, variant: 'danger' });
+            if (error instanceof StaleProspectError) {
+              workspace.querySelector('#board-conflict')?.remove();
+              const feedback = document.createElement('div'); feedback.id = 'board-conflict';
+              setAlert(feedback, { message, variant: 'danger' });
+              feedback.querySelector('.nc-alert__message')?.append(' ', button('Reload board', () => {
+                if (canMove()) void renderRoute();
+              }));
+              workspace.prepend(feedback);
+            } else showToast({ message, variant: 'danger' });
             if (error && typeof error === 'object' && ('status' in error && error.status === 401 || 'code' in error && ['PGRST301','PGRST303'].includes(String(error.code)))) acceptSession(null);
           }
         };
