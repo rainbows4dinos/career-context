@@ -55,7 +55,7 @@ button:disabled { opacity:.5; cursor:wait }
 .board-search .board-search-clear:hover { background:var(--nc-input-hover) }
 .board-search-results { flex:none; margin:0; white-space:nowrap; color:var(--nc-text-muted); font:var(--nc-type-body-default-weight) var(--nc-type-body-default-size)/var(--nc-type-body-default-line-height) var(--nc-type-body-default-family) }
 .column-cards:focus-visible { outline:var(--nc-focus-width) solid var(--nc-focus-ring); outline-offset:var(--nc-focus-offset) }
-.board { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; overflow-x:auto; padding:4px 4px 1rem; min-height:300px; align-items:start }
+.board { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; overflow-x:auto; padding:0px 0px 1rem; min-height:300px; align-items:start }
 .column { min-width:0; background:var(--surface); border:1px solid var(--border-subtle); border-radius:var(--radius); padding:12px }
 .column h3 { font:500 14px var(--sans); display:flex; justify-content:space-between; margin-bottom:1rem }
 .column { transition:border-color var(--nc-transition-general-sm),background-color var(--nc-transition-general-sm) }
