@@ -12,65 +12,38 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.18"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
-      // Migration-based PostgreSQL snapshot; regenerate hosted types after applying the profile migration.
       career_profiles: {
         Row: {
-          owner_id: string;
-          explicit_profile: Json;
-          inferred_signals: Json;
-          reviewed_at: string;
-          revision: number;
-          created_at: string;
-          updated_at: string;
-        };
+          created_at: string
+          explicit_profile: Json
+          inferred_signals: Json
+          owner_id: string
+          reviewed_at: string
+          revision: number
+          updated_at: string
+        }
         Insert: {
-          owner_id?: string;
-          explicit_profile: Json;
-          inferred_signals?: Json;
-          reviewed_at: string;
-          revision?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
+          created_at?: string
+          explicit_profile: Json
+          inferred_signals?: Json
+          owner_id?: string
+          reviewed_at: string
+          revision?: number
+          updated_at?: string
+        }
         Update: {
-          owner_id?: string;
-          explicit_profile?: Json;
-          inferred_signals?: Json;
-          reviewed_at?: string;
-          revision?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-
+          created_at?: string
+          explicit_profile?: Json
+          inferred_signals?: Json
+          owner_id?: string
+          reviewed_at?: string
+          revision?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       prospect_status_events: {
         Row: {
           from_status: string | null
@@ -345,9 +318,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },
