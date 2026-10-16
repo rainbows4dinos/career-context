@@ -123,6 +123,16 @@ export async function startFixture(port = 0) {
       }
       if (url.pathname.startsWith('/rest/v1/')) {
         if (req.headers.authorization !== `Bearer ${token}`) { send({ message: 'Unauthorized', code: 'PGRST301' }, 401); return; }
+        if (url.pathname === '/rest/v1/rpc/reorder_prospect_column' && req.method === 'POST') {
+          if (failNextSave) { failNextSave = false; send({ message: 'Synthetic reorder failure', code: 'TEST_FAILURE' }, 503); return; }
+          const body = JSON.parse(text);
+          await db.transaction(async tx => {
+            await tx.exec('set local role authenticated');
+            await tx.query("select set_config('request.jwt.claims', $1, true)", [JSON.stringify({ sub: owner })]);
+            await tx.query('select public.reorder_prospect_column($1,$2::uuid[],$3::uuid[])', [body.column_id, body.expected_ids, body.ordered_ids]);
+          });
+          send(null); return;
+        }
         const table = url.pathname.split('/').pop();
         if (!['prospects','prospect_status_events','career_profiles','radar_opportunities'].includes(table)) { send({}, 404); return; }
         if(table==='radar_opportunities' && req.method==='GET' && failHistory){failHistory=false;send({message:'Synthetic history failure'},503);return;}
@@ -141,7 +151,7 @@ export async function startFixture(port = 0) {
           const where = clauses.length ? ' where ' + clauses.join(' and ') : '';
           let query;
           if (req.method === 'GET') {
-            query = `select row_to_json(p)::text as value from public.${table} p${where} order by ${table === 'career_profiles' ? 'owner_id' : 'id'} limit ${Math.min(Number(url.searchParams.get('limit') || 500), 500)} offset ${Number(url.searchParams.get('offset') || 0)}`;
+            query = `select row_to_json(p)::text as value from public.${table} p${where} order by ${table === 'career_profiles' ? 'owner_id' : table === 'prospects' && url.searchParams.get('order')?.startsWith('board_position.') ? 'board_position, created_at desc, id' : 'id'} limit ${Math.min(Number(url.searchParams.get('limit') || 500), 500)} offset ${Number(url.searchParams.get('offset') || 0)}`;
           } else {
             if (!['prospects','career_profiles','radar_opportunities'].includes(table) || !['POST','PATCH'].includes(req.method)) throw new Error('Unsupported fixture write');
             const body = JSON.parse(text);

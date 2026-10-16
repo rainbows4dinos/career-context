@@ -42,9 +42,9 @@ test('board groups every canonical status exactly once into four ordered lifecyc
   assert.deepEqual(groups.flatMap(group => group.statuses), STATUSES);
   assert.ok(groups.every(group => group.cards.length === 0));
 });
-test('board groups cards without changing records or revisions and retains other lifecycle groups’ input order', () => {
+test('board groups cards without changing records or revisions and retains saved positions in every lifecycle group', () => {
   const cards = STATUSES.toReversed().map((status, index) => Object.freeze({
-    id: String(index), status, updated_at: '2026-10-06T12:34:56.123456+00:00'
+    id: String(index), board_position: index, status, updated_at: '2026-10-06T12:34:56.123456+00:00'
   }));
   Object.freeze(cards);
   const groups = groupCards(cards);
@@ -64,35 +64,22 @@ test('board keeps empty lifecycle columns when all prospects are done', () => {
   assert.deepEqual(groups.map(group => group.cards.length), [0, 0, 0, 1]);
   assert.equal(groups[3].cards[0], card);
 });
-test('Applied prioritizes real application dates, uses discovery/creation for undated records, and breaks ties deterministically', () => {
-  const created = '2026-10-06T12:00:00.123456+00:00';
-  const records = [
-    { id: 'undated-new', discovered_on: null, created_at: '2026-10-05T12:00:00Z' },
-    { id: 'known-old', applied_on: '2025-12-31' },
-    { id: 'undated-discovered', discovered_on: '2026-09-01' },
-    { id: 'known-new-b', applied_on: '2026-10-01' },
-    { id: 'undated-old', created_at: '2026-08-01T12:00:00Z' },
-    { id: 'known-new-a', applied_on: '2026-10-01' },
-    { id: 'known-new-earlier-created', applied_on: '2026-10-01', created_at: '2026-10-05T12:00:00Z' }
-  ].map(record => Object.freeze({
-    status: 'applied', applied_on: null, discovered_on: null, created_at: created,
-    updated_at: created, ...record
-  }));
-  Object.freeze(records);
-  const applied = groupCards(records).find(group => group.id === 'applied');
-  assert.deepEqual(applied.cards.map(card => card.id), [
-    'known-new-a', 'known-new-b', 'known-new-earlier-created', 'known-old',
-    'undated-new', 'undated-discovered', 'undated-old'
-  ]);
-  assert.equal(applied.cards.length, records.length);
-  for (const card of applied.cards) assert.equal(card, records.find(record => record.id === card.id));
-  assert.equal(records[0].applied_on, null);
-  assert.equal(records[2].applied_on, null);
-  assert.ok(records.every(card => card.updated_at === created && card.status === 'applied'));
+test('manual positions override dates in every column with deterministic creation/id ties', () => {
+  for (const status of ['prospect', 'applied', 'recruiter', 'closed']) {
+    const cards = [
+      { id: 'a', board_position: 3, applied_on: '2026-10-15' },
+      { id: 'b', board_position: 1, applied_on: '2025-01-01' },
+      { id: 'c', board_position: -10 },
+      { id: 'd', board_position: 1 }
+    ].map(card => Object.freeze({ company: 'Example', title: 'Designer', created_at: '2026-10-01T00:00:00Z', status, ...card }));
+    Object.freeze(cards);
+    assert.deepEqual(groupCards(cards).flatMap(group => group.cards).map(card => card.id), ['c','b','d','a']);
+    assert.deepEqual(cards.map(card => card.id), ['a','b','c','d']);
+  }
 });
 test('all Applied records remain available beyond the former ten-card limit', () => {
   const records = Array.from({ length: 31 }, (_, index) => Object.freeze({
-    id: String(index), company: 'Example', title: 'Designer', status: 'applied', applied_on: `2026-08-${String(index + 1).padStart(2, '0')}`,
+    id: String(index), board_position: -index, company: 'Example', title: 'Designer', status: 'applied', applied_on: `2026-08-${String(index + 1).padStart(2, '0')}`,
     created_at: '2026-10-06T12:00:00Z', updated_at: '2026-10-06T12:00:00.123456+00:00'
   }));
   const applied = searchBoardGroups(records, '').find(group => group.id === 'applied');
@@ -116,15 +103,16 @@ test('search matches only company/title, trims whitespace and ignores case witho
   for (const query of ['', '   ']) assert.deepEqual(searchBoardGroups(records, query).flatMap(group => group.cards), [...records]);
   assert.ok(searchBoardGroups(records, 'no match').every(group => group.cards.length === 0));
 });
-test('filtered Applied results retain the central date sort and full column totals', () => {
+test('filtered Applied results retain manual positions and full column totals', () => {
   const records = [
-    { id: 'old', company: 'Sample', title: 'Designer', applied_on: '2026-10-01' },
-    { id: 'other', company: 'Other', title: 'Engineer', applied_on: '2026-10-13' },
-    { id: 'new', company: 'Sample', title: 'Designer', applied_on: '2026-10-12' }
+    { id: 'old', board_position: 1, company: 'Sample', title: 'Designer', applied_on: '2026-10-01' },
+    { id: 'other', board_position: 2, company: 'Other', title: 'Engineer', applied_on: '2026-10-13' },
+    { id: 'new', board_position: 3, company: 'Sample', title: 'Designer', applied_on: '2026-10-12' }
   ].map(card => Object.freeze({ ...card, status: 'applied', created_at: '2026-10-01T00:00:00Z' }));
   const group = searchBoardGroups(records, 'sample')[1];
   assert.equal(group.total, 3);
-  assert.deepEqual(group.cards.map(card => card.id), ['new', 'old']);
+  assert.deepEqual(group.cards.map(card => card.id), ['old', 'new']);
+  assert.deepEqual(searchBoardGroups(records, '')[1].cards.map(card => card.id), ['old', 'other', 'new']);
   assert.deepEqual(records.map(card => card.id), ['old', 'other', 'new']);
 });
 test('details form clears optional core fields without touching status, assessments or connections', () => {

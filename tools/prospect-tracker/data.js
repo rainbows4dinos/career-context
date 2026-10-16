@@ -9,7 +9,7 @@ import {
 /** @typedef {import('./model.js').Connection} Connection */
 /** @typedef {import('./model.js').ProspectStatus} ProspectStatus */
 /** @typedef {import('./model.js').StatusEvent} StatusEvent */
-/** @typedef {Pick<Prospect, 'id'|'company'|'title'|'location'|'work_arrangement'|'status'|'applied_on'|'discovered_on'|'created_at'|'updated_at'>} ProspectCard */
+/** @typedef {Pick<Prospect, 'id'|'company'|'title'|'location'|'work_arrangement'|'status'|'applied_on'|'discovered_on'|'created_at'|'updated_at'|'board_position'>} ProspectCard */
 /** @typedef {Pick<Prospect, 'id'|'company'|'title'|'job_url'|'location'|'status'|'applied_on'|'updated_at'>} ProspectIdentity */
 
 export class StaleProspectError extends Error {
@@ -55,8 +55,8 @@ export function createRadarDataAccess(client) {
     const pageSize = 500;
     for (let offset = 0; ; offset += pageSize) {
       const { data, error } = await client.from('prospects')
-        .select('id,company,title,location,work_arrangement,status,applied_on,discovered_on,created_at,updated_at')
-        .order('created_at', { ascending: false }).order('id', { ascending: true })
+        .select('id,company,title,location,work_arrangement,status,applied_on,discovered_on,created_at,updated_at,board_position')
+        .order('board_position', { ascending: true }).order('created_at', { ascending: false }).order('id', { ascending: true })
         .range(offset, offset + pageSize - 1);
       if (error) throw error;
       for (const row of data) {
@@ -154,5 +154,13 @@ export function createRadarDataAccess(client) {
     }
   }
 
-  return { listProspects, listProspectIdentities, getProspect, createProspect, updateProspect, updateAssessment, setConnections, changeStatus, listStatusEvents };
+  /** @param {string} columnId @param {string[]} expectedIds @param {string[]} orderedIds */
+  async function reorderColumn(columnId, expectedIds, orderedIds) {
+    expectedIds.forEach(id => validateId(id)); orderedIds.forEach(id => validateId(id));
+    const { error } = await client.rpc('reorder_prospect_column', { column_id: columnId, expected_ids: expectedIds, ordered_ids: orderedIds });
+    if (error?.code === '40001') throw new StaleProspectError();
+    if (error) throw error;
+  }
+
+  return { reorderColumn, listProspects, listProspectIdentities, getProspect, createProspect, updateProspect, updateAssessment, setConnections, changeStatus, listStatusEvents };
 }

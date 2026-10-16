@@ -145,3 +145,11 @@ time { display:block; font-size:13px; color:var(--muted) }
 .loading-message { display:flex; align-items:center; gap:8px }
 
 .nc-field { margin-bottom:1rem }
+
+/* Insertion overlay preserves card geometry while making the exact slot visible. */
+.column-cards { position:relative }
+.board-insertion { position:absolute; left:0; right:0; height:3px; background:var(--nc-focus-ring); border-radius:var(--nc-radius-default); pointer-events:none; z-index:1 }
+.board-insertion::before, .board-insertion::after { content:""; position:absolute; top:-2px; width:7px; height:7px; border-radius:50%; background:inherit }
+.board-insertion::before { left:0 } .board-insertion::after { right:0 }
+.board-order-help { margin:0 0 12px; color:var(--muted); font-size:13px }
+.prospect-card:focus-visible { outline:var(--nc-focus-width) solid var(--nc-focus-ring); outline-offset:var(--nc-focus-offset) }

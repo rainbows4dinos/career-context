@@ -112,7 +112,7 @@ test('board queries narrow fields and paginate in stable order', async () => {
   assert.equal(cards[500].applied_on, '2026-09-01');
   assert.equal(cards[500].discovered_on, '2026-08-31');
   assert.equal(cards[500].updated_at, revision);
-  assert.equal(requests[0].url.searchParams.get('order'), 'created_at.desc,id.asc');
+  assert.equal(requests[0].url.searchParams.get('order'), 'board_position.asc,created_at.desc,id.asc');
   assert.equal(requests[0].url.searchParams.get('offset'), '0');
   assert.equal(requests[1].url.searchParams.get('offset'), '500');
   assert.equal(requests[0].url.searchParams.get('select').includes('job_description'), false);
@@ -140,4 +140,18 @@ test('invalid input is rejected without HTTP calls', async () => {
   await assert.rejects(data.updateAssessment(id, { title: 'not an assessment' }, revision));
   await assert.rejects(data.changeStatus(id, 'invented', revision));
   assert.equal(requests.length, 0);
+});
+
+test('reordering uses the guarded RPC without status or history writes', async () => {
+  const other = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+  const { data, requests } = harness([{ body: null }]);
+  await data.reorderColumn('prospects', [id, other], [other, id]);
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].url.pathname, '/rest/v1/rpc/reorder_prospect_column');
+  assert.deepEqual(requests[0].body, { column_id: 'prospects', expected_ids: [id, other], ordered_ids: [other, id] });
+});
+test('stale reorder and network failures are surfaced without retry', async () => {
+  const { data, requests } = harness([{ status: 409, body: { code: '40001', message: 'Board changed' } }]);
+  await assert.rejects(data.reorderColumn('prospects', [id], [id]), StaleProspectError);
+  assert.equal(requests.length, 1);
 });

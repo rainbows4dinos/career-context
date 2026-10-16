@@ -6,7 +6,7 @@ import { SELECTABLE_STATUSES, WORK_ARRANGEMENTS, validateHttpUrl } from './model
 import { createHandoff, HANDOFF_TTL } from '../shared/resume-handoff.mjs';
 import { STATUS_BADGE_TONES } from './prospect-status.js';
 // @ts-expect-error Browser asset revision; TypeScript does not resolve URL query strings.
-import { mountBoardDrag } from './kanban.js?v=20261013-board-search';
+import { mountBoardDrag } from './kanban.js?v=20261016-board-order';
 
 /** @param {HTMLElement} element @param {import('./model.js').ProspectStatus} status */
 export function setProspectStatusBadge(element, status) {
@@ -120,13 +120,16 @@ export function boardView(root, cards, options = {}) {
     clear.hidden = !input.value;
     results.hidden = !searching;
     results.textContent = matches ? `${matches} of ${loadedCards.length} matches` : 'No matches';
-    hint.textContent = 'Open a card to edit it. Drag cards between columns on desktop to change status. Expand Done to see completed prospects.';
+    hint.className = 'board-order-help';
+    hint.textContent = searching ? 'Clear filters to reorder cards. Drag between columns on desktop to change status.' : 'Drag to reorder or move between columns on desktop. Keyboard: focus a card and press Alt + ↑ or ↓ to reorder.';
     for (const group of groups) {
       const { count, list } = columns.find(column => column.id === group.id) ?? columns[0];
       count.textContent = searching ? `${group.cards.length} of ${group.total}` : String(group.total);
       list.replaceChildren(...group.cards.map(card => {
         const node = link('', `#/prospects/${card.id}`); node.className = 'prospect-card';
         node.dataset.prospectId = card.id;
+        node.setAttribute('aria-describedby', hint.id);
+        if (!searching) node.setAttribute('aria-keyshortcuts', 'Alt+ArrowUp Alt+ArrowDown');
         node.append(el('strong', card.company), el('span', card.title));
         node.append(statusBadge(card.status));
         const appliedDate = formatAppliedDate(card.applied_on);
@@ -140,7 +143,7 @@ export function boardView(root, cards, options = {}) {
       list.scrollTop = state.scrollTop[group.id] ?? 0;
     }
     board.scrollLeft = state.scrollLeft;
-    if (options.move) disposeDrag = mountBoardDrag(board, loadedCards, { move: options.move, canMove: options.canMove ?? (() => true) });
+    if (options.move) disposeDrag = mountBoardDrag(board, loadedCards, { move: options.move, canMove: options.canMove ?? (() => true), reorder: options.reorder, canReorder: () => !state.query.trim() });
     if (focused) (/** @type {HTMLElement|null} */ (board.querySelector(`[data-prospect-id="${focused}"]`)) ?? board).focus({ preventScroll: true });
     rendered = true;
   }

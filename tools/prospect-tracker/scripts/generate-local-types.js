@@ -38,7 +38,9 @@ try {
       : '        Relationships: [];\n';
     output += '      };\n';
   }
-  output += '    };\n    Views: { [_ in never]: never };\n    Functions: { [_ in never]: never };\n    Enums: { [_ in never]: never };\n    CompositeTypes: { [_ in never]: never };\n  };\n};\n';
+  const { rows: functions } = await db.query(`select p.proname, pg_get_function_arguments(p.oid) as args from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'reorder_prospect_column'`);
+  if (functions.length !== 1 || functions[0].args !== 'column_id text, expected_ids uuid[], ordered_ids uuid[]') throw new Error('Unexpected reorder RPC signature');
+  output += '    };\n    Views: { [_ in never]: never };\n    Functions: { reorder_prospect_column: { Args: { column_id: string; expected_ids: string[]; ordered_ids: string[] }; Returns: undefined } };\n    Enums: { [_ in never]: never };\n    CompositeTypes: { [_ in never]: never };\n  };\n};\n';
   await writeFile(new URL('../database.types.ts', import.meta.url), output);
   console.log('Generated migration-based PostgreSQL schema snapshot. Hosted Supabase generation is still required after deployment.');
 } finally {

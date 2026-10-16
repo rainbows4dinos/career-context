@@ -81,6 +81,7 @@ export type Database = {
           applied_on: string | null
           assessment_concerns: string | null
           assessment_rationale: string | null
+          board_position: number
           company: string
           compensation_fit: number | null
           compensation_text: string | null
@@ -116,6 +117,7 @@ export type Database = {
           applied_on?: string | null
           assessment_concerns?: string | null
           assessment_rationale?: string | null
+          board_position?: number
           company: string
           compensation_fit?: number | null
           compensation_text?: string | null
@@ -151,6 +153,7 @@ export type Database = {
           applied_on?: string | null
           assessment_concerns?: string | null
           assessment_rationale?: string | null
+          board_position?: number
           company?: string
           compensation_fit?: number | null
           compensation_text?: string | null
@@ -242,7 +245,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      reorder_prospect_column: {
+        Args: {
+          column_id: string
+          expected_ids: string[]
+          ordered_ids: string[]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

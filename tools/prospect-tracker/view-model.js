@@ -19,19 +19,6 @@ export function resolveBoardDrop(status, destination) {
   return column.dropStatus ? { kind: 'default', status: column.dropStatus } : { kind: 'choose', statuses: column.statuses };
 }
 
-/** Known application dates first; undated imports use discovery/creation recency.
- * Dates are ordering hints only, never inferred or written back.
- * @param {import('./data.js').ProspectCard} a @param {import('./data.js').ProspectCard} b
- */
-function compareAppliedCards(a, b) {
-  if (Boolean(a.applied_on) !== Boolean(b.applied_on)) return a.applied_on ? -1 : 1;
-  const aDate = a.applied_on ?? a.discovered_on ?? a.created_at;
-  const bDate = b.applied_on ?? b.discovered_on ?? b.created_at;
-  return Date.parse(bDate) - Date.parse(aDate)
-    || Date.parse(b.created_at) - Date.parse(a.created_at)
-    || a.id.localeCompare(b.id);
-}
-
 /** @param {string} status */
 export function statusLabel(status) {
   return status === 'final' ? 'Final round' : status.charAt(0).toUpperCase() + status.slice(1);
@@ -59,7 +46,8 @@ export function parseRoute(hash) {
 export function groupCards(cards) {
   return BOARD_COLUMNS.map(column => {
     const grouped = cards.filter(card => column.statuses.includes(card.status));
-    if (column.id === 'applied') grouped.sort(compareAppliedCards);
+    grouped.sort((a, b) => (a.board_position ?? 0) - (b.board_position ?? 0)
+      || (Date.parse(b.created_at) - Date.parse(a.created_at) || 0) || a.id.localeCompare(b.id));
     return { ...column, cards: grouped };
   });
 }
