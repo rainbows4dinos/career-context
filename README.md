@@ -2,7 +2,7 @@
 
 Shared professional context and personal career tools for Larry Reynolds: résumé tailoring, portfolio positioning, interview preparation, and opportunity evaluation.
 
-nextchapter connects three applications: Career Radar (coming soon) for discovery and evaluation, Prospect Tracker for managing prospects and applications, and Résumé Builder for tailored application materials. Prospect Tracker retains existing manual tracking and editable job URL previews (Greenhouse, Ashby, Lever, account-qualified Workable and limited Workday).
+nextchapter connects three applications: Career Radar for reviewing a structured career profile (discovery and evaluation planned), Prospect Tracker for managing prospects and applications, and Résumé Builder for tailored application materials. Prospect Tracker retains existing manual tracking and editable job URL previews (Greenhouse, Ashby, Lever, account-qualified Workable and limited Workday).
 
 ## Shared career context
 
@@ -40,7 +40,7 @@ Repository agents should read `AGENTS.md` and the career files relevant to their
 
 - [index.html](index.html): the site root opens the Prospect Tracker board; signed-out visitors use its existing sign-in flow.
 - [tools/resume-tailor.html](tools/resume-tailor.html): the résumé and cover-letter builder. One static page covering tailoring, revisions, QA warnings, and downloads.
-- [tools/career-radar.html](tools/career-radar.html): Career Radar coming soon; discovery and evaluation are not implemented.
+- [tools/career-radar.html](tools/career-radar.html): Career Radar profile editor and opportunity review feed with persistent Accept/Pass decisions and explicit Tracker handoff. Live research remains disabled. See [profile setup](docs/career-radar/profile.md) and [feed/release status](docs/career-radar/opportunity-feed.md).
 - [tools/prospect-tracker/index.html](tools/prospect-tracker/index.html): Prospect Tracker, private prospect tracking with a status board, core details, status history and editable posting previews. Also linked from the résumé builder.
 - [tools/about.html](tools/about.html): a public introduction to nextchapter, its tools, and shared professional context.
 - [tools/proxy-worker.js](tools/proxy-worker.js): Cloudflare Worker that proxies Anthropic API requests using a server-side secret.
@@ -56,7 +56,7 @@ For architecture and the constraints that apply when changing any of this, see [
 
 The suite shares Figma-based color and typography tokens, Gravity UI icons, and opt-in native components. Application layout and behavior remain local. Implementation reports cover [foundations](docs/nextchapter-shared-foundations-phase1.md), [Actions](docs/nextchapter-actions-phase2a.md), [Inputs and Status](docs/nextchapter-inputs-status-phase2b.md), and [Navigation and About](docs/nextchapter-navigation.md).
 
-The shared header links the three tools and About. Wide layouts show utility links directly; compact desktop layouts use the More popover for About and Log In/Log Out; mobile layouts use an expandable navigation panel. Account controls reuse Prospect Tracker’s existing authentication. Builder, Career Radar’s placeholder, and About remain public. Login from another tool returns to that tool after authentication; logout stays on the current page.
+The shared header links the three tools and About. Wide layouts show utility links directly; compact desktop layouts use the More popover for About and Log In/Log Out; mobile layouts use an expandable navigation panel. Account controls reuse Prospect Tracker’s existing authentication. Builder and About remain public. Career Radar’s introduction is public; its profile editor uses the existing sign-in and private Supabase storage. Login from another tool returns to that tool after authentication; logout stays on the current page.
 
 Dark remains the default theme, with a persistent light/dark switch. Shared sizing keeps borders and padding within specified outer dimensions. Tokens and component styles live in `tools/shared/`; document previews and export formatting remain in Builder. Copying the résumé HTML requires preserving its relative shared assets and the referenced Tracker authentication configuration/vendor files. See [token boundaries](docs/shared-design-tokens.md) and [navigation dependencies](docs/nextchapter-navigation.md).
 

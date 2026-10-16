@@ -22,3 +22,4 @@ reconciliation-report*.md
 career-radar-backup*.json
 prospects-backup*.json
 prospect-status-events-backup*.json
+.env.local

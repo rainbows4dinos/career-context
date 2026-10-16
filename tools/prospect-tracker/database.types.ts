@@ -12,33 +12,38 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.18"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
+      career_profiles: {
+        Row: {
+          created_at: string
+          explicit_profile: Json
+          inferred_signals: Json
+          owner_id: string
+          reviewed_at: string
+          revision: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          explicit_profile: Json
+          inferred_signals?: Json
+          owner_id?: string
+          reviewed_at: string
+          revision?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          explicit_profile?: Json
+          inferred_signals?: Json
+          owner_id?: string
+          reviewed_at?: string
+          revision?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       prospect_status_events: {
         Row: {
           from_status: string | null
@@ -179,6 +184,59 @@ export type Database = {
         }
         Relationships: []
       }
+      radar_opportunities: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          decision: string
+          id: string
+          identity_key: string
+          last_seen_at: string
+          owner_id: string
+          pass_note: string | null
+          pass_reason: string | null
+          prospect_id: string | null
+          snapshot: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          decision?: string
+          id?: string
+          identity_key: string
+          last_seen_at?: string
+          owner_id?: string
+          pass_note?: string | null
+          pass_reason?: string | null
+          prospect_id?: string | null
+          snapshot: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          decision?: string
+          id?: string
+          identity_key?: string
+          last_seen_at?: string
+          owner_id?: string
+          pass_note?: string | null
+          pass_reason?: string | null
+          prospect_id?: string | null
+          snapshot?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "radar_opportunities_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -313,9 +371,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

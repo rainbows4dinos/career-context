@@ -1,0 +1,24 @@
+.profile-content { max-width: 1000px; margin: 0 auto; }
+#profile-notice { margin: 1rem 0; color: var(--nc-text-secondary); }
+.profile-factor { display: grid; grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr); gap: 20px; margin-top: 24px; }
+.profile-compensation { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.profile-introduction { display: flex; flex-direction: column; gap: 16px; }
+.profile-title { display: flex; flex-direction: column; align-items: start; gap: 4px; }
+.profile-title h2 { margin: 0; font: var(--nc-type-h2-weight) var(--nc-type-h2-size)/var(--nc-type-h2-line-height) var(--nc-type-h2-family); }
+.profile-introduction > p { margin: 0; font-size: var(--nc-type-body-default-size); line-height: var(--nc-type-body-default-line-height); }
+.profile-tools { width: 100%; margin: 0; }
+.profile-tools input { max-width: 100%; }
+.profile-tools input[type="file"] { box-sizing: border-box; width: 100%; height: 40px; margin: 0; padding: 7px 12px; border: 1px solid var(--nc-input-border); background: var(--nc-input-bg); color: var(--nc-text-placeholder); font-size: var(--nc-type-ui-label-size); line-height: var(--nc-type-ui-label-line-height); }
+.profile-tools input::file-selector-button { border: 0; padding: 0; margin-right: 12px; background: transparent; color: var(--nc-link-default); font: inherit; font-weight: 500; cursor: pointer; }
+.profile-save { display: flex; flex-direction: column; align-items: start; gap: 20px; }
+.profile-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.profile-actions .nc-button { min-height: 40px; padding: 0 12px; }
+.profile-acknowledgment { display: flex; align-items: start; gap: 10px; margin: 0; font: var(--nc-type-ui-label-weight) var(--nc-type-ui-label-size)/var(--nc-type-ui-label-line-height) var(--nc-type-ui-label-family); }
+.profile-acknowledgment input { appearance: none; flex: none; width: 20px; height: 20px; margin: 2px 0; padding: 0; border: 1px solid var(--nc-input-border); border-radius: 2px; background: var(--nc-input-bg); display: grid; place-items: center; }
+.profile-acknowledgment input:checked { background: var(--nc-action-primary-bg); border-color: var(--nc-action-primary-border); }
+.profile-acknowledgment input:checked::after { content: ''; width: 14px; height: 14px; background: var(--nc-action-primary-fg); mask: url('shared/assets/career-profile/check.svg') center / 14px 14px no-repeat; }
+.profile-acknowledgment input:disabled { background: var(--nc-action-disabled-bg); border-color: transparent; }
+.profile-acknowledgment input:disabled::after { background: var(--nc-action-disabled-fg); }
+.profile-export-icon { display: block; flex: none; width: 16px; height: 16px; background: currentColor; mask: url('shared/assets/career-profile/export.svg') center / 16px 16px no-repeat; }
+#profile-workspace pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .profile-factor, .profile-compensation { grid-template-columns: minmax(0, 1fr); gap: 12px; } }

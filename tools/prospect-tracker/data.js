@@ -80,15 +80,16 @@ export function createRadarDataAccess(client) {
    * Caller retains the same UUID for retries; a failed insert is never silently
    * retried or converted into an overwrite. Use getProspect(id) to reconcile.
    * @param {import('./model.js').NewProspect} input
+   * @param {string} [expectedOwner] Optional owner assertion for asynchronous Radar handoffs; RLS enforces it.
    * @returns {Promise<Prospect>}
    */
-  async function createProspect(input) {
+  async function createProspect(input, expectedOwner) {
     const { id, status = 'prospect', ...patch } = input;
     validateId(id);
     const values = normalizePatch(patch);
     if (!values.company || !values.title) throw new Error('company and title are required');
     const { data, error } = await client.from('prospects').insert({
-      ...values, id, status: validateStatus(status), company: values.company, title: values.title
+      ...values, ...(expectedOwner!==undefined ? { owner_id: validateId(expectedOwner) } : {}), id, status: validateStatus(status), company: values.company, title: values.title
     }).select('*').single();
     if (error) throw error;
     return decodeProspect(data);

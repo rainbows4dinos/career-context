@@ -20,6 +20,8 @@ export async function createLocalDatabase() {
       grant execute on function auth.uid() to authenticated;
     `);
     await db.exec(await readFile(new URL('../../../supabase/migrations/20261006000000_career_radar_v0.sql', import.meta.url), 'utf8'));
+    await db.exec(await readFile(new URL('../../../supabase/migrations/20261014000000_career_profiles.sql', import.meta.url), 'utf8'));
+    await db.exec(await readFile(new URL('../../../supabase/migrations/20261016000000_radar_opportunities.sql', import.meta.url), 'utf8'));
     return db;
   } catch (error) {
     await db.close();
