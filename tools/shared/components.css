@@ -19,12 +19,12 @@
 }
 .nc-button { border: 1px solid transparent; }
 .nc-button--lg {
-  min-height: 40px; padding: 10px 16px; gap: 8px;
+  min-height: 40px; padding: 12px 12px; gap: 8px;
   border-radius: var(--nc-radius-default);
   font-size: var(--nc-type-ui-button-size); line-height: var(--nc-type-ui-button-line-height);
 }
 .nc-button--sm {
-  min-height: 28px; padding: 6px 12px; gap: 6px; border-radius: 6px;
+  min-height: 28px; padding: 8px 8px; gap: 6px; border-radius: 6px;
   font-size: var(--nc-type-ui-button-small-size); line-height: var(--nc-type-ui-button-small-line-height);
 }
 .nc-button--primary {
