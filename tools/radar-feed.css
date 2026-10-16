@@ -1,0 +1,23 @@
+.radar-feed { max-width:1000px; margin:0 auto 32px; }
+.radar-introduction { display:grid; gap:16px; }
+.radar-introduction h2,.radar-introduction p { margin:0; }
+.radar-actions,.radar-filters,.radar-sources { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+.radar-filters { margin:24px 0; }
+.radar-filters [aria-pressed="true"] { background:var(--nc-action-primary-bg); border-color:var(--nc-action-primary-border); color:var(--nc-action-primary-fg); }
+.radar-results { display:grid; gap:20px; }
+.radar-results:empty { display:none; }
+.radar-results h3 { margin:8px 0; }
+.radar-card { min-width:0; overflow-wrap:anywhere; }
+.radar-card h4 { margin:0 0 8px; font:var(--nc-type-h2-weight) var(--nc-type-h2-size)/var(--nc-type-h2-line-height) var(--nc-type-h2-family); }
+.radar-card h5 { margin:24px 0 8px; font:inherit; font-weight:600; }
+.radar-card .radar-company { font-weight:600; }
+.radar-card p,.radar-card li { white-space:pre-wrap; }
+.radar-card > a { display:block; margin:8px 0; }
+.radar-card .radar-actions,.radar-sources { margin:20px 0; }
+.radar-card summary,.radar-profile > summary { cursor:pointer; padding:12px 0; font-weight:600; }
+.radar-card details > :is(.nc-select-wrap,textarea) { display:block; width:100%; max-width:600px; margin:12px 0; }
+.radar-card details > .nc-field__label { display:block; margin-top:12px; }
+.radar-status[data-state="error"] { color:var(--nc-text-primary); border-left:3px solid var(--nc-link-default); padding-left:12px; }
+.radar-profile { max-width:1000px; margin:auto; }
+.radar-profile > summary { font-size:1.125rem; }
+@media(max-width:600px) { .radar-actions .nc-button { flex:1 1 auto; } .radar-filters .nc-button { flex:1 1 40%; } }

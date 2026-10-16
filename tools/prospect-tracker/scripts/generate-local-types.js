@@ -9,7 +9,7 @@ try {
     select table_name, column_name, udt_name, is_nullable, column_default, is_identity
     from information_schema.columns
     where table_schema = 'public'
-      and table_name in ('prospects', 'prospect_status_events', 'career_profiles')
+      and table_name in ('prospects', 'prospect_status_events', 'career_profiles', 'radar_opportunities')
     order by table_name, ordinal_position;
   `);
   const typeMap = { uuid: 'string', text: 'string', date: 'string', timestamptz: 'string', int2: 'number', int8: 'number', jsonb: 'Json' };
@@ -17,7 +17,7 @@ try {
   output += '// Bootstrap snapshot; regenerate from Supabase with npm run types:generate after migration.\n';
   output += 'export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];\n\n';
   output += 'export type Database = {\n  public: {\n    Tables: {\n';
-  for (const table of ['prospects', 'prospect_status_events', 'career_profiles']) {
+  for (const table of ['prospects', 'prospect_status_events', 'career_profiles', 'radar_opportunities']) {
     const columns = rows.filter(row => row.table_name === table);
     if (!columns.length) throw new Error(`Missing table: ${table}`);
     output += `      ${table}: {\n`;

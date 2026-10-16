@@ -6,6 +6,8 @@ import { resolve, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createLocalDatabase } from '../../scripts/local-database.js';
 import { createIngestionHandler } from '../../ingestion/handler.js';
+import { feedResponse } from './feed-response.js';
+import { emptyProfile } from '../../career-profile-model.js';
 import { recognizePosting } from '../../ingestion/posting-url.js';
 
 export async function startFixture(port = 0) {
@@ -26,6 +28,7 @@ export async function startFixture(port = 0) {
   const encode = value => Buffer.from(JSON.stringify(value)).toString('base64url');
   const token = `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ sub: owner, role: 'authenticated', aud: 'authenticated', exp: Math.floor(Date.now() / 1000) + 3600 })}.synthetic`;
   let failNextSave = false;
+  let failHistory=false, feedMode='completed', researchCalls=0;
   let retrieves = 0, attempts = 0;
   let origin = '';
   const server = createServer(async (req, res) => {
@@ -36,6 +39,27 @@ export async function startFixture(port = 0) {
     try {
       let text = '';
       for await (const chunk of req) text += chunk;
+      if (url.pathname === '/__feed' && req.method === 'GET') {
+        const page=await readFile(resolve(root,'../career-radar.html'),'utf8');
+        res.writeHead(200,{'content-type':'text/html','cache-control':'no-store'});
+        res.end(page.replace('<head>','<head><base href="/tools/">').replace('prospect-tracker/radar-feed-bootstrap.js','prospect-tracker/tests/fixtures/feed-browser.js'));return;
+      }
+      if (url.pathname === '/__feed/control') {
+        const input=JSON.parse(text || '{}');
+        if(input.mode) feedMode=input.mode;
+        if(input.failHistory) failHistory=true;
+        if(input.failSave) failNextSave=true;
+        if(input.seedProfile) { const profile=emptyProfile();profile.factors.seniority.value='Product design';await db.query('insert into career_profiles(owner_id,explicit_profile,reviewed_at) values ($1,$2,now()) on conflict(owner_id) do nothing',[owner,JSON.stringify(profile)]); }
+        const {rows}=await db.query('select (select count(*)::integer from radar_opportunities) as opportunities,(select count(*)::integer from prospects) as prospects,(select count(*)::integer from prospect_status_events) as events');
+        send({...rows[0],researchCalls});return;
+      }
+      if (url.pathname === '/functions/v1/research-opportunities') {
+        if(req.headers.authorization!==`Bearer ${token}`){send({},401);return;}
+        researchCalls++;
+        if(feedMode==='slow')await new Promise(done=>setTimeout(done,1500));
+        if(feedMode==='error'){send({error:{code:'provider_failure'}},503);return;}
+        send(feedResponse(feedMode,JSON.parse(text).profile_revision));return;
+      }
       if (url.pathname === '/__fixture' && req.method === 'GET') {
         const { rows } = await db.query('select (select count(*)::integer from prospects) as prospects, (select count(*)::integer from prospect_status_events) as events');
         send({ ...rows[0], retrieves, attempts }); return;
@@ -100,7 +124,8 @@ export async function startFixture(port = 0) {
       if (url.pathname.startsWith('/rest/v1/')) {
         if (req.headers.authorization !== `Bearer ${token}`) { send({ message: 'Unauthorized', code: 'PGRST301' }, 401); return; }
         const table = url.pathname.split('/').pop();
-        if (!['prospects','prospect_status_events','career_profiles'].includes(table)) { send({}, 404); return; }
+        if (!['prospects','prospect_status_events','career_profiles','radar_opportunities'].includes(table)) { send({}, 404); return; }
+        if(table==='radar_opportunities' && req.method==='GET' && failHistory){failHistory=false;send({message:'Synthetic history failure'},503);return;}
         if (req.method !== 'GET') {
           attempts++;
           if (failNextSave) { failNextSave = false; send({ message: 'Synthetic save failure; your preview is preserved', code: 'TEST_FAILURE' }, 503); return; }
@@ -118,16 +143,16 @@ export async function startFixture(port = 0) {
           if (req.method === 'GET') {
             query = `select row_to_json(p)::text as value from public.${table} p${where} order by ${table === 'career_profiles' ? 'owner_id' : 'id'} limit ${Math.min(Number(url.searchParams.get('limit') || 500), 500)} offset ${Number(url.searchParams.get('offset') || 0)}`;
           } else {
-            if (!['prospects','career_profiles'].includes(table) || !['POST','PATCH'].includes(req.method)) throw new Error('Unsupported fixture write');
+            if (!['prospects','career_profiles','radar_opportunities'].includes(table) || !['POST','PATCH'].includes(req.method)) throw new Error('Unsupported fixture write');
             const body = JSON.parse(text);
-            const allowed = table === 'career_profiles' ? ['explicit_profile','reviewed_at'] : ['id','company','title','job_url','source','location','work_arrangement','employment_type','compensation_text','job_description','posted_on','discovered_on','applied_on','notes','status'];
+            const allowed = table === 'radar_opportunities' ? ['id','owner_id','identity_key','snapshot','decision','pass_reason','pass_note','prospect_id'] : table === 'career_profiles' ? ['explicit_profile','reviewed_at'] : ['id','owner_id','company','title','job_url','source','location','work_arrangement','employment_type','compensation_text','job_description','posted_on','discovered_on','applied_on','notes','status'];
             const keys = Object.keys(body);
             if (keys.some(key => !allowed.includes(key))) throw new Error('Unsupported fixture column');
             if (req.method === 'POST') {
-              values.splice(0); values.push(...keys.map(key => key === 'explicit_profile' ? JSON.stringify(body[key]) : body[key]));
+              values.splice(0); values.push(...keys.map(key => ['explicit_profile','snapshot'].includes(key) ? JSON.stringify(body[key]) : body[key]));
               query = `with saved as (insert into ${table} (${keys.join(',')}) values (${keys.map((_, index) => '$' + (index + 1)).join(',')}) returning *) select row_to_json(saved)::text as value from saved`;
             } else {
-              const assignments = keys.map(key => { values.push(key === 'explicit_profile' ? JSON.stringify(body[key]) : body[key]); return `"${key}" = $${values.length}`; });
+              const assignments = keys.map(key => { values.push(['explicit_profile','snapshot'].includes(key) ? JSON.stringify(body[key]) : body[key]); return `"${key}" = $${values.length}`; });
               query = `with saved as (update ${table} set ${assignments.join(',')}${where} returning *) select row_to_json(saved)::text as value from saved`;
             }
           }
@@ -146,7 +171,7 @@ export async function startFixture(port = 0) {
         res.writeHead(200, { 'content-type': 'text/html', 'cache-control': 'no-store' });
         res.end(bytes); return;
       }
-      if (url.pathname === '/resume-master.md' || url.pathname === '/tools/career-profile.css' || url.pathname === '/tools/resume-tailor.html' || url.pathname === '/tools/career-radar.html' || url.pathname === '/tools/about.html' || /^\/tools\/shared\/[\w-]+\.(css|mjs)$/.test(url.pathname) || /^\/tools\/shared\/vendor\/gravity-icons\/(sprite\.svg|names\.mjs)$/.test(url.pathname)) {
+      if (url.pathname === '/resume-master.md' || url.pathname === '/tools/radar-feed.css' || url.pathname === '/tools/career-profile.css' || url.pathname === '/tools/resume-tailor.html' || url.pathname === '/tools/career-radar.html' || url.pathname === '/tools/about.html' || /^\/tools\/shared\/[\w-]+\.(css|mjs)$/.test(url.pathname) || /^\/tools\/shared\/assets\/career-profile\/(check|export)\.svg$/.test(url.pathname) || /^\/tools\/shared\/vendor\/gravity-icons\/(sprite\.svg|names\.mjs)$/.test(url.pathname)) {
         const bytes = await readFile(resolve(root, '../..', url.pathname.slice(1)));
         res.writeHead(200, { 'content-type': url.pathname.endsWith('.html') ? 'text/html' : url.pathname.endsWith('.css') ? 'text/css' : url.pathname.endsWith('.svg') ? 'image/svg+xml' : 'text/javascript', 'cache-control': 'no-store' });
         res.end(bytes); return;

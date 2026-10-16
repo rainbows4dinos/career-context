@@ -1,7 +1,7 @@
 # Career Radar product spec
 
-Status: Living product plan; profile editor implemented for #3 (hosted migration pending); the server-side discovery/verification foundation is implemented locally but not deployed; discovery and recommendation UI workflows are not implemented.
-Updated: 2026-10-15
+Status: Living product plan; profile editor implemented for #3 (hosted migration pending); the server-side discovery/verification foundation is implemented locally but not deployed; the opportunity feed and review workflow are implemented locally, with live discovery disabled and the new opportunity-table migration pending hosted application.
+Updated: 2026-10-16
 Parent: [#2 — Product overview and MVP](https://github.com/rainbows4dinos/nextchapter/issues/2)
 
 ## Goals
@@ -77,3 +77,7 @@ Older [career-radar-v0 setup documentation](../career-radar-v0.md) describes tod
 | [#7 — Add to Prospects and optional Pass feedback](https://github.com/rainbows4dinos/nextchapter/issues/7) | Tracker handoff and lightweight decisions |
 | [#8 — Feedback-informed recommendations](https://github.com/rainbows4dinos/nextchapter/issues/8) | Controlled learning from decisions |
 | [#9 — Duplicate detection and recommendation history](https://github.com/rainbows4dinos/nextchapter/issues/9) | Recognition, suppression, and reconsideration |
+
+## Local opportunity-feed implementation
+
+See [the #6 implementation and validation notes](opportunity-feed.md). The approved workflow is New → Accept → Add to Prospects, with Pass as an alternative and explicit decision reversal. Accept alone never imports a Tracker record. One user-owned Supabase table stores small fact/claim-aware cards and current decisions; no full descriptions or raw provider responses are retained. Hosted migration and paid-discovery enablement remain separately approval-gated.

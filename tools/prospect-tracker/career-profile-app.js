@@ -4,6 +4,7 @@ import { getRadarClient } from './supabase-client.js';
 // @ts-expect-error Browser asset revision; same module URL as the shared header.
 import { setAccountBusy } from '../shared/navigation.mjs?v=20261013-tracker-route';
 import { bindFieldValidation } from '../shared/fields.mjs';
+import { gravityIcon } from '../shared/icons.mjs';
 
 const workspace = /** @type {HTMLElement} */ (document.getElementById('profile-workspace'));
 const notice = /** @type {HTMLElement} */ (document.getElementById('profile-notice'));
@@ -15,6 +16,8 @@ let ready = false;
 /** @type {import('./career-profile-data.js').ProfileRow|null} */ let saved = null;
 /** @type {HTMLFormElement|null} */ let form = null;
 /** @type {HTMLInputElement|null} */ let review = null;
+let baseline = '';
+let refreshState = () => {};
 
 /** @param {string} tag @param {string} [text] @param {string} [className] */
 function element(tag, text = '', className = '') {
@@ -37,7 +40,11 @@ function field(name, label, value, options = null) {
     control.append(node);
   }
   else /** @type {HTMLTextAreaElement} */ (control).maxLength = 4000;
-  control.value = value; wrapper.append(caption, control); return wrapper;
+  control.value = value; wrapper.append(caption);
+  if (options) {
+    const closed = element('span', '', 'nc-select-wrap'); closed.append(control, gravityIcon('chevron-down')); wrapper.append(closed);
+  } else wrapper.append(control);
+  return wrapper;
 }
 /** @param {string} name */
 function value(name) { return String(new FormData(/** @type {HTMLFormElement} */ (form)).get(name) ?? ''); }
@@ -47,10 +54,15 @@ function readForm() {
   draft.compensation = { minimum: value('minimum') === '' ? null : Number(value('minimum')), currency: value('currency').trim().toUpperCase(), period: /** @type {'year'|'hour'} */ (value('period')), importance: /** @type {import('./career-profile-model.js').Importance} */ (value('compensation-importance')), unknown: /** @type {'review'|'exclude'} */ (value('unknown')) };
   return validateProfile(draft);
 }
+// Compare entered values, including invalid values, independently of acknowledgment/import controls.
+function formSnapshot() {
+  return JSON.stringify([...new FormData(/** @type {HTMLFormElement} */ (form))].filter(([name]) => name !== 'profile-import'));
+}
 /** @param {boolean} next */
 function setBusy(next) {
   busy = next; setAccountBusy(next);
   if (form) for (const control of form.querySelectorAll('button, input, select, textarea')) /** @type {HTMLInputElement} */ (control).disabled = next;
+  if (!next) refreshState();
 }
 function canLeave() { return !busy && (!dirty || window.confirm('Leave without saving your career profile edits?')); }
 window.addEventListener('beforeunload', event => { if (dirty || busy) { event.preventDefault(); event.returnValue = ''; } });
@@ -59,16 +71,15 @@ document.getElementById('nextchapter-header')?.addEventListener('click', event =
   if (event.target instanceof Element && event.target.closest('a') && !canLeave()) event.preventDefault();
 });
 
-/** @param {import('./career-profile-model.js').Profile} profile @param {boolean} draft */
-function render(profile, draft) {
+/** @param {import('./career-profile-model.js').Profile} profile @param {boolean} draft @param {boolean} [resetBaseline] */
+function render(profile, draft, resetBaseline = false) {
   form = document.createElement('form'); form.id = 'career-profile-form';
-  const heading = element('section', '', 'panel');
-  heading.append(element('h2', 'Your career profile'), element('p', draft
-    ? 'Suggested draft • Not yet approved. Review every field, remove assumptions and fill in what matters to you.'
-    : `Reviewed profile • Revision ${saved?.revision}. Edit any setting and review before saving.`));
+  const heading = element('section', '', 'panel profile-introduction');
+  const title = element('div', '', 'profile-title');
+  const status = element('span', '', 'nc-status-badge'); status.id = 'profile-state'; status.setAttribute('role', 'status');
+  title.append(status, element('h2', 'Your career profile')); heading.append(title);
   heading.append(element('p', 'Your saved settings are the source of truth. Hard constraints are requirements; strong and soft preferences guide fit; open-to-surprise areas invite exploration. Blank means undecided.'));
-  heading.append(element('p', 'The starting strengths and roles come from resume-master.md. They describe experience, not confirmed search preferences. Import your Consumer Design Watch draft to review its additional suggestions.', 'muted'));
-  const fileLabel = element('label', 'Import draft (JSON)', 'nc-field__label');
+  const fileLabel = element('label', 'Import profile (JSON)', 'nc-field__label');
   const file = document.createElement('input'); file.type = 'file'; file.accept = '.json,application/json'; file.id = 'profile-import'; fileLabel.setAttribute('for', file.id);
   file.addEventListener('change', async () => {
     const selected = file.files?.[0]; if (!selected) return;
@@ -78,16 +89,19 @@ function render(profile, draft) {
       const imported = validateProfile(JSON.parse(await selected.text()));
       if (currentEpoch !== epoch || busy) return;
       if (dirty && !window.confirm('Replace unsaved edits with this draft?')) return;
-      dirty = true; render(imported, true); notice.textContent = 'Imported as an unapproved draft. Nothing has been saved.';
+      render(imported, true); notice.textContent = 'Imported as an unapproved draft. Nothing has been saved.';
     } catch (error) { if (currentEpoch === epoch) notice.textContent = error instanceof Error ? error.message : 'Could not read draft.'; }
   });
-  const tools = element('div', '', 'profile-tools'); tools.append(fileLabel, file, button('Export current draft', () => {
+  const tools = element('div', '', 'nc-field profile-tools'); tools.append(fileLabel, file); heading.append(tools); form.append(heading);
+  const exportButton = button('Export', () => {
     try {
       const url = URL.createObjectURL(new Blob([JSON.stringify(readForm(), null, 2)], { type: 'application/json' }));
       const link = document.createElement('a'); link.href = url; link.download = 'career-radar-private-profile.json'; link.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (error) { notice.textContent = error instanceof Error ? error.message : 'Could not export.'; }
-  })); heading.append(tools); form.append(heading);
+  });
+  exportButton.className = 'nc-button nc-button--tertiary nc-button--lg'; exportButton.setAttribute('aria-label', 'Export current draft');
+  const exportIcon = element('span', '', 'profile-export-icon'); exportIcon.setAttribute('aria-hidden', 'true'); exportButton.append(exportIcon);
   for (const [title, ids] of [
     ['Experience & strengths', ['strengths']],
     ['Preferences', ['seniority', 'scope', 'focus', 'sectors', 'work_style']],
@@ -101,7 +115,7 @@ function render(profile, draft) {
       const entry = field(id, definition[1], profile.factors[id].value);
       const helper = element('p', definition[2], 'nc-field__helper'); helper.id = `profile-${id}-help`;
       entry.querySelector('textarea')?.setAttribute('aria-describedby', helper.id); entry.append(helper); row.append(entry);
-      if (id !== 'strengths') row.append(field(`${id}-importance`, `Importance: ${definition[1]}`, profile.factors[id].importance, IMPORTANCE));
+      if (id !== 'strengths') row.append(field(`${id}-importance`, 'Importance', profile.factors[id].importance, IMPORTANCE));
       else { const importance = document.createElement('input'); importance.type = 'hidden'; importance.name = `${id}-importance`; importance.value = profile.factors[id].importance; row.append(importance); }
       section.append(row);
     }
@@ -115,29 +129,53 @@ function render(profile, draft) {
         else { input.required = true; input.pattern = '[A-Za-z]{3}'; input.maxLength = 3; }
         old?.replaceWith(input); compensation.append(wrapper);
       }
-      compensation.append(field('period', 'Pay period', profile.compensation.period, ['year', 'hour']), field('compensation-importance', 'Threshold importance', profile.compensation.importance, IMPORTANCE), field('unknown', 'When compensation is missing', profile.compensation.unknown, ['review', 'exclude'])); section.append(compensation);
+      compensation.append(field('period', 'Pay period', profile.compensation.period, ['year', 'hour']), field('compensation-importance', 'Importance', profile.compensation.importance, IMPORTANCE), field('unknown', 'When compensation is missing', profile.compensation.unknown, ['review', 'exclude'])); section.append(compensation);
     }
     form.append(section);
   }
   const signals = element('section', '', 'panel'); signals.append(element('h2', 'Inferred signals'), element('p', 'Signals are separate from your explicit settings. AI-assisted proposals will require your approval; conversational editing is planned for later.'));
   const list = document.createElement('pre'); list.textContent = saved && JSON.stringify(saved.inferred_signals) !== '[]' ? JSON.stringify(saved.inferred_signals, null, 2) : 'No inferred signals.'; signals.append(list); form.append(signals);
   const footer = element('section', '', 'panel profile-save'); review = document.createElement('input'); review.type = 'checkbox'; review.id = 'profile-reviewed'; review.required = true;
-  const label = document.createElement('label'); label.htmlFor = review.id; label.append(review, document.createTextNode(' I have reviewed this profile, including suggested values and undecided constraints.'));
-  const submit = document.createElement('button'); submit.type = 'submit'; submit.textContent = 'Save reviewed profile'; submit.className = 'nc-button nc-button--primary nc-button--lg';
-  footer.append(label, submit); form.append(footer);
-  form.addEventListener('input', event => { if (event.target !== review) { dirty = true; if (review) review.checked = false; notice.textContent = 'Unsaved edits.'; } });
+  review.checked = !draft && !!saved?.reviewed_at;
+  const label = document.createElement('label'); label.htmlFor = review.id; label.className = 'profile-acknowledgment'; label.append(review, document.createTextNode('I have reviewed this profile, including suggested values and undecided constraints.'));
+  const submit = document.createElement('button'); submit.type = 'submit'; submit.textContent = 'Save Reviewed Profile'; submit.className = 'nc-button nc-button--primary nc-button--lg';
+  const actions = element('div', '', 'profile-actions'); actions.append(submit, exportButton);
+  footer.append(label, actions); form.append(footer);
+  if (resetBaseline) baseline = formSnapshot();
+  refreshState = () => {
+    if (!form || busy) return;
+    dirty = formSnapshot() !== baseline;
+    const reviewed = !!saved?.reviewed_at;
+    const state = dirty ? 'Unsaved Changes' : reviewed ? 'Reviewed' : 'Draft';
+    if (status.textContent !== state) status.textContent = state;
+    status.className = `nc-status-badge nc-status-badge--${dirty ? 'negative' : reviewed ? 'positive' : 'accent'}`;
+    let valid = [...form.querySelectorAll('input, select, textarea')].every(control => /** @type {HTMLInputElement} */ (control).validity.valid);
+    try { readForm(); } catch { valid = false; }
+    submit.disabled = !ready || !review?.checked || !valid || (!dirty && reviewed);
+  };
+  /** @param {Event} event */
+  const edited = event => {
+    if (event.target === file || busy) return;
+    if (event.target !== review && formSnapshot() !== lastSnapshot) {
+      if (review) review.checked = false;
+      notice.textContent = '';
+    }
+    lastSnapshot = formSnapshot(); refreshState();
+  };
+  let lastSnapshot = formSnapshot();
+  form.addEventListener('input', edited); form.addEventListener('change', edited);
   form.addEventListener('submit', async event => {
-    event.preventDefault(); if (busy || !ready || !owner || !review?.checked) return;
+    event.preventDefault(); refreshState(); if (busy || !ready || !owner || !review?.checked || submit.disabled) return;
     const currentOwner = owner, currentEpoch = epoch;
     try {
       const profile = readForm(); setBusy(true); notice.textContent = 'Saving profile…';
       const result = await access.save(currentOwner, profile, saved);
       if (currentEpoch !== epoch) return;
-      saved = result; dirty = false; render(profile, false); notice.textContent = `Saved reviewed profile, revision ${saved.revision}.`;
+      saved = result; dirty = false; render(profile, false, true); window.dispatchEvent(new window.Event('nextchapter:profile-saved')); notice.textContent = `Saved reviewed profile, revision ${saved.revision}.`;
     } catch (error) { if (currentEpoch === epoch) notice.textContent = `Could not save. Your edits are still here. ${error instanceof Error ? error.message : 'Check your connection.'}`; }
     finally { setBusy(false); }
   });
-  bindFieldValidation(form); workspace.replaceChildren(form);
+  bindFieldValidation(form); workspace.replaceChildren(form); refreshState();
 }
 
 /** @type {ReturnType<typeof createCareerProfileData>} */ let access;
@@ -146,7 +184,7 @@ try {
   /** @param {string|null} id */
   async function changeOwner(id) {
     if (id === owner && ready) return;
-    owner = id; const currentEpoch = ++epoch; ready = false; dirty = false; saved = null; form = null; review = null; notice.textContent = '';
+    owner = id; const currentEpoch = ++epoch; ready = false; dirty = false; saved = null; form = null; review = null; baseline = ''; refreshState = () => {}; notice.textContent = '';
     if (!id) {
       workspace.replaceChildren(element('p', 'Sign in using Log In in the header to review and save your private career profile.')); return;
     }
@@ -162,7 +200,7 @@ try {
           draft = careerContextDraft(await response.text());
         } catch { notice.textContent = 'Career context could not load. Start with blank fields or import your draft.'; }
       }
-      if (currentEpoch !== epoch) return; ready = true; render(draft, !row);
+      if (currentEpoch !== epoch) return; ready = true; render(draft, !row?.reviewed_at, true);
     } catch {
       if (currentEpoch !== epoch) return;
       workspace.replaceChildren(element('p', 'Career profile could not load. Check your connection. If this is a new setup, apply the career profiles migration first.'), button('Retry', () => { void changeOwner(id); }));

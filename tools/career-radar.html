@@ -18,16 +18,23 @@
   <script type="module" src="shared/navigation.mjs?v=20261013-tracker-route"></script>
   <link rel="stylesheet" href="shared/layout.css">
   <link rel="stylesheet" href="career-profile.css">
+  <link rel="stylesheet" href="radar-feed.css">
 </head>
 <body>
   <header id="nextchapter-header" data-app="radar"></header>
   <div class="shell nc-content">
-    <h1>Career Radar</h1>
-    <p>Start with what matters to you. Discovery and recommendations will come later.</p>
-    <p id="profile-notice" role="status" aria-live="polite"></p>
-    <main id="profile-workspace"><p>Connecting to Career Radar…</p></main>
-    <noscript><p>Career Radar needs JavaScript to review and save your profile.</p></noscript>
+    <main class="profile-content" id="radar-workspace">
+      <h1>Career Radar</h1>
+      <p>Find opportunities, review promising leads, and decide what to pursue.</p>
+      <section id="radar-feed" class="radar-feed" aria-label="Opportunity feed"><p>Connecting to saved opportunities…</p></section>
+      <details class="radar-profile" id="radar-profile"><summary>Your career profile</summary>
+      <p id="profile-notice" role="status" aria-live="polite"></p>
+      <div id="profile-workspace"><p>Connecting to Career Radar…</p></div>
+      </details>
+      <noscript><p>Career Radar needs JavaScript to review and save your profile.</p></noscript>
+    </main>
   </div>
   <script type="module" src="prospect-tracker/career-profile-app.js"></script>
+  <script type="module" src="prospect-tracker/radar-feed-bootstrap.js"></script>
 </body>
 </html>
