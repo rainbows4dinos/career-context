@@ -1,7 +1,7 @@
 # Career Radar product spec
 
-Status: Living product plan; profile editor implemented for #3 (hosted migration pending); discovery and recommendation workflows are not implemented.
-Updated: 2026-10-14
+Status: Living product plan; profile editor implemented for #3 (hosted migration pending); the server-side discovery/verification foundation is implemented locally but not deployed; discovery and recommendation UI workflows are not implemented.
+Updated: 2026-10-15
 Parent: [#2 — Product overview and MVP](https://github.com/rainbows4dinos/nextchapter/issues/2)
 
 ## Goals
@@ -62,7 +62,7 @@ Radar owns discovery, assessment, recommendation/decision history, and feedback;
 
 Persistence is Supabase, with Auth and RLS protecting private records. Opportunity records and personal feedback belong outside this public repository; browser code cannot hold secrets. Reuse canonical career facts and framing without copying them into this spec. Résumé formatting rules are not opportunity evaluation criteria.
 
-Keep costs low through deterministic eligibility screening before selective AI evaluation and cached assessments for unchanged postings/profile versions. Existing allowlisted URL ingestion can inform source planning, but manual posting retrieval does not establish discovery coverage.
+For AI-led discovery, the model researches provisional candidates before they exist for deterministic screening. The [#25 foundation](discovery-foundation.md) then validates output/provenance, suppresses supplied decisions and performs bounded independent availability checks. This explicitly replaces the earlier assumption that all discovery can be screened before any AI call. Deeper qualification ranking and cached assessment policy remain #5; no cache or assessment persistence is implemented. Existing allowlisted URL ingestion can inform URL safety, but manual posting retrieval does not establish discovery coverage.
 
 Older [career-radar-v0 setup documentation](../career-radar-v0.md) describes today's Prospect Tracker. The current Radar route provides the [career profile editor](profile.md), and the legacy directory redirects to Tracker. This spec defines planned Radar behavior without prescribing new schemas, endpoints, providers, or component structures.
 

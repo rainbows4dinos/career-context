@@ -1,0 +1,45 @@
+{
+  "status": "completed",
+  "output": [
+    {
+      "type": "web_search_call",
+      "id": "search0",
+      "status": "completed",
+      "action": {
+        "type": "search",
+        "sources": [
+          {
+            "url": "https://fictional-employer.com/careers/roles/123"
+          },
+          {
+            "url": "https://job-boards.greenhouse.io/fictional/jobs/123"
+          },
+          {
+            "url": "https://fictional.wd503.myworkdayjobs.com/careers/job/Designer_REQ-1"
+          },
+          {
+            "url": "https://fictional.wd5.myworkdayjobs.com/careers/job/Designer_REQ-2"
+          }
+        ]
+      }
+    },
+    {
+      "type": "web_search_call",
+      "id": "open",
+      "status": "completed",
+      "action": {
+        "type": "open_page",
+        "url": "https://fictional.wd5.myworkdayjobs.com/careers/job/Designer_REQ-2"
+      }
+    },
+    {
+      "type": "message",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "{\"opportunities\": [{\"company\": \"Fictional 0\", \"job_title\": \"Example Designer\", \"location\": null, \"remote_eligibility\": null, \"compensation_text\": null, \"original_employer_or_ats_url\": \"https://fictional-employer.com/careers/roles/123\", \"discovery_source_url\": \"https://fictional-employer.com/careers/roles/123\", \"source_check_timestamp\": null, \"verification_status\": \"original_page_consulted\", \"why_fit\": [\"Example fit\"], \"concerns_or_unknowns\": [], \"wildcard_rationale\": null, \"evidence\": []}, {\"company\": \"Fictional 1\", \"job_title\": \"Example Designer\", \"location\": null, \"remote_eligibility\": null, \"compensation_text\": null, \"original_employer_or_ats_url\": \"https://job-boards.greenhouse.io/fictional/jobs/123\", \"discovery_source_url\": \"https://job-boards.greenhouse.io/fictional/jobs/123\", \"source_check_timestamp\": null, \"verification_status\": \"original_page_consulted\", \"why_fit\": [\"Example fit\"], \"concerns_or_unknowns\": [], \"wildcard_rationale\": null, \"evidence\": []}, {\"company\": \"Fictional 2\", \"job_title\": \"Example Designer\", \"location\": null, \"remote_eligibility\": null, \"compensation_text\": null, \"original_employer_or_ats_url\": \"https://fictional.wd503.myworkdayjobs.com/careers/job/Designer_REQ-1\", \"discovery_source_url\": \"https://fictional.wd503.myworkdayjobs.com/careers/job/Designer_REQ-1\", \"source_check_timestamp\": null, \"verification_status\": \"original_page_consulted\", \"why_fit\": [\"Example fit\"], \"concerns_or_unknowns\": [], \"wildcard_rationale\": null, \"evidence\": []}, {\"company\": \"Fictional 3\", \"job_title\": \"Example Designer\", \"location\": null, \"remote_eligibility\": null, \"compensation_text\": null, \"original_employer_or_ats_url\": \"https://fictional.wd5.myworkdayjobs.com/careers/job/Designer_REQ-2\", \"discovery_source_url\": \"https://fictional.wd5.myworkdayjobs.com/careers/job/Designer_REQ-2\", \"source_check_timestamp\": null, \"verification_status\": \"original_page_consulted\", \"why_fit\": [\"Example fit\"], \"concerns_or_unknowns\": [], \"wildcard_rationale\": null, \"evidence\": []}], \"research_notes\": [\"Synthetic fixture; no live leads.\"]}"
+        }
+      ]
+    }
+  ]
+}
