@@ -1,6 +1,6 @@
 # Discovery and verification foundation — #25
 
-Implemented and corrected locally on October 15, 2026. **Disabled by default, not deployed or live-tested.** The user's later implementation and remediation requests supersede [#25](https://github.com/rainbows4dinos/nextchapter/issues/25)'s earlier contract-only wording. The [two #27 experiments](ai-web-research-spike.md) remain historical evidence; no additional paid request or issue change was made here.
+Implemented and corrected locally on October 15, 2026. **Deployed October 16 with JWT verification enabled and live research disabled; no product live-research call has been made.** The user's later implementation and remediation requests supersede [#25](https://github.com/rainbows4dinos/nextchapter/issues/25)'s earlier contract-only wording. The [two #27 experiments](ai-web-research-spike.md) remain historical evidence; no additional paid request or issue change was made here.
 
 ## Flow and boundaries
 
@@ -99,4 +99,4 @@ Validation commands remain scoped: `npm test`, `npm run typecheck`, `npm run lin
 
 ## Later #6 implementation — October 16, 2026
 
-The subsequent user-approved [opportunity feed](opportunity-feed.md) now implements the UI and single-table persistence described there. Earlier statements that #6 or persistence were unstarted describe the foundation milestone. The research foundation itself is unchanged. Live discovery remains disabled, and the new migration has not been applied to hosted Supabase.
+The subsequent user-approved [opportunity feed](opportunity-feed.md) now implements the UI and single-table persistence described there. Earlier statements that #6 or persistence were unstarted describe the foundation milestone. The research foundation itself is unchanged. Live discovery remains disabled. The new migration was applied during the approved October 16 disabled release; see the [release record](release-2026-10-16.md).

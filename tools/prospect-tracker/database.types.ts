@@ -14,52 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      // New table: migration-based PostgreSQL introspection; regenerate hosted types after applying.
-      radar_opportunities: {
-        Row: {
-          id: string;
-          owner_id: string;
-          identity_key: string;
-          snapshot: Json;
-          decision: string;
-          pass_reason: string | null;
-          pass_note: string | null;
-          decided_at: string | null;
-          prospect_id: string | null;
-          created_at: string;
-          last_seen_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          owner_id?: string;
-          identity_key: string;
-          snapshot: Json;
-          decision?: string;
-          pass_reason?: string | null;
-          pass_note?: string | null;
-          decided_at?: string | null;
-          prospect_id?: string | null;
-          created_at?: string;
-          last_seen_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          owner_id?: string;
-          identity_key?: string;
-          snapshot?: Json;
-          decision?: string;
-          pass_reason?: string | null;
-          pass_note?: string | null;
-          decided_at?: string | null;
-          prospect_id?: string | null;
-          created_at?: string;
-          last_seen_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [{ foreignKeyName: "radar_opportunities_prospect_id_fkey"; columns: ["prospect_id"]; isOneToOne: false; referencedRelation: "prospects"; referencedColumns: ["id"]; }];
-      };
       career_profiles: {
         Row: {
           created_at: string
@@ -229,6 +183,59 @@ export type Database = {
           work_style_fit?: number | null
         }
         Relationships: []
+      }
+      radar_opportunities: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          decision: string
+          id: string
+          identity_key: string
+          last_seen_at: string
+          owner_id: string
+          pass_note: string | null
+          pass_reason: string | null
+          prospect_id: string | null
+          snapshot: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          decision?: string
+          id?: string
+          identity_key: string
+          last_seen_at?: string
+          owner_id?: string
+          pass_note?: string | null
+          pass_reason?: string | null
+          prospect_id?: string | null
+          snapshot: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          decision?: string
+          id?: string
+          identity_key?: string
+          last_seen_at?: string
+          owner_id?: string
+          pass_note?: string | null
+          pass_reason?: string | null
+          prospect_id?: string | null
+          snapshot?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "radar_opportunities_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "prospects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

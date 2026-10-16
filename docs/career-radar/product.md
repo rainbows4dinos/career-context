@@ -1,6 +1,6 @@
 # Career Radar product spec
 
-Status: Living product plan; profile editor implemented for #3 (hosted migration confirmed); the server-side discovery/verification foundation is implemented locally but not deployed; the opportunity feed and review workflow are implemented locally, with live discovery disabled and the new opportunity-table migration pending hosted application.
+Status: Living product plan; profile editor implemented for #3 (hosted migration confirmed); the discovery/verification function is deployed with research disabled and the opportunity-table migration is applied. The profile/feed release awaits Pages acceptance recorded in PR #15.
 Updated: 2026-10-16
 Parent: [#2 — Product overview and MVP](https://github.com/rainbows4dinos/nextchapter/issues/2)
 
