@@ -4,7 +4,7 @@ Implemented and corrected locally on October 15, 2026. **Disabled by default, no
 
 ## Flow and boundaries
 
-**Find Opportunities → Review promising leads → Accept or Pass.** This foundation supplies the server contract; #6 UI/client work has not started. Accept means interest, not applying or creating a Tracker record.
+**Find Opportunities → Review promising leads → Accept or Pass.** This foundation supplies the server contract; the later [#6 implementation](opportunity-feed.md) supplies the UI/client. Accept means interest, not applying or creating a Tracker record.
 
 The owner-only `research-opportunities` function authenticates the Supabase user, loads the reviewed `career_profiles` row with that user's JWT and a public key through existing RLS, and checks the submitted revision. No service-role key, inferred signals, canonical career documents or full private history are used. Research preferences come exclusively from the reviewed explicit factors, compensation settings and optional focus. Factor importance is preserved. Common email/phone patterns are removed; free text still needs user review for unnecessary personal information.
 

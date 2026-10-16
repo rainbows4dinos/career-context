@@ -40,7 +40,7 @@ Repository agents should read `AGENTS.md` and the career files relevant to their
 
 - [index.html](index.html): the site root opens the Prospect Tracker board; signed-out visitors use its existing sign-in flow.
 - [tools/resume-tailor.html](tools/resume-tailor.html): the résumé and cover-letter builder. One static page covering tailoring, revisions, QA warnings, and downloads.
-- [tools/career-radar.html](tools/career-radar.html): Career Radar profile editor; discovery and evaluation are not implemented. See [profile setup and decisions](docs/career-radar/profile.md).
+- [tools/career-radar.html](tools/career-radar.html): Career Radar profile editor and opportunity review feed with persistent Accept/Pass decisions and explicit Tracker handoff. Live research remains disabled. See [profile setup](docs/career-radar/profile.md) and [feed/release status](docs/career-radar/opportunity-feed.md).
 - [tools/prospect-tracker/index.html](tools/prospect-tracker/index.html): Prospect Tracker, private prospect tracking with a status board, core details, status history and editable posting previews. Also linked from the résumé builder.
 - [tools/about.html](tools/about.html): a public introduction to nextchapter, its tools, and shared professional context.
 - [tools/proxy-worker.js](tools/proxy-worker.js): Cloudflare Worker that proxies Anthropic API requests using a server-side secret.

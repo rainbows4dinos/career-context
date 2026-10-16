@@ -1,46 +1,51 @@
 # Career Radar product spec
 
-Status: Living product plan; profile editor implemented for #3 (hosted migration pending); the server-side discovery/verification foundation is implemented locally but not deployed; the opportunity feed and review workflow are implemented locally, with live discovery disabled and the new opportunity-table migration pending hosted application.
+Status: Living product plan; profile editor implemented for #3 (hosted migration confirmed); the server-side discovery/verification foundation is implemented locally but not deployed; the opportunity feed and review workflow are implemented locally, with live discovery disabled and the new opportunity-table migration pending hosted application.
 Updated: 2026-10-16
 Parent: [#2 — Product overview and MVP](https://github.com/rainbows4dinos/nextchapter/issues/2)
 
-## Goals
+## Vision
 
-Productize the Consumer Design Watch workflow as a personalized opportunity feed informed by the user's strengths, interests, and practical constraints. Surface a small number of opportunities worth considering, mostly preferred roles with occasional explainable surprises. Improve relevance through decisions while keeping the user in control.
+Productize Consumer Design Job Watch as an on-demand personalized opportunity feed. **Core loop:** Reviewed Career Profile → Find Opportunities → live-web AI research → sourced recommendations → Accept or Pass → explicit Add to Prospects → learn from decisions.
 
-**Core loop:** Discover → Recommend → Add to Prospects or Pass → Learn.
+This is a lightweight research-and-review workflow, **not** a dedicated ATS crawler or job aggregation platform. ChatGPT's scheduled watch is not automatically a developer API.
 
-This document captures cross-feature product intent. Linked issues hold feature requirements and acceptance criteria. Update both when a decision changes; resolve conflicts explicitly. Open decisions below are unresolved, not implementation instructions. Create implementation tasks only when a feature is ready to build.
+## MVP
 
-## User experience
+1. Use the reviewed, editable Career Profile (#3), respecting explicit preferences and hard constraints.
+2. A user clicks **Find Opportunities**. Server-side live-web-search-capable AI, or a search API combined with a model, researches publicly discoverable opportunities across employers and job boards. Plain model recollection is not live discovery.
+3. Return up to five distinct relevant opportunities per run, including unfamiliar companies and occasional justified wildcards. Explain qualification fit separately from personal interest, plus concerns and unknowns (#5).
+4. Show employer/title, evidenced location/compensation, source and original URLs where available, search/check time, and clear verified/unverified states. A search hit or snippet does not prove an employer posting is active (#6).
+5. **Accept** records interest in Radar. **Add to Prospects** separately and explicitly creates/reuses a Prospect Tracker record. **Pass** is an alternative to Accept and optionally captures a reason; both decisions can be reversed (#7).
+6. Preserve user decisions and enough permitted identifiers to suppress unchanged previously considered opportunities (#9). Feedback can inform future searches but must not silently change explicit profile settings (#8).
 
-1. Review and edit a career profile before recommendations depend on it. Seed it from reviewed Consumer Design Watch learnings and canonical career context; do not blindly import chat memory.
-2. Initiate discovery on demand from selected reliable sources, covering target companies and some exploratory discovery.
-3. Review a focused feed. Each card shows company, role, location, compensation when stated, original posting/source link, freshness and verification context, a concise reason it surfaced, and concerns or unknowns. Clearly label strong matches and wildcards; make stale or unverified listings obvious.
-4. **Add to Prospects** creates or reuses an appropriate Prospect Tracker record with available job details and source URL. Only intentionally accepted opportunities enter Tracker; preserve its existing status and history semantics.
-5. **Pass** removes the item from the active feed and preserves its decision history. Feedback is optional: compensation, seniority/scope, management-heavy, company/industry, location/time zone, work type, already considered/applied, or other. Passing without a reason must remain quick.
-6. Review history through lightweight New/Passed/All views or equivalent. Avoid a second Kanban workflow.
+## Technical direction
 
-## Recommendation and feedback model
+- Start with a bounded **proof of concept** comparing a simple live-web research API approach against representative Consumer Design Watch results (#27).
+- Then build only the minimal research-run/result contract, server-side secrets, Supabase Auth/RLS history, safe response validation, provenance, partial failure handling and measurable per-run budgets (#25).
+- Discovery and personalized assessment may occur in one bounded research call, as long as facts are traceable and interpretation is labeled.
+- Search links and employer links remain distinct. Check original postings through permitted routes where practical; never invent missing facts, claim a search hit is verified open, or treat failed retrieval as proof of closure.
+- Respect source attribution, permitted caching/retention, API conditions and safe URL handling. Store minimal decision history and allowed metadata, not a bulk archive of licensed descriptions.
+- On-demand only, no background search. Bound requests, tokens, latency and cost. Do not promise an exact cost estimate without supporting API usage/pricing data.
+- Reuse existing static HTML/JavaScript, shared design system and existing Prospect Tracker single-URL ingestion. No framework rewrite.
 
-- **Career profile:** Separate hard constraints, strong preferences, soft preferences, and areas open to surprise. Capture strengths and transferable experience alongside seniority, IC/player-coach versus management, work focus/sectors, location/time zones, employment type, and compensation thresholds. Specific starting values require user review.
-- **Assessment:** Evaluate qualification/experience fit separately from personal interest. Explain strengths, concerns, unknowns, and possible dealbreakers in concise conversational language. Distinguish sourced facts from interpretations; do not invent salary, remote policy, requirements, or other posting facts.
-- **Strong matches and wildcards:** Most recommendations align closely with the profile. Occasional wildcards challenge preferences for a concrete, explained reason grounded in transferable strengths or compelling work. They do not bypass hard constraints. The initial mix and ranking method remain open.
-- **Feedback:** Keep explicit preferences, accept/pass decisions, optional reasons, and learned inferences distinct. Recurring feedback may adjust ranking or suggest profile changes; inferences must be inspectable and reversible. Explicit settings take precedence and cannot be silently overwritten. A single pass must not become a broad exclusion; preserve exploration.
-- **Identity and history:** Check Tracker and Radar history before treating a role as new. Use posting IDs, canonical URLs, and cautious company/role/location similarity; flag uncertain duplicates rather than automatically merging them. Unchanged roles already recommended, passed, tracked, or applied to must not repeatedly appear as new. Material changes may justify resurfacing with an explanation. Keep first-seen and last-verified context.
+## Backlog and sequence
 
-## MVP scope
+- [#2 Product overview](https://github.com/rainbows4dinos/nextchapter/issues/2)
+- [#3 Career Profile](https://github.com/rainbows4dinos/nextchapter/issues/3): reviewed editor already built.
+- [#27 AI web research PoC](https://github.com/rainbows4dinos/nextchapter/issues/27): two experiments documented; source quality and controlled product acceptance remain unresolved.
+- [#25 Minimal research contract](https://github.com/rainbows4dinos/nextchapter/issues/25): bounded discovery/verification foundation implemented; disabled production release preparation is approved.
+- [#4 Discovery](https://github.com/rainbows4dinos/nextchapter/issues/4), [#5 Assessment](https://github.com/rainbows4dinos/nextchapter/issues/5), [#6 Feed](https://github.com/rainbows4dinos/nextchapter/issues/6): Find Opportunities to reviewable recommendations.
+- [#7 Add/Pass](https://github.com/rainbows4dinos/nextchapter/issues/7), [#9 History](https://github.com/rainbows4dinos/nextchapter/issues/9), [#8 Feedback](https://github.com/rainbows4dinos/nextchapter/issues/8): complete the loop.
+- [#26 Targeted ATS listing discovery](https://github.com/rainbows4dinos/nextchapter/issues/26): **deferred optional enhancement**, not an MVP dependency.
 
-The MVP completes the core loop with a reviewable profile, limited on-demand discovery, transparent personalized assessments, strong matches and occasional wildcards, a focused feed, Add to Prospects, optional Pass feedback, persistent history, duplicate suppression, and basic feedback-informed recommendations.
+## Previous source research
 
-MVP success means the user can understand why a role surfaced, decide quickly, find an accepted role once in Tracker, and retain decisions across refreshes. Repeat feedback can influence future recommendations without silently changing explicit preferences. The precise depth of learning remains a feature decision.
+The [cross-company API spike](discovery-source-spike.md) reviewed Himalayas, Adzuna, The Muse, Jooble, Remotive and Brave. Its findings remain useful reference material, but do not require integrating an aggregator. Himalayas surfaced relevant remote design jobs; structured API access, original-posting verification and content-retention rights were not fully validated.
 
 ## Non-goals
 
-- Broad internet crawling or a comprehensive generic job aggregator.
-- Scheduled discovery, notifications, natural-language search, salary estimation, or sophisticated autonomous learning in the MVP.
-- Automated applications or automatically adding every discovered role to Tracker.
-- Replacing Tracker's application workflow or rebuilding Résumé Builder.
+No mandatory ATS adapter, aggregator API, bulk crawling, large job corpus, provider configuration UI, scheduled discovery, notifications, automatic applications, salary predictions or elaborate learning in MVP.
 
 ## Open decisions
 
@@ -50,7 +55,7 @@ MVP success means the user can understand why a role surfaced, decide quickly, f
 | Initial sources, API/retrieval restrictions, coverage, reliability, and refresh strategy | [#4](https://github.com/rainbows4dinos/nextchapter/issues/4) |
 | Minimum evidence, assessment representation, ranking, wildcard mix, reevaluation triggers, and cost limits | [#5](https://github.com/rainbows4dinos/nextchapter/issues/5) |
 | Feed ordering, card density, and placement of detailed rationale | [#6](https://github.com/rainbows4dinos/nextchapter/issues/6) |
-| Already-tracked behavior and whether passes can be undone | [#7](https://github.com/rainbows4dinos/nextchapter/issues/7) |
+| Exact Tracker identities are reused; Accept/Pass can be undone. Broader handoff policy remains open | [#7](https://github.com/rainbows4dinos/nextchapter/issues/7) |
 | Feedback storage/model, MVP learning depth, confirmation prompts, and ranking transparency | [#8](https://github.com/rainbows4dinos/nextchapter/issues/8) |
 | Canonical identity, historical import, material-change thresholds, and resurfacing rules | [#9](https://github.com/rainbows4dinos/nextchapter/issues/9) |
 
@@ -64,7 +69,7 @@ Persistence is Supabase, with Auth and RLS protecting private records. Opportuni
 
 For AI-led discovery, the model researches provisional candidates before they exist for deterministic screening. The [#25 foundation](discovery-foundation.md) then validates output/provenance, suppresses supplied decisions and performs bounded independent availability checks. This explicitly replaces the earlier assumption that all discovery can be screened before any AI call. Deeper qualification ranking and cached assessment policy remain #5; no cache or assessment persistence is implemented. Existing allowlisted URL ingestion can inform URL safety, but manual posting retrieval does not establish discovery coverage.
 
-Older [career-radar-v0 setup documentation](../career-radar-v0.md) describes today's Prospect Tracker. The current Radar route provides the [career profile editor](profile.md), and the legacy directory redirects to Tracker. This spec defines planned Radar behavior without prescribing new schemas, endpoints, providers, or component structures.
+Older [career-radar-v0 setup documentation](../career-radar-v0.md) describes today's Prospect Tracker. The current Radar route provides the [career profile editor](profile.md) and [opportunity feed](opportunity-feed.md), and the legacy directory redirects to Tracker. This spec defines planned Radar behavior without prescribing new schemas, endpoints, providers, or component structures.
 
 ## Feature issues
 
@@ -78,6 +83,8 @@ Older [career-radar-v0 setup documentation](../career-radar-v0.md) describes tod
 | [#8 — Feedback-informed recommendations](https://github.com/rainbows4dinos/nextchapter/issues/8) | Controlled learning from decisions |
 | [#9 — Duplicate detection and recommendation history](https://github.com/rainbows4dinos/nextchapter/issues/9) | Recognition, suppression, and reconsideration |
 
-## Local opportunity-feed implementation
+## Opportunity-feed implementation
 
-See [the #6 implementation and validation notes](opportunity-feed.md). The approved workflow is New → Accept → Add to Prospects, with Pass as an alternative and explicit decision reversal. Accept alone never imports a Tracker record. One user-owned Supabase table stores small fact/claim-aware cards and current decisions; no full descriptions or raw provider responses are retained. Hosted migration and paid-discovery enablement remain separately approval-gated.
+See [the #6 implementation and validation notes](opportunity-feed.md). The approved workflow is New → Accept → Add to Prospects, with Pass as an alternative and explicit decision reversal. Accept alone never imports a Tracker record. One user-owned Supabase table stores small fact/claim-aware cards and current decisions; no full descriptions or raw provider responses are retained. The disabled production release is approved; hosted acceptance is pending. Live-discovery enablement and paid requests remain separately approval-gated.
+
+This document captures cross-feature intent; linked issues define feature acceptance. The approved release preserves on-demand research and minimal storage rather than adding ATS discovery infrastructure.

@@ -20,7 +20,7 @@ Saved `explicit_profile` is the source of truth. `inferred_signals` is a separat
 
 ## Persistence and versioning
 
-Apply `supabase/migrations/20261014000000_career_profiles.sql` to the intended Supabase project through the existing migration process before deploying the page. **This implementation does not apply the migration to hosted Supabase.** It adds one `career_profiles` row per Auth owner, protected by select/insert/update RLS. Anonymous access and delete are denied. Column grants limit browser writes to explicit settings and review confirmation; ownership, signals and revision metadata are not browser-writable.
+Apply `supabase/migrations/20261014000000_career_profiles.sql` to the intended Supabase project through the existing migration process before deploying the page. **Hosted migration history was checked during the October 16 release preflight and confirms this migration is applied.** It adds one `career_profiles` row per Auth owner, protected by select/insert/update RLS. Anonymous access and delete are denied. Column grants limit browser writes to explicit settings and review confirmation; ownership, signals and revision metadata are not browser-writable.
 
 JSON schema version starts at 1. PostgreSQL increments the profile revision only when explicit settings change and updates the exact timestamp on every update. Writes match the exact Supabase timestamp without parsing/reformatting microseconds. A stale update never succeeds silently, and first-save insert never upserts over an existing profile. Export the retained edits and reload to reconcile concurrent/ambiguous saves. There is a latest revision counter, **not** full profile history; append-only snapshots can be introduced if a later feature needs audit/replay.
 
