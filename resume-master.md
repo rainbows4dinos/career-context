@@ -114,7 +114,7 @@ Comfortable moving between strategy and execution, including AI-assisted prototy
 # Experience
 
 # The Pattern
-Fractional Head of Design
+Fractional Head of Design (contract)
 Jun 2026 – Sep 2026
 
 ## Overview
@@ -141,7 +141,7 @@ Short fractional engagement on a consumer mobile app rebuild. Owned the interact
 - The engagement ended in Sep 2026, before launch. No idea how much of the work shipped, so claim no launch credit, no metrics, no outcomes.
 - What survived review: the general direction and interaction model for the You tab, the journey wheel and carousel, the level 2 insight card interaction, and the basic level 3 reader interaction.
 - The brand evolution work was rejected. Never reference it.
-- Cap this role at 2 or 3 bullets. It was three months and should never outweigh G2 or Wisdom Panel.
+- Cap this role at 2 bullets. It was three months and should never outweigh G2 or Wisdom Panel.
 - Also done but not load-bearing: UX audit of the existing app, competitive analysis. Use only if a job description specifically asks for strategy or research work.
 
 ---
